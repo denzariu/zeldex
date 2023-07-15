@@ -1,0 +1,37 @@
+import {
+  ScrollView,
+  Text,
+  View,
+  StyleSheet
+} from 'react-native';
+import React from 'react'
+import { colors, fontSizes } from '../../styles/defaults';
+
+const styles = StyleSheet.create({
+  pageContainer: {
+    flex: 1,
+    backgroundColor: colors.primary
+  },
+
+  container: {
+  },
+
+  textArea: {
+    fontSize: fontSizes.l,
+    fontWeight: 'bold',
+    color: colors.quaternary
+  }
+})
+
+const Home = () => {
+
+  return (
+    <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.pageContainer}>
+      <View style={styles.container}>
+        <Text style={styles.textArea}>Hi</Text>
+      </View>
+    </ScrollView>
+  );
+}
+
+export default Home

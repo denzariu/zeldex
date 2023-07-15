@@ -1,14 +1,12 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
+import {NavigationContainer} from '@react-navigation/native'
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import type {PropsWithChildren} from 'react';
+
+const Stack = createNativeStackNavigator();
+
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -24,79 +22,64 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
 import MenuBar from './components/MenuBar';
+import Home from './components/screens/Home';
+import Profile from './components/screens/Profile';
+import { colors, fontSizes } from './styles/defaults';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-
-          
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaProvider>
+      <StatusBar/>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName='Home'>
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{
+              title: 'My home',
+              headerStyle: {
+                backgroundColor: colors.quaternary,
+              },
+              headerTintColor: colors.primary,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: fontSizes.xxl,
+              },
+            }}
+          />
+          <Stack.Screen 
+            name="Search"
+            component={Profile}
+            options={{
+              title: 'Search',
+              headerBackVisible: false,
+            }}
+          />
+          <Stack.Screen 
+            name="Orders"
+            component={Profile}
+            options={{
+              title: 'Orders',
+              headerBackVisible: false,
+            }}
+          />
+          <Stack.Screen 
+            name="Profile"
+            component={Profile}
+            options={{
+              title: 'Profile',
+              headerBackVisible: false,
+            }}
+          />
+        </Stack.Navigator>
+        
       <MenuBar/>
-    </SafeAreaView>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 

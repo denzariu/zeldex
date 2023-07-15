@@ -2,12 +2,15 @@ import React from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { colors, fontSizes, fonts} from '../styles/defaults';
 import { SvgXml } from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
+import Home from './screens/Home';
+import Profile from './screens/Profile';
 
 const MenuBar = () => {
 
   type ButtonMenu = {
     name: string,
-    icon: string;
+    icon: string,
   }
   const MenuButtons: Array<ButtonMenu> = [
     {name: "Home", icon: homeIcon},
@@ -15,6 +18,14 @@ const MenuBar = () => {
     {name: "Orders", icon: ordersIcon},
     {name: "Profile", icon: profileIcon}
   ]
+
+  const [selectedButton, setSelectedButton] = React.useState(MenuButtons[0].name); // Initial selected button
+  const navigation = useNavigation();
+  
+  const handleSelection = (activePage: string) => {
+    setSelectedButton(activePage);
+    navigation.navigate(activePage);
+  };
 
   return (
     // <View style={[styles.center, {top: 50}]}>
@@ -25,12 +36,11 @@ const MenuBar = () => {
     // </View>
     <View style={styles.container}>
       {
-        MenuButtons.map(buttonMenu => (
+        MenuButtons.map((buttonMenu) => (
         
-        
-        <TouchableOpacity style={styles.menuItem}>
-          <SvgXml xml={buttonMenu.icon} width={24} height={24} />
-          <Text style={styles.menuItemText}>{buttonMenu.name}</Text>
+        <TouchableOpacity style={styles.menuItem} key={"ButtonMenu" + buttonMenu.name} onPress={() => handleSelection(buttonMenu.name)}>
+          <SvgXml xml={buttonMenu.icon} width={24} height={24} fill={selectedButton === buttonMenu.name ? menuItemStyleActive : menuItemStyle}/>
+          <Text style={selectedButton === buttonMenu.name ? styles.menuItemTextActive : styles.menuItemText}>{buttonMenu.name}</Text>
         </TouchableOpacity>
         ))
       }
@@ -49,7 +59,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 20,
     borderTopWidth: 2,
-    borderTopColor: colors.tertiary,
+    borderTopColor: colors.quaternary,
   },
 
   menuItem: {
@@ -62,24 +72,32 @@ const styles = StyleSheet.create({
     color: colors.textBlack,
   },
 
+  menuItemTextActive: {
+    fontSize: fontSizes.m,
+    color: colors.quaternary,
+  },
+
 });
+
+const menuItemStyle: string = colors.black;
+const menuItemStyleActive: string = colors.quaternary;
 
 // SVG icons
 const homeIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="-2 -2 24 24">
-    <path d='M18 18V7.132l-8-4.8-8 4.8V18h4v-2.75a4 4 0 1 1 8 0V18h4zm-6 2v-4.75a2 2 0 1 0-4 0V20H2a2 2 0 0 1-2-2V7.132a2 2 0 0 1 .971-1.715l8-4.8a2 2 0 0 1 2.058 0l8 4.8A2 2 0 0 1 20 7.132V18a2 2 0 0 1-2 2h-6z'/>
+    <path fillRule="evenodd" d='M18 18V7.132l-8-4.8-8 4.8V18h4v-2.75a4 4 0 1 1 8 0V18h4zm-6 2v-4.75a2 2 0 1 0-4 0V20H2a2 2 0 0 1-2-2V7.132a2 2 0 0 1 .971-1.715l8-4.8a2 2 0 0 1 2.058 0l8 4.8A2 2 0 0 1 20 7.132V18a2 2 0 0 1-2 2h-6z'/>
   </svg>
 `;
 
 const searchIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    <path d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z"/>
+    <path fillRule="evenodd" d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z"/>
   </svg>
 `;
 
 const ordersIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    <path d="M2 17v2h20v-2H2zm0-5h20v2H2v-2zm0-4h20v2H2V8zm0-4h20v2H2V4zm0 11h20v2H2v-2z"/>
+    <path fillRule="evenodd" d="M2 17v2h20v-2H2zm0-5h20v2H2v-2zm0-4h20v2H2V8zm0-4h20v2H2V4zm0 11h20v2H2v-2z"/>
   </svg>
 `;
 

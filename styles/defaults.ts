@@ -23,6 +23,7 @@ export const fontSizes = {
   m: normalize(16),
   l: normalize(18),
   xl: normalize(20),
+  xxl: normalize(24),
 }
 
 export const fonts = {
