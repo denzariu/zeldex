@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
 
   container: {
   },
+  
   textArea: {
     flex: 1,
 
