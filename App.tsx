@@ -31,6 +31,7 @@ import { colors, fontSizes } from './styles/defaults';
 import Search from './components/screens/Search';
 import Orders from './components/screens/Orders';
 import { UserModel } from './redux/actions';
+import Login from './components/screens/Login';
 
 
 function App(): JSX.Element {
@@ -45,12 +46,29 @@ function App(): JSX.Element {
       <SafeAreaProvider>
         <StatusBar/>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName='Home' screenOptions={{ contentStyle: {backgroundColor: colors.quaternary}}}>
+          <Stack.Navigator initialRouteName='Login' screenOptions={{ contentStyle: {backgroundColor: colors.quaternary}}}>
+          <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{
+                title: 'Sign In',
+                headerShown: false,
+                headerStyle: {
+                  backgroundColor: colors.quaternary,
+                },
+                headerTintColor: colors.primary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xxl,
+                },
+              }}
+            />
             <Stack.Screen
               name="Home"
               component={Home}
               options={{
                 title: 'My home',
+                headerBackVisible: false,
                 headerStyle: {
                   backgroundColor: colors.quaternary,
                 },

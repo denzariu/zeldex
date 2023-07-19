@@ -1,5 +1,8 @@
-export const ON_LOGIN = 'ON_LOGIN';
-export const ON_ERROR = 'ON_ERROR';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+
+// export const ON_LOGIN = 'ON_LOGIN';
+// export const ON_ERROR = 'ON_ERROR';
 
 export interface UserModel {
   firstName: string;
@@ -7,14 +10,14 @@ export interface UserModel {
   phone: string;
 }
 
-export interface LoginAction {
-  readonly type: 'ON_LOGIN';
-  payload: UserModel;
-}
+// export interface LoginAction {
+//   readonly type: 'ON_LOGIN';
+//   payload: UserModel;
+// }
 
-export interface ErrorAction {
-  readonly type: 'ON_ERROR';
-  payload: any;
-}
+// export interface ErrorAction {
+//   readonly type: 'ON_ERROR';
+//   payload: any;
+// }
+// export type UserAction = LoginAction | ErrorAction;
 
-export type UserAction = LoginAction | ErrorAction;

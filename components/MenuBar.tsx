@@ -3,9 +3,7 @@ import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { colors, fontSizes, fonts} from '../styles/defaults';
 import { SvgXml } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
-import Home from './screens/Home';
-import Profile from './screens/Profile';
-
+import { useSelector } from 'react-redux';
 const MenuBar = () => {
 
   type ButtonMenu = {
@@ -21,19 +19,15 @@ const MenuBar = () => {
 
   const [selectedButton, setSelectedButton] = React.useState(MenuButtons[0].name); // Initial selected button
   const navigation = useNavigation();
+  const loggedin: boolean = useSelector((state:any) => (state.userReducer.isAuthenticated));
   
   const handleSelection = (activePage: string) => {
     setSelectedButton(activePage);
     navigation.navigate(activePage);
   };
 
+  if (loggedin)
   return (
-    // <View style={[styles.center, {top: 50}]}>
-    //   <MenuBar />
-    // </View>
-    // <View style={colors.red, fontSizes.xl}>
-    //   <MenuBar/>
-    // </View>
     <View style={styles.container}>
       {
         MenuButtons.map((buttonMenu) => (
@@ -45,7 +39,8 @@ const MenuBar = () => {
         ))
       }
     </View>
-  );
+  )
+  return <></>
 };
 
 const styles = StyleSheet.create({

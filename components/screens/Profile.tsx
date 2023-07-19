@@ -5,7 +5,22 @@ import {
   StyleSheet
 } from 'react-native';
 import React from 'react'
-import { colors } from '../../styles/defaults';
+import { colors, fontSizes } from '../../styles/defaults';
+import { useSelector } from 'react-redux';
+
+const Profile = () => {
+  
+  //Test
+  const phone: string = useSelector((state:any) => (state.userReducer.user.phone));
+
+  return (
+    <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.pageContainer}>
+      <View style={styles.container}>
+        <Text style={styles.textArea}>{phone}</Text>
+      </View>
+    </ScrollView>
+  );
+}
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -15,23 +30,12 @@ const styles = StyleSheet.create({
 
   container: {
   },
-  
+
   textArea: {
     flex: 1,
-
+    fontSize: fontSizes.l,
+    color: colors.quaternary
   }
 })
-
-
-const Profile = () => {
-  
-  return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.pageContainer}>
-      <View style={styles.container}>
-        <Text style={styles.textArea}>Hi</Text>
-      </View>
-    </ScrollView>
-  );
-}
 
 export default Profile

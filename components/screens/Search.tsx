@@ -5,22 +5,7 @@ import {
   StyleSheet
 } from 'react-native';
 import React from 'react'
-import { colors } from '../../styles/defaults';
-
-const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    backgroundColor: colors.primary
-  },
-
-  container: {
-  },
-  textArea: {
-    flex: 1,
-
-  }
-})
-
+import { colors, fontSizes } from '../../styles/defaults';
 
 const Search = () => {
   
@@ -32,5 +17,21 @@ const Search = () => {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  pageContainer: {
+    flex: 1,
+    backgroundColor: colors.primary
+  },
+
+  container: {
+  },
+
+  textArea: {
+    flex: 1,
+    fontSize: fontSizes.l,
+    color: colors.quaternary
+  }
+})
 
 export default Search

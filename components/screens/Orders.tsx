@@ -7,6 +7,19 @@ import {
 import React from 'react'
 import { colors, fontSizes } from '../../styles/defaults';
 
+const Orders = () => {
+  
+  return (
+    <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.pageContainer}>
+      <View style={styles.container}>
+        <Text style={styles.textArea}>Hello</Text>
+        
+        <Text style={styles.textArea}>Hello</Text>
+      </View>
+    </ScrollView>
+  );
+}
+
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
@@ -22,19 +35,5 @@ const styles = StyleSheet.create({
     color: colors.quaternary
   }
 })
-
-
-const Orders = () => {
-  
-  return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.pageContainer}>
-      <View style={styles.container}>
-        <Text style={styles.textArea}>Hello</Text>
-        
-        <Text style={styles.textArea}>Hello</Text>
-      </View>
-    </ScrollView>
-  );
-}
 
 export default Orders
