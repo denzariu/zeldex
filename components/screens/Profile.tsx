@@ -12,11 +12,12 @@ const Profile = () => {
   
   //Test
   const phone: string = useSelector((state:any) => (state.userReducer.user.phone));
+  const countryCode: string = useSelector((state:any) => (state.userReducer.user.countryCode));
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.pageContainer}>
       <View style={styles.container}>
-        <Text style={styles.textArea}>{phone}</Text>
+        <Text style={styles.textArea}>{'+' + countryCode + phone}</Text>
       </View>
     </ScrollView>
   );

@@ -13,6 +13,7 @@ const initialState = {
     firstName: '',
     lastName: '',
     phone: '',
+    countryCode: '',
     password: '' //Test purposes only
   } as UserModel,
   error: '' as string | undefined,
@@ -43,6 +44,9 @@ export const userSlice = createSlice({
     },
     setLoggedInString(state, action: PayloadAction<string>) {
       action.payload == 'true' ? state.isAuthenticated = true : state.isAuthenticated = false;
+    },
+    setCountryCode(state, action: PayloadAction<string>) {
+      state.user.countryCode = action.payload;
     },
   }
 })

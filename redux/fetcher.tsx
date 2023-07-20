@@ -80,7 +80,8 @@ export const cacheUserDetails = (userData : UserModel, userIsLogged : boolean) =
   ['firstName', userData.firstName],
   ['lastName', userData.lastName],
   ['phone', userData.phone],
-  ['isAuthenticated', userIsLogged? 'true' : 'false']
+  ['isAuthenticated', userIsLogged? 'true' : 'false'],
+  ['countryCode', userData.countryCode]
 ]))
 }
 
@@ -89,7 +90,7 @@ export const cacheUserDetails = (userData : UserModel, userIsLogged : boolean) =
 
 export const _retrieveDataOnStartup = async () => {
 
-  const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated']  
+  const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated', 'countryCode']  
   
   try {
     for (const item in dataToRetrieveUser) {
@@ -108,8 +109,11 @@ export const _retrieveDataOnStartup = async () => {
           case 'isAuthenticated':
             store.dispatch(userSlice.actions.setLoggedInString(value));
             break;
+          case 'countryCode':
+            store.dispatch(userSlice.actions.setCountryCode(value));
+            break;
           default:
-            console.log("None of the provided options has been found in data retrieval.")
+            console.log("None of the provided options has been found in data retrieval." + dataToRetrieveUser[item])
         }
       }
     }

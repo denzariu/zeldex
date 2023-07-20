@@ -21,6 +21,7 @@ export const colors = {
 export const fontSizes = {
   s: normalize(14),
   m: normalize(16),
+  ml: normalize(17),
   l: normalize(18),
   xl: normalize(20),
   xxl: normalize(24),
@@ -29,5 +30,5 @@ export const fontSizes = {
 export const fonts = {
   default: 'Poppins-Regular',
   medium: 'Poppins-Medium',
-  bold: 'Poppins-Bold'
+  bold: 'Poppins-Bold',
 }
