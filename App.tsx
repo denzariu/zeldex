@@ -8,21 +8,12 @@ import type {PropsWithChildren} from 'react';
 const Stack = createNativeStackNavigator();
 
 import {
-  ScrollView,
+  Button,
   StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 import MenuBar from './components/MenuBar';
 import Home from './components/screens/Home';
@@ -32,6 +23,7 @@ import Search from './components/screens/Search';
 import Orders from './components/screens/Orders';
 import { UserModel } from './redux/actions';
 import Login from './components/screens/Login';
+import { Text } from 'react-native-svg';
 
 
 function App(): JSX.Element {
@@ -67,6 +59,7 @@ function App(): JSX.Element {
               name="Home"
               component={Home}
               options={{
+                // headerShown: false,
                 title: 'My home',
                 headerBackVisible: false,
                 headerStyle: {
@@ -115,16 +108,18 @@ function App(): JSX.Element {
               name="Profile"
               component={Profile}
               options={{
-                title: 'Hi ' + userFullName + '!',
-                headerBackVisible: false,
-                headerStyle: {
-                  backgroundColor: colors.quaternary,
-                },
-                headerTintColor: colors.primary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
-                },
+                headerShown: false,
+                // title: '',
+                // headerBackVisible: false,
+                // //headerLeft: () => (<View style={{width: 500}}><Text>Hi {userFullName}</Text></View>),
+                // headerStyle: {
+                //   backgroundColor: colors.quaternary,
+                // },
+                // headerTintColor: colors.primary,
+                // headerTitleStyle: {
+                //   fontWeight: 'bold',
+                //   fontSize: fontSizes.xxl,
+                // },
               }}
             />
           </Stack.Navigator>

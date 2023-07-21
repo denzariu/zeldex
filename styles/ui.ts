@@ -10,14 +10,14 @@ export const input = {
   borderColor: colors.quaternary,
   padding: 10,
   fontSize: fontSizes.m,
-  color: colors.quaternary,
+  color: colors.textBlack,
   backgroundColor: colors.primary
 }
 
 export const card = StyleSheet.create({
   cardContainer: {
-    height: 242,
-    marginBottom: 8
+    height: 243,
+    marginBottom: 16
   },
 
   cardImageContainer: {
@@ -69,11 +69,10 @@ export const card = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     textAlign: "center",
-    gap: 8
+    gap: 8,
   },
   
   cardPrice: {
-    paddingTop: 0,
     color: colors.textBlack,
     fontWeight: '500',
     fontSize: fontSizes.m,

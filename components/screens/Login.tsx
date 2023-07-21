@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: colors.primary,
+    color: colors.white,
     fontWeight: '900',
     fontSize: fontSizes.xl,
     textAlign: 'center'
