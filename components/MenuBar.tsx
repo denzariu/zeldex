@@ -2,9 +2,11 @@ import React from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { colors, fontSizes, fonts} from '../styles/defaults';
 import { SvgXml } from 'react-native-svg';
-import { useNavigation } from '@react-navigation/native';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-const MenuBar = () => {
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+const MenuBar = ({ navigation }) => {
 
   type ButtonMenu = {
     name: string,
@@ -18,7 +20,6 @@ const MenuBar = () => {
   ]
 
   const [selectedButton, setSelectedButton] = React.useState(MenuButtons[0].name); // Initial selected button
-  const navigation = useNavigation();
   const loggedin: boolean = useSelector((state:any) => (state.userReducer.isAuthenticated));
   
   const handleSelection = (activePage: string) => {
@@ -45,7 +46,7 @@ const MenuBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: 'relative',
     bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',

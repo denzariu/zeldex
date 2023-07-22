@@ -13,7 +13,7 @@ import {
 import React, { useEffect, useState } from 'react'
 import { colors, fontSizes, fonts } from '../../styles/defaults';
 import { useDispatch, useSelector } from 'react-redux';
-import { DarkTheme, useNavigation } from '@react-navigation/native';
+import { DarkTheme, ParamListBase, useNavigation } from '@react-navigation/native';
 import { input } from '../../styles/ui';
 import { userSlice } from '../../redux/reducers';
 import { UserModel } from '../../redux/actions';
@@ -25,6 +25,7 @@ import PhoneInput from "react-native-phone-number-input";
 
 import CountryPicker from 'react-native-country-picker-modal'
 import { CountryCode, Country } from '../ui/types'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 //Use modal
 
@@ -37,7 +38,7 @@ const Login = () => {
   // const [showMessage, setShowMessage] = useState(false);
   // const phoneInput = useRef<PhoneInput>(null);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const dispatch = useDispatch();
   const loggedin: boolean = useSelector((state:any) => (state.userReducer.isAuthenticated));
   const phone: string = useSelector((state:any) => (state.userReducer.user.phone));
@@ -97,7 +98,7 @@ const Login = () => {
   useEffect(() => {
     console.log(fetchLoaded, loggedin)
     if (loggedin)
-      navigation.navigate('Home');
+      navigation.navigate('MainTabScreen');
     else if (fetchLoaded)
       onLoading(false);
 

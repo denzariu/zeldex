@@ -18,7 +18,7 @@ export const cacheData = async (key: string, value: string) => {
       key,
       value,
     );
-    Alert.alert("Item with key: " + key + " and value: " + value + " successfully cached.")
+    //Alert.alert("Item with key: " + key + " and value: " + value + " successfully cached.")
   } catch (error) {
     Alert.alert("Some error occured while caching data. Check console logs for details.");
     console.log(error);

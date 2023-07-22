@@ -4,13 +4,18 @@ import {
   View,
   StyleSheet,
   SectionList,
-  VirtualizedList
+  VirtualizedList,
+  TouchableOpacity
 } from 'react-native';
 import React from 'react'
 import { colors, fontSizes } from '../../styles/defaults';
 import { useSelector } from 'react-redux';
 import { SvgXml } from 'react-native-svg';
+import { NavigationContainer, ParamListBase, useNavigation } from '@react-navigation/native';
+import UserDetails from './secondary/ProfileUserDetails';
+import { NativeStackNavigationProp, createNativeStackNavigator } from '@react-navigation/native-stack';
 
+const Stack = createNativeStackNavigator();
 
 type ItemProps = {
   title: string;
@@ -27,6 +32,8 @@ const Item = ({title, icon}: ItemProps) => (
 
 const Profile = () => {
   
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
   //Test
   const name: string = useSelector((state:any) => (state.userReducer.user.firstName + ' ' + state.userReducer.user.lastName));
   const phone: string = useSelector((state:any) => (state.userReducer.user.phone));
@@ -34,8 +41,10 @@ const Profile = () => {
 
   return (
     <View style={styles.pageContainer}>
-      <Text style={styles.nameArea}>{name}</Text>
-      <Text style={styles.phoneArea}>{'+' + countryCode + phone}</Text>
+      <TouchableOpacity onPress={() => {navigation.navigate('ProfileUserDetails')}}>
+        <Text style={styles.nameArea}>{name}</Text>
+        <Text style={styles.phoneArea}>{'+' + countryCode + phone}</Text>
+      </TouchableOpacity>
       <Item title='Payment' icon={xmls.payment}/>
       <Item title='Promo codes' icon={xmls.promoCodes}/>
       <Item title='Profile' icon={xmls.profile}/>
@@ -51,8 +60,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.primary,
     paddingHorizontal: 24,
-    paddingVertical: 32,
-    marginBottom: 24
+    paddingVertical: 32
   },
 
   container: {
@@ -70,7 +78,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.l,
     color: colors.quaternary,
     fontWeight: '400',
-    paddingBottom: 32
+    //paddingBottom: 32
   },
 
   item: {
@@ -78,7 +86,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    marginBottom: 32, 
+    marginTop: 32, 
   },
 
   itemText: {

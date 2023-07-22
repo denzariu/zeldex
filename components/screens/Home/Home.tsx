@@ -5,8 +5,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import React from 'react'
-import { colors, fontSizes } from '../../styles/defaults';
-import Card  from '../../components/ui/components/Card'
+import { colors, fontSizes } from '../../../styles/defaults';
+import Card  from '../../ui/components/Card'
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    paddingBottom: 60
   },
 
   textArea: {
