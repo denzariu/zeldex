@@ -1,17 +1,30 @@
 import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigationState } from '@react-navigation/native';
 import { colors, fontSizes } from '../../../styles/defaults';
+import Input from '../../ui/components/Input';
 
 
 
 const ProfilePromoCodes = () => {
   
-  const routesLength = useNavigationState(state => state.routes.length);
+  const [promoCode, setPromoCode] = useState('');
+
+  const onChangePromoCode = (value: string) => {
+    setPromoCode(value);
+  }
+
   return (
     <View style={styles.pageContainer}>
-      <Text style={styles.textArea}>{routesLength}</Text>
-      <Text style={styles.textArea}>Hello</Text>
+      <Input 
+        keyboardType='default'
+        autoComplete={undefined}
+        upperText='Promo code'
+        autoFocus={true}
+        maxLength={40}
+        onTextChange={onChangePromoCode}
+        defaultValue={promoCode}
+        disabled={false}/>
     </View>
   )
 }
@@ -21,7 +34,8 @@ const ProfilePromoCodes = () => {
 const styles = StyleSheet.create({
 pageContainer: {
   flex: 1,
-  backgroundColor: colors.primary
+  backgroundColor: colors.primary,
+  padding: 24
 },
 
 container: {

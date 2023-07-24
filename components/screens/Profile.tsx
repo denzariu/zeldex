@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     flex: 0,
     fontSize: fontSizes.xl,
     color: colors.textBlack,
-    fontWeight: '500'
+    fontWeight: '400'
   }
 })
 

@@ -31,6 +31,8 @@ import ProfilePromoCodes from './components/screens/secondary/ProfilePromoCodes'
 import ProfileSettings from './components/screens/secondary/ProfileSettings';
 import ProfileAbout from './components/screens/secondary/ProfileAbout';
 import ProfileHelp from './components/screens/secondary/ProfileHelp';
+import ProfileLanguage from './components/screens/secondary/ProfileLanguage';
+import ProfileCommunication from './components/screens/secondary/ProfileCommunication';
 
 
 //TODO: styles revamp
@@ -88,7 +90,7 @@ function ProfileStackScreen() {
                 headerTintColor: colors.primary,
                 headerTitleStyle: {
                   fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
+                  fontSize: fontSizes.xl,
                 },
               }}
             />
@@ -97,17 +99,18 @@ function ProfileStackScreen() {
               component={ProfileUserDetails}
               options={{
                 headerShown: true,
-                headerTitle: '',
-                title: 'My home',
+                headerTitle: 'Profile',
+                title: 'Profile',
                 headerBackVisible: true,
                 headerShadowVisible: false,
+                headerTitleAlign: 'center',
                 headerStyle: {
                   backgroundColor: colors.primary,
                 },
                 headerTintColor: colors.quaternary,
                 headerTitleStyle: {
                   fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
+                  fontSize: fontSizes.xl,
                 },
               }}
             />
@@ -116,17 +119,18 @@ function ProfileStackScreen() {
               component={ProfilePayment}
               options={{
                 headerShown: true,
-                headerTitle: '',
-                title: 'My home',
+                headerTitle: 'Payment',
+                title: 'Payment',
                 headerBackVisible: true,
                 headerShadowVisible: false,
+                headerTitleAlign: 'center',
                 headerStyle: {
                   backgroundColor: colors.primary,
                 },
                 headerTintColor: colors.quaternary,
                 headerTitleStyle: {
                   fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
+                  fontSize: fontSizes.xl,
                 },
               }}
             />
@@ -135,17 +139,18 @@ function ProfileStackScreen() {
               component={ProfilePromoCodes}
               options={{
                 headerShown: true,
-                headerTitle: '',
-                title: 'My home',
+                headerTitle: 'Promo Codes',
+                title: 'Promo Codes',
                 headerBackVisible: true,
                 headerShadowVisible: false,
+                headerTitleAlign: 'center',
                 headerStyle: {
-                  backgroundColor: colors.primary,
+                  backgroundColor: colors.primary
                 },
                 headerTintColor: colors.quaternary,
                 headerTitleStyle: {
                   fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
+                  fontSize: fontSizes.xl,
                 },
               }}
             />
@@ -154,17 +159,18 @@ function ProfileStackScreen() {
               component={ProfileSettings}
               options={{
                 headerShown: true,
-                headerTitle: '',
-                title: 'My home',
+                headerTitle: 'Settings',
+                title: 'Settings',
                 headerBackVisible: true,
                 headerShadowVisible: false,
                 headerStyle: {
                   backgroundColor: colors.primary,
                 },
+                headerTitleAlign: 'center',
                 headerTintColor: colors.quaternary,
                 headerTitleStyle: {
                   fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
+                  fontSize: fontSizes.xl,
                 },
               }}
             />
@@ -173,17 +179,18 @@ function ProfileStackScreen() {
               component={ProfileAbout}
               options={{
                 headerShown: true,
-                headerTitle: '',
+                headerTitle: 'About',
                 title: 'My home',
                 headerBackVisible: true,
                 headerShadowVisible: false,
+                headerTitleAlign: 'center',
                 headerStyle: {
                   backgroundColor: colors.primary,
                 },
                 headerTintColor: colors.quaternary,
                 headerTitleStyle: {
                   fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
+                  fontSize: fontSizes.xl,
                 },
               }}
             />
@@ -192,17 +199,58 @@ function ProfileStackScreen() {
               component={ProfileHelp}
               options={{
                 headerShown: true,
-                headerTitle: '',
+                headerTitle: 'Help',
                 title: 'My home',
                 headerBackVisible: true,
                 headerShadowVisible: false,
+                headerTitleAlign: 'center',
                 headerStyle: {
                   backgroundColor: colors.primary,
                 },
                 headerTintColor: colors.quaternary,
                 headerTitleStyle: {
                   fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
+                  fontSize: fontSizes.xl,
+                },
+              }}
+            />
+      <ProfileStack.Screen
+              name="ProfileLanguage"
+              component={ProfileLanguage}
+              options={{
+                headerShown: true,
+                headerTitle: 'Language',
+                title: 'Language',
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerTitleAlign: 'center',
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xl,
+                },
+              }}
+            />
+      <ProfileStack.Screen
+              name="ProfileCommunication"
+              component={ProfileCommunication}
+              options={{
+                headerShown: true,
+                headerTitle: 'Profile Communication',
+                title: 'Profile Communication',
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerTitleAlign: 'center',
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xl,
                 },
               }}
             />
