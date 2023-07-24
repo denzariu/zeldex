@@ -81,16 +81,22 @@ export const cacheUserDetails = (userData : UserModel, userIsLogged : boolean) =
   ['lastName', userData.lastName],
   ['phone', userData.phone],
   ['isAuthenticated', userIsLogged? 'true' : 'false'],
-  ['countryCode', userData.countryCode]
+  ['countryCode', userData.countryCode],
+  ['email', userData.email]
 ]))
 }
 
+// const ActionType = {
+//   state: 'firstName' | 'lastName' | 'phone' | 'isAuthenticated' | 'countryCode'
+// };
 
-
+export const cacheSpecific = (userData : UserModel, userIsLogged : boolean) => {
+  
+}
 
 export const _retrieveDataOnStartup = async () => {
 
-  const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated', 'countryCode']  
+  const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated', 'countryCode', 'email']  
   
   try {
     for (const item in dataToRetrieveUser) {
@@ -111,6 +117,9 @@ export const _retrieveDataOnStartup = async () => {
             break;
           case 'countryCode':
             store.dispatch(userSlice.actions.setCountryCode(value));
+            break;
+          case 'email':
+            store.dispatch(userSlice.actions.setEmail(value));
             break;
           default:
             console.log("None of the provided options has been found in data retrieval." + dataToRetrieveUser[item])

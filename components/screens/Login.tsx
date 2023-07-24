@@ -53,7 +53,6 @@ const Login = () => {
 
   const [countryCode, setCountryCode] = useState<CountryCode>('RO')
   const [country, setCountry] = useState<Country>()
-  const [withCountryNameButton, setWithCountryNameButton] = useState<boolean>(false)
  
   const [callingCode, setCountryCallingCode] = useState<string>('40')
   
@@ -82,13 +81,19 @@ const Login = () => {
 
     dispatch(userSlice.actions.login(userLoginData))
     cacheUserDetails(userLoginData, true)
+    
+    if (loggedin) {
+      onLoading(false)
+      navigation.navigate('MainTabScreen');
+    }
   }
-
   useEffect(() => {
     onLoading(true)
     _retrieveDataOnStartup().then(res => {
       onFetchLoad(true);
       console.log(fetchLoaded, loggedin)
+      if (loggedin)
+        onLoading(false)
     });
     
     //TEST PURPOSES - TODELETE

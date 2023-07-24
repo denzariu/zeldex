@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   
   menuItemText: {
     fontSize: fontSizes.m,
-    color: colors.textBlack,
+    color: colors.gray,
   },
 
   menuItemTextActive: {
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
 
 });
 
-const menuItemStyle: string = colors.black;
+const menuItemStyle: string = colors.gray;
 const menuItemStyleActive: string = colors.quaternary;
 
 // SVG icons

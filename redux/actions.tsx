@@ -8,8 +8,9 @@ export interface UserModel {
   firstName: string;
   lastName: string;
   phone: string;
-  countryCode: string,
-  password: string
+  email: string;
+  countryCode: string;
+  password: string;
 }
 
 // export interface LoginAction {

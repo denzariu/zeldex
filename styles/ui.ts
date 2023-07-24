@@ -14,6 +14,54 @@ export const input = {
   backgroundColor: colors.primary
 }
 
+export const inputTextAbove = StyleSheet.create({
+  container: {
+    height: 64,
+    margin: 6,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    borderColor: colors.quaternary,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    fontSize: fontSizes.m,
+    color: colors.textBlack,
+    backgroundColor: colors.primary
+  },
+
+  focused: {
+
+  }, 
+
+  notFocused: {
+    borderColor: colors.gray,
+    color: colors.gray
+  },
+
+  disabled: {
+    borderColor: colors.grayDisabled,
+    color: colors.grayDisabled
+  }, 
+
+  notDisabled: {
+  },
+
+  inputUpperText: {
+    padding: 0,
+    margin: 0,
+    color: colors.quaternary,
+    fontSize: fontSizes.s,
+    fontWeight: '500'
+  },
+
+  input: {
+    padding: 0,
+    margin: 0,
+    color: colors.textBlack,
+    fontSize: fontSizes.m,
+    fontWeight: '400'
+  }
+})
+
 export const card = StyleSheet.create({
   cardContainer: {
     height: 243,

@@ -13,6 +13,7 @@ const initialState = {
     firstName: '',
     lastName: '',
     phone: '',
+    email: '',
     countryCode: '',
     password: '' //Test purposes only
   } as UserModel,
@@ -47,6 +48,9 @@ export const userSlice = createSlice({
     },
     setCountryCode(state, action: PayloadAction<string>) {
       state.user.countryCode = action.payload;
+    },
+    setEmail(state, action: PayloadAction<string>) {
+      state.user.email = action.payload;
     },
   }
 })

@@ -26,6 +26,11 @@ import Login from './components/screens/Login';
 import { Text } from 'react-native-svg';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileUserDetails from './components/screens/secondary/ProfileUserDetails';
+import ProfilePayment from './components/screens/secondary/ProfilePayment';
+import ProfilePromoCodes from './components/screens/secondary/ProfilePromoCodes';
+import ProfileSettings from './components/screens/secondary/ProfileSettings';
+import ProfileAbout from './components/screens/secondary/ProfileAbout';
+import ProfileHelp from './components/screens/secondary/ProfileHelp';
 
 
 //TODO: styles revamp
@@ -90,6 +95,101 @@ function ProfileStackScreen() {
       <ProfileStack.Screen
               name="ProfileUserDetails"
               component={ProfileUserDetails}
+              options={{
+                headerShown: true,
+                headerTitle: '',
+                title: 'My home',
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xxl,
+                },
+              }}
+            />
+      <ProfileStack.Screen
+              name="ProfilePayment"
+              component={ProfilePayment}
+              options={{
+                headerShown: true,
+                headerTitle: '',
+                title: 'My home',
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xxl,
+                },
+              }}
+            />
+      <ProfileStack.Screen
+              name="ProfilePromoCodes"
+              component={ProfilePromoCodes}
+              options={{
+                headerShown: true,
+                headerTitle: '',
+                title: 'My home',
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xxl,
+                },
+              }}
+            />
+      <ProfileStack.Screen
+              name="ProfileSettings"
+              component={ProfileSettings}
+              options={{
+                headerShown: true,
+                headerTitle: '',
+                title: 'My home',
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xxl,
+                },
+              }}
+            />
+      <ProfileStack.Screen
+              name="ProfileAbout"
+              component={ProfileAbout}
+              options={{
+                headerShown: true,
+                headerTitle: '',
+                title: 'My home',
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xxl,
+                },
+              }}
+            />
+      <ProfileStack.Screen
+              name="ProfileHelp"
+              component={ProfileHelp}
               options={{
                 headerShown: true,
                 headerTitle: '',
