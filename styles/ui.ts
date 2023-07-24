@@ -74,6 +74,7 @@ export const card = StyleSheet.create({
     padding: 4,
     display: "flex",
     flexDirection: "column",
+    position: 'relative',
     alignItems: "center",
     borderWidth: 3,
     borderColor: colors.primary,

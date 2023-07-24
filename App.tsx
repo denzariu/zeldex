@@ -33,6 +33,7 @@ import ProfileAbout from './components/screens/secondary/ProfileAbout';
 import ProfileHelp from './components/screens/secondary/ProfileHelp';
 import ProfileLanguage from './components/screens/secondary/ProfileLanguage';
 import ProfileCommunication from './components/screens/secondary/ProfileCommunication';
+import Restaurants from './components/screens/Home/Restaurants';
 
 
 //TODO: styles revamp
@@ -53,35 +54,65 @@ function MainTabScreen() {
       screenOptions={{headerShown: false}} 
       tabBar={props => <MenuBar {...props}/>}
     >
-      <HomeTabs.Screen name='Home' component={Home} options={{
-                headerShown: true,
-                title: 'My home',
-                headerStyle: {
-                  backgroundColor: colors.quaternary,
-                },
-                headerTintColor: colors.primary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
-                },
-              }}/>
+      <HomeTabs.Screen name='Home' component={HomeStackScreen}/>
       <HomeTabs.Screen name='Search' component={Search}/>
       <HomeTabs.Screen name='Orders' component={Orders}/>
       <HomeTabs.Screen name='Profile' component={ProfileStackScreen}/>
     </HomeTabs.Navigator>
   )
 }
+const HomeStack = createNativeStackNavigator();
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator screenOptions={{headerShown: false, statusBarColor: colors.primary, statusBarStyle: 'dark'}}>
+      <HomeStack.Screen
+              name="HomeStackScreen"
+              component={Home}
+              options={{
+                title: 'My home',
+                headerBackVisible: false,
+                headerStyle: {
+                  backgroundColor: colors.quaternary,
+                },
+                headerTintColor: colors.primary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xl,
+                },
+              }}
+            />
+        <HomeStack.Screen
+              name="HomeRestaurants"
+              component={Restaurants}
+              options={{
+                title: '',
+                headerShown: true,
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerTitleAlign: 'center',
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xl,
+                },
+              }}
+            />
+    </HomeStack.Navigator>
+  )
+}
 
 const ProfileStack = createNativeStackNavigator();
 function ProfileStackScreen() {
   return (
-    <ProfileStack.Navigator screenOptions={{headerShown: false}}>
+    <ProfileStack.Navigator screenOptions={{headerShown: false, statusBarColor: colors.primary, statusBarStyle: 'dark'}}>
       <ProfileStack.Screen
               name="ProfileStackScreen"
               component={Profile}
               options={{
                 // headerShown: false,
-                animation: 'fade_from_bottom',
                 title: 'My home',
                 headerBackVisible: false,
                 headerStyle: {
@@ -239,8 +270,8 @@ function ProfileStackScreen() {
               component={ProfileCommunication}
               options={{
                 headerShown: true,
-                headerTitle: 'Profile Communication',
-                title: 'Profile Communication',
+                headerTitle: 'Communication preferences',
+                title: 'Communication preferences',
                 headerBackVisible: true,
                 headerShadowVisible: false,
                 headerTitleAlign: 'center',

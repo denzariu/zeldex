@@ -30,9 +30,9 @@ const Card = (props: any) => {
           </View>
         </View>
         <View style={card.cardPriceContainer}>
-          <Text style={card.cardPrice}>{props.priceDeliveryUsual}</Text>
+          <Text style={card.cardPrice}>{props.priceDeliveryUsual + ' lei'}</Text>
           { props.priceDelivery !== props.priceDeliveryUsual && 
-            <Text style={card.cardPriceDiscount}>{props.priceDelivery}</Text>
+            <Text style={card.cardPriceDiscount}>{props.priceDelivery + ' lei'}</Text>
           }
         </View>
       </View>
