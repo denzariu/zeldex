@@ -3,6 +3,7 @@ import Card from "../../ui/components/Card";
 import { Restaurant } from "./Home";
 import { colors, fontSizes } from "../../../styles/defaults";
 
+// Switch to FlatList
 
 const Restaurants = ({route, navigation} : any) => {
 
@@ -13,11 +14,13 @@ const Restaurants = ({route, navigation} : any) => {
 
       {restaurants.map((restaurant: Restaurant, i: number) => 
       <Card key={restaurant.name + i} 
+        miniCard={false}
         name={restaurant.name} 
         rating={restaurant.rating} 
         priceDelivery={restaurant.priceDelivery}
         priceDeliveryUsual={restaurant.priceDeliveryUsual}
         menuDiscount={restaurant.menuDiscount}/>
+        
       )}
     </ScrollView>
   )
@@ -25,7 +28,6 @@ const Restaurants = ({route, navigation} : any) => {
 
 const styles = StyleSheet.create({
   pageContainer: {
-    flex: 1,
     backgroundColor: colors.primary,
     paddingHorizontal: 24,
   },

@@ -21,6 +21,7 @@ export const colors = {
 
 export const fontSizes = {
   s: normalize(14),
+  sm: normalize(15),
   m: normalize(16),
   ml: normalize(17),
   l: normalize(18),

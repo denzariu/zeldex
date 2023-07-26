@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { colors, fontSizes } from "./defaults";
 
 export const input = {
@@ -64,12 +64,17 @@ export const inputTextAbove = StyleSheet.create({
 
 export const card = StyleSheet.create({
   cardContainer: {
-    height: 243,
+    flex: 1,
+    height: 242,
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    //maxWidth: Dimensions.get('window').width - 50,
     marginBottom: 16
   },
 
   cardImageContainer: {
-    height: 195,
+    height: 194,
     backgroundColor: colors.primary,
     padding: 4,
     display: "flex",
@@ -79,10 +84,10 @@ export const card = StyleSheet.create({
     borderWidth: 3,
     borderColor: colors.primary,
   },
-
+  
   cardImage: {
     flex: 1,
-    aspectRatio: 2.06,
+    aspectRatio: 2.04,
     width: undefined,
     height: undefined,
     borderRadius: 12,
@@ -92,26 +97,29 @@ export const card = StyleSheet.create({
     display: 'flex',
     flexDirection: "row",
     justifyContent: "space-between",
-    flex: 1
+    borderRightWidth: 0
+    
   },
 
   cardText: {
     color: colors.textBlack,
     fontWeight: '700',
-    fontSize: fontSizes.l
+    fontSize: fontSizes.l,
+    maxWidth: 320,
+    paddingRight: 12,
   },
-
+  
   cardRating: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: "nowrap",
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
 
   cardRatingText: {
     color: colors.textBlack,
     fontWeight: '700',
-    fontSize: fontSizes.m
+    fontSize: fontSizes.ml,
   },
 
   cardPriceContainer: {
@@ -145,6 +153,107 @@ export const card = StyleSheet.create({
     color: colors.quaternary,
     fontWeight: '700',
     fontSize: fontSizes.m,
+    backgroundColor: colors.primary,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 2
+  }
+})
+
+export const minicard = StyleSheet.create({
+  
+  cardContainer: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    height: 141,
+    width: 180,
+    marginBottom: 16,
+  },
+
+  cardImageContainer: {
+    height: 98,
+    backgroundColor: colors.primary,
+    padding: 4,
+    display: "flex",
+    flexDirection: "column",
+    position: 'relative',
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: colors.primary,
+  },
+
+  cardImage: {
+    flex: 1,
+    aspectRatio: 2.04,
+    width: undefined,
+    height: undefined,
+    borderRadius: 12,
+  },
+
+  cardTextContainer: {
+    display: 'flex',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderRightWidth: 0
+    
+  },
+
+  cardText: {
+    color: colors.textBlack,
+    fontWeight: '700',
+    fontSize: fontSizes.m,
+    maxWidth: 138,
+    paddingRight: 8,
+    paddingLeft: 4
+  },
+
+  cardRating: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: "nowrap",
+    justifyContent: 'center',
+    paddingRight: 4
+  },
+
+  cardRatingText: {
+    color: colors.textBlack,
+    fontWeight: '700',
+    fontSize: fontSizes.sm
+  },
+  
+  cardPriceContainer: {
+    display: "flex",
+    flexDirection: "row",
+    textAlign: "center",
+    gap: 8,
+    paddingLeft: 4
+  },
+  
+  cardPrice: {
+    color: colors.textBlack,
+    fontWeight: '500',
+    fontSize: fontSizes.s,
+  },
+
+  cardPriceDiscount: {
+    color: colors.primary,
+    fontWeight: '500',
+    fontSize: fontSizes.s,
+    backgroundColor: colors.quaternary,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingBottom: 1
+  },
+
+  cardMenuDiscount: {
+    position: "absolute",
+    top: 12,
+    left: 6,
+    color: colors.quaternary,
+    fontWeight: '700',
+    fontSize: fontSizes.s,
     backgroundColor: colors.primary,
     borderRadius: 6,
     paddingHorizontal: 8,
