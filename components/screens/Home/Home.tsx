@@ -8,6 +8,7 @@ import {
 import React from 'react'
 import { colors, fontSizes } from '../../../styles/defaults';
 import Restaurants from './Restaurants';
+import Card from '../../ui/components/Card';
 
 
 const Home = ({ navigation }) => {
@@ -49,6 +50,19 @@ const Home = ({ navigation }) => {
           <Text style={styles.textArea}>🎁 Discount on the entire menu</Text>
         </TouchableOpacity>
 
+        {/* TO REMOVE & ADD FILTERING */}
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
+        {[restaurants[0], restaurants[4], restaurants[2]].map((restaurant: Restaurant, i: number) => 
+          <Card key={restaurant.name + i} 
+            miniCard={true}
+            name={restaurant.name} 
+            rating={restaurant.rating} 
+            priceDelivery={restaurant.priceDelivery}
+            priceDeliveryUsual={restaurant.priceDeliveryUsual}
+            menuDiscount={restaurant.menuDiscount}/>
+        )}
+        </ScrollView>
+
         <TouchableOpacity onPress={() => showRestaurants('DISCOUNT_DELIVERY')}>
           <Text style={styles.textArea}>Discount on delivery</Text>
         </TouchableOpacity>  
@@ -75,7 +89,7 @@ const restaurants: Restaurant[] = [
   {name:'Balls Apaca', rating:'4.7', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'10'},
   {name:'Noodle Pack Veranda Mall', rating:'3.9', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'0'},
   {name:'Circus Pub', rating:'4.6', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0'},
-  {name:'Fabio Pizza Opanez', rating:'4.2', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'40'},
+  {name:'Shoteria - Statie i i i i i i i i i i ', rating:'4.2', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'40'},
 ]
 
 const styles = StyleSheet.create({
@@ -94,6 +108,10 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: colors.quaternary,
     paddingVertical: 8,
+  },
+
+  cardInline: {
+    gap: 8
   }
 })
 
