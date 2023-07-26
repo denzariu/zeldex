@@ -256,7 +256,7 @@ export const minicard = StyleSheet.create({
     fontSize: fontSizes.s,
     backgroundColor: colors.primary,
     borderRadius: 6,
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
     paddingVertical: 2
   }
 })

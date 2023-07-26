@@ -42,17 +42,19 @@ const Home = ({ navigation }) => {
   return (
     <ScrollView>
       <View style={styles.pageContainer}>
-        <TouchableOpacity onPress={() => showRestaurants('DISCOUNTS')}>
+        {/* <TouchableOpacity onPress={() => showRestaurants('DISCOUNTS')}>
           <Text style={styles.textArea}>🌙 Late Night Munchies</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity onPress={() => showRestaurants('DISCOUNT_MENU')}>
           <Text style={styles.textArea}>🎁 Discount on the entire menu</Text>
         </TouchableOpacity>
 
-        {/* TO REMOVE & ADD FILTERING */}
+        {/* Discount the entire menu filtering */}
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
-        {[restaurants[0], restaurants[4], restaurants[2]].map((restaurant: Restaurant, i: number) => 
+        {restaurants
+          .filter((restaurant: Restaurant) => {return restaurant.menuDiscount !== '0'})
+          .map((restaurant: Restaurant, i: number) => 
           <Card key={restaurant.name + i} 
             miniCard={true}
             name={restaurant.name} 
@@ -65,7 +67,47 @@ const Home = ({ navigation }) => {
 
         <TouchableOpacity onPress={() => showRestaurants('DISCOUNT_DELIVERY')}>
           <Text style={styles.textArea}>Discount on delivery</Text>
-        </TouchableOpacity>  
+        </TouchableOpacity> 
+
+        {/* Discount on delivery */}
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
+        {restaurants
+          .filter((restaurant: Restaurant) => {return restaurant.priceDelivery !== restaurant.priceDeliveryUsual})
+          .map((restaurant: Restaurant, i: number) => 
+          <Card key={restaurant.name + i} 
+            miniCard={true}
+            name={restaurant.name} 
+            rating={restaurant.rating} 
+            priceDelivery={restaurant.priceDelivery}
+            priceDeliveryUsual={restaurant.priceDeliveryUsual}
+            menuDiscount={restaurant.menuDiscount}/>
+        )}
+        </ScrollView>
+
+        <TouchableOpacity onPress={() => showRestaurants('DISCOUNT_DELIVERY')}>
+          <Text style={styles.textArea}>✨Top rated</Text>
+        </TouchableOpacity> 
+
+        {/* Discount on delivery */}
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
+        { [...restaurants]
+          .sort((a, b) => {
+            const parsedA = parseFloat(a.rating);
+            const parsedB = parseFloat(b.rating);
+            return parsedA > parsedB ? -1 : 1;
+          })
+          .map((restaurant: Restaurant, i: number) => 
+          <Card key={restaurant.name + i} 
+            miniCard={true}
+            name={restaurant.name} 
+            rating={restaurant.rating} 
+            priceDelivery={restaurant.priceDelivery}
+            priceDeliveryUsual={restaurant.priceDeliveryUsual}
+            menuDiscount={restaurant.menuDiscount}/>
+        )}
+        </ScrollView>
+
+         
       </View>
 
       <Text style={[styles.textArea, {paddingHorizontal: 24}]}>All restaurants and Stores</Text>
@@ -87,9 +129,9 @@ export type Restaurant = {
 const restaurants: Restaurant[] = [
   {name:'Omni Pizza', rating:'4.3', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'0'},
   {name:'Balls Apaca', rating:'4.7', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'10'},
-  {name:'Noodle Pack Veranda Mall', rating:'3.9', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'0'},
-  {name:'Circus Pub', rating:'4.6', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0'},
-  {name:'Shoteria - Statie i i i i i i i i i i ', rating:'4.2', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'40'},
+  {name:'Noodle Pack Veranda Mall', rating:'3.9', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0'},
+  {name:'Circus Pub', rating:'4.6', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'0'},
+  {name:'Shoteria - Statie de test test test test ', rating:'4.2', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'40'},
 ]
 
 const styles = StyleSheet.create({
@@ -105,8 +147,8 @@ const styles = StyleSheet.create({
 
   textArea: {
     fontSize: fontSizes.xl,
-    fontWeight: '900',
-    color: colors.quaternary,
+    fontWeight: '700',
+    color: colors.textBlack,
     paddingVertical: 8,
   },
 
