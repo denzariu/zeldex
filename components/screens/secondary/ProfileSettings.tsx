@@ -4,7 +4,7 @@ import { useNavigationState } from '@react-navigation/native';
 import { colors, fontSizes } from '../../../styles/defaults';
 import SvgImage from 'react-native-svg/lib/typescript/elements/Image';
 import { SvgXml } from 'react-native-svg';
-
+import { svgRightArrowQuaternary } from '../../ui/images/svgs'
 
 
 const ProfileSettings = ({navigation}) => {
@@ -15,12 +15,12 @@ const ProfileSettings = ({navigation}) => {
       
       <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('ProfileLanguage')}>
         <Text style={styles.textArea}>Language</Text>
-        <SvgXml xml={svgRightArrow} width={24} height={24} />
+        <SvgXml xml={svgRightArrowQuaternary} width={24} height={24} />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('ProfileCommunication')}>
         <Text style={styles.textArea}>Communication preferences</Text>
-        <SvgXml xml={svgRightArrow} width={24} height={24} />
+        <SvgXml xml={svgRightArrowQuaternary} width={24} height={24} />
       </TouchableOpacity>
 
     </View>
@@ -51,10 +51,5 @@ textArea: {
   fontWeight: '400'
 }
 })
-
-const svgRightArrow = `<svg width="800px" height="800px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="48" height="48" fill="white" fill-opacity="0.01"/>
-<path d="M19 12L31 24L19 36" stroke="`+ colors.quaternary +`" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`
 
 export default ProfileSettings

@@ -141,9 +141,9 @@ export const card = StyleSheet.create({
     fontWeight: '500',
     fontSize: fontSizes.m,
     backgroundColor: colors.quaternary,
-    borderRadius: 8,
+    borderRadius: 12,
     paddingHorizontal: 8,
-    paddingBottom: 1
+    paddingBottom: 1.4
   },
 
   cardMenuDiscount: {
@@ -154,7 +154,7 @@ export const card = StyleSheet.create({
     fontWeight: '700',
     fontSize: fontSizes.m,
     backgroundColor: colors.primary,
-    borderRadius: 6,
+    borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 2
   }
@@ -167,13 +167,13 @@ export const minicard = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignContent: "center",
-    height: 141,
-    width: 180,
+    height: 146,
+    width: 216,
     marginBottom: 16,
   },
 
   cardImageContainer: {
-    height: 98,
+    height: 126,
     backgroundColor: colors.primary,
     padding: 4,
     display: "flex",
@@ -186,7 +186,7 @@ export const minicard = StyleSheet.create({
 
   cardImage: {
     flex: 1,
-    aspectRatio: 2.04,
+    aspectRatio: 1.84,
     width: undefined,
     height: undefined,
     borderRadius: 12,
@@ -243,7 +243,7 @@ export const minicard = StyleSheet.create({
     fontSize: fontSizes.s,
     backgroundColor: colors.quaternary,
     borderRadius: 8,
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     paddingBottom: 1
   },
 
@@ -252,11 +252,11 @@ export const minicard = StyleSheet.create({
     top: 12,
     left: 6,
     color: colors.quaternary,
-    fontWeight: '700',
+    fontWeight: '800',
     fontSize: fontSizes.s,
     backgroundColor: colors.primary,
-    borderRadius: 6,
-    paddingHorizontal: 4,
+    borderRadius: 12,
+    paddingHorizontal: 6,
     paddingVertical: 2
   }
 })

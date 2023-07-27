@@ -15,11 +15,7 @@ const Restaurants = ({route, navigation} : any) => {
       {restaurants.map((restaurant: Restaurant, i: number) => 
       <Card key={restaurant.name + i} 
         miniCard={false}
-        name={restaurant.name} 
-        rating={restaurant.rating} 
-        priceDelivery={restaurant.priceDelivery}
-        priceDeliveryUsual={restaurant.priceDeliveryUsual}
-        menuDiscount={restaurant.menuDiscount}/>
+        restaurant={restaurant}/>
         
       )}
     </ScrollView>
@@ -37,8 +33,8 @@ const styles = StyleSheet.create({
 
   textArea: {
     fontSize: fontSizes.xxl,
-    fontWeight: '900',
-    color: colors.quaternary,
+    fontWeight: '800',
+    color: colors.textBlack,
     paddingVertical: 8,
   }
 })

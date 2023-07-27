@@ -3,10 +3,17 @@ import { SvgXml } from "react-native-svg"
 import { colors } from "../../../styles/defaults"
 import { card, minicard } from "../../../styles/ui"
 import { useEffect, useState } from "react"
+import { Restaurant } from "../../screens/Home/Home"
 
-const Card = (props: any) => {
+type CardProps = {
+  restaurant: Restaurant,
+  miniCard: boolean
+}
 
-  const cardInUse = props.miniCard? minicard : card;
+const Card = ({restaurant, miniCard}: CardProps) => {
+
+  const cardInUse = miniCard? minicard : card;
+  console.log(restaurant)
 
   return (
     <Pressable 
@@ -16,30 +23,30 @@ const Card = (props: any) => {
       ]}>
       <View style={cardInUse.cardContainer}>
         <View style={cardInUse.cardImageContainer}>
-          <Image
+          <Image 
             style={cardInUse.cardImage}
-            source={{uri:'https://fastly.picsum.photos/id/608/400/175.jpg?hmac=nF4KfcHPcc-5rcUrMWjz1WooJek8gXDFqjvcCHv3_oY'}}
+            source={restaurant.image}
           /> 
-          {props.menuDiscount > '0' && <Text style={cardInUse.cardMenuDiscount}>{'-' + props.menuDiscount + '%'}</Text>}
+          {restaurant.menuDiscount > '0' && <Text style={cardInUse.cardMenuDiscount}>{'-' + restaurant.menuDiscount + '%'}</Text>}
         </View>
         
         <View style={cardInUse.cardTextContainer}>
           <Text numberOfLines={1} style={cardInUse.cardText}>
-            {props.name}
+            {restaurant.name}
           </Text>
           
           <View style={cardInUse.cardRating}>
-            <SvgXml xml={starXml} width={props.miniCard ? 14 : 18} height={props.miniCard? 14 : 18} 
-                    fill={props.rating >= '4.5'? colors.quaternary : colors.textBlack} />
+            <SvgXml xml={starXml} width={miniCard ? 14 : 18} height={miniCard? 14 : 18} 
+                    fill={restaurant.rating >= '4.5'? colors.quaternary : colors.textBlack} />
             <Text style={cardInUse.cardRatingText}>
-              {props.rating}
+              {restaurant.rating}
             </Text>
           </View>
         </View>
         <View style={cardInUse.cardPriceContainer}>
-          <Text style={cardInUse.cardPrice}>{props.priceDeliveryUsual + ' lei'}</Text>
-          { props.priceDelivery !== props.priceDeliveryUsual && 
-            <Text style={cardInUse.cardPriceDiscount}>{props.priceDelivery + ' lei'}</Text>
+          <Text style={cardInUse.cardPrice}>{restaurant.priceDeliveryUsual + ' lei'}</Text>
+          { restaurant.priceDelivery !== restaurant.priceDeliveryUsual && 
+            <Text style={cardInUse.cardPriceDiscount}>{restaurant.priceDelivery + ' lei'}</Text>
           }
         </View>
       </View>
@@ -58,4 +65,6 @@ const starXml = `
 //Green field tempo:
 //https://fastly.picsum.photos/id/840/400/175.jpg?hmac=32hN2aKRca4IcZhAtFXb3T3xAp27RA0TixICFaagPkU
 
+// Last used img
+// uri:'https://fastly.picsum.photos/id/608/400/175.jpg?hmac=nF4KfcHPcc-5rcUrMWjz1WooJek8gXDFqjvcCHv3_oY'}
 export default Card
