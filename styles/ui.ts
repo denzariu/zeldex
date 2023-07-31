@@ -96,7 +96,7 @@ export const card = StyleSheet.create({
   cardStar: {
 
   },
-  
+
   cardText: {
     flex: 1,
     color: colors.textBlack,
@@ -193,10 +193,10 @@ export const minicard = StyleSheet.create({
   },
 
   cardText: {
+    flex: 1,
     color: colors.textBlack,
     fontWeight: '700',
     fontSize: fontSizes.m,
-    maxWidth: 176,
     paddingRight: 4,
     paddingLeft: 4
   },

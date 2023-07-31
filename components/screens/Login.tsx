@@ -18,10 +18,8 @@ import { input } from '../../styles/ui';
 import { userSlice } from '../../src/redux/reducers';
 import { UserModel } from '../../src/redux/actions';
 import { _retrieveDataOnStartup, cacheUserDetails } from '../../src/redux/fetcher';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { checkPhone } from '../behavior/dataCheck';
+import { checkPhone } from '../../src/behavior/dataCheck';
 
-import PhoneInput from "react-native-phone-number-input";
 
 import CountryPicker from 'react-native-country-picker-modal'
 import { CountryCode, Country } from '../ui/types'
@@ -46,8 +44,8 @@ const Login = () => {
 
   const [loading, onLoading] = React.useState(true);
   const [fetchLoaded, onFetchLoad] = React.useState(false);
-  const [textName, onChangeTextName] = React.useState('Pinzariu');
-  const [textGivenName, onChangeTextGivenName] = React.useState('Denis');
+  const [textName, onChangeTextName] = React.useState('');
+  const [textGivenName, onChangeTextGivenName] = React.useState('');
   const [textPhone, onChangePhone] = React.useState(phone);
   const [textPassword, onChangePassword] = React.useState('');
 

@@ -11,11 +11,11 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { colors, fontSizes } from '../../../styles/defaults';
 import Restaurants from './Restaurants';
 import Card from '../../ui/components/Card';
-import { SvgXml } from 'react-native-svg';
-import { svgRightArrowBlack } from '../../ui/images/svgs';
 import LabelArrow from '../../ui/components/LabelArrow';
 import { createTable, deleteTable, getDBConnection, getRestaurantItems, saveRestaurantItems } from '../../../src/database/db-service';
 import { restaurantItem } from '../../../src/database/models';
+import CardLoader from '../../ui/loaders/CardLoader';
+import MiniCardLoader from '../../ui/loaders/MiniCardLoader';
 
 const Home = ({ navigation }) => {
 
@@ -33,19 +33,23 @@ const Home = ({ navigation }) => {
         {id: 3, name:'Circus Pub', rating:'4.6', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'0', image: 'https://i.imgur.com/KnuLgDK.png'},
         {id: 4, name:'Shoteria - Statie de test test test testi t t ', rating:'4.2', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'40', image: 'https://i.imgur.com/RdY0gsz.png'},
       ]
-      //const initRestaurants = [{ id: 0, value: 'go to shop' }, { id: 1, value: 'eat at least a one healthy foods' }, { id: 2, value: 'Do some exercises' }];
+      // const initRestaurants: restaurantItem[] = [
+      // ]
       const db = await getDBConnection();
       
       // Test only
-      //await deleteTable(db);
+      await deleteTable(db);
 
       await createTable(db);
-      const storedRestaurantItems = await getRestaurantItems(db);
-      if (storedRestaurantItems.length) {
-        setRestaurantItems(storedRestaurantItems);
-      } else {
-        await saveRestaurantItems(db, initRestaurants);
-        setRestaurantItems(initRestaurants);
+
+      if(initRestaurants.length) {
+        const storedRestaurantItems = await getRestaurantItems(db);
+        if (storedRestaurantItems.length) {
+          setRestaurantItems(storedRestaurantItems);
+        } else {
+          await saveRestaurantItems(db, initRestaurants);
+          setRestaurantItems(initRestaurants);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -83,13 +87,20 @@ const Home = ({ navigation }) => {
 
         {/* Discount the entire menu filtering */}
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
-        {[...restaurants]
+        {
+          restaurants.length ?
+          [...restaurants]
           .filter((restaurant) => {return restaurant.menuDiscount !== '0'})
           .map((restaurant, i: number) => 
           <Card key={restaurant.name + i} 
             miniCard={true}
-            restaurant={restaurant}/>
-        )}
+            restaurant={restaurant}/>)
+          :
+          <>
+            <MiniCardLoader/>
+            <MiniCardLoader/>
+          </>
+        }
         </ScrollView>
 
         <LabelArrow 
@@ -111,14 +122,21 @@ const Home = ({ navigation }) => {
 
         {/* Discount on delivery */}
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
-        {[...restaurants]
+        { 
+          restaurants.length ? 
+          [...restaurants]
           .filter((restaurant) => {return restaurant.priceDelivery !== restaurant.priceDeliveryUsual})
           .map((restaurant, i: number) => 
           <Card key={restaurant.name + i} 
             miniCard={true}
             restaurant={restaurant}
-          />
-        )}
+          />)
+          :
+          <>
+            <MiniCardLoader/>
+            <MiniCardLoader/>
+          </>
+        }
         </ScrollView>
 
         {/* Spotlight */}
@@ -132,7 +150,7 @@ const Home = ({ navigation }) => {
             source={require('./../../ui/images/image.jpg')}
           /> 
         </View>
-
+        
         <LabelArrow 
           paddingH={24}
           paddingV={16}
@@ -149,10 +167,12 @@ const Home = ({ navigation }) => {
             })}
           }}
         />
-
+        
         {/* Top Picks */}
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
-        { [...restaurants]
+        { 
+          restaurants.length ? 
+          [...restaurants]
           .sort((a, b) => {
             const parsedA = parseFloat(a.rating);
             const parsedB = parseFloat(b.rating);
@@ -162,14 +182,31 @@ const Home = ({ navigation }) => {
           <Card key={restaurant.name + i} 
             miniCard={true}
             restaurant={restaurant}/>
-        )}
+          )
+          :
+          <>
+            {/* <Card miniCard={true} restaurant={{id: 0, name:'Omni Pizza', rating:'4.3', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0', image: 'https://i.imgur.com/nhxJhzV.jpeg'}} /> */}
+            {/* <Card miniCard={true} restaurant={{id: 0, name:'Omni Pizza', rating:'4.3', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0', image: 'https://i.imgur.com/nhxJhzV.jpeg'}} /> */}
+            <MiniCardLoader/>
+            <MiniCardLoader/>
+          </>
+        }
         </ScrollView>
-
-         
+        
       </View>
 
       <Text style={[styles.textArea, {paddingHorizontal: 24}]}>All restaurants and Stores</Text>
-      <Restaurants route={{params:{restaurants: restaurants, title: undefined}}}/>
+      {
+        restaurants.length ?
+        <Restaurants route={{params:{restaurants: restaurants}}}/>
+        :
+        <>
+          <CardLoader/>
+          <CardLoader/>
+          <CardLoader/>   
+        </>
+  }
+        
     </ScrollView>
   )
 }

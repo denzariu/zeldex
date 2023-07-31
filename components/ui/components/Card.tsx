@@ -1,9 +1,7 @@
-import { Alert, Image, Pressable, Text, View } from "react-native"
+import { Image, Pressable, Text, View } from "react-native"
 import { SvgXml } from "react-native-svg"
 import { colors } from "../../../styles/defaults"
 import { card, minicard } from "../../../styles/ui"
-import { useEffect, useState } from "react"
-import { Restaurant } from "../../screens/Home/Home"
 import { useNavigation } from "@react-navigation/native"
 import { starXml } from "../images/svgs"
 
@@ -16,7 +14,7 @@ const Card = ({restaurant, miniCard}: CardProps) => {
 
   const navigator = useNavigation();
   const cardInUse = miniCard? minicard : card;
-
+ 
   return (
     <Pressable 
       onPress={()=>navigator.navigate('HomeRestaurant', {restaurant: restaurant})}
