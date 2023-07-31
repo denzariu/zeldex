@@ -7,43 +7,56 @@ import {
   ImageSourcePropType,
   Image
 } from 'react-native';
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { colors, fontSizes } from '../../../styles/defaults';
 import Restaurants from './Restaurants';
 import Card from '../../ui/components/Card';
 import { SvgXml } from 'react-native-svg';
 import { svgRightArrowBlack } from '../../ui/images/svgs';
 import LabelArrow from '../../ui/components/LabelArrow';
-
+import { createTable, deleteTable, getDBConnection, getRestaurantItems, saveRestaurantItems } from '../../../src/database/db-service';
+import { restaurantItem } from '../../../src/database/models';
 
 const Home = ({ navigation }) => {
 
-  const showRestaurants = (filter: string) => {
-    if (filter === 'DISCOUNT_MENU') {
-      const restaurantsFiltered = restaurants.filter((restaurant: Restaurant) => {
-        return restaurant.menuDiscount !== '0';
-      })
-      navigation.navigate({
-      name: 'HomeRestaurants',
-      params: {title: '🎁 Discount on the entire menu', restaurants: restaurantsFiltered}
-      });
-    }
-
-    else if (filter === 'DISCOUNT_DELIVERY') {
-      const restaurantsFiltered = restaurants.filter((restaurant: Restaurant) => {
-        return restaurant.priceDelivery !== restaurant.priceDeliveryUsual;
-      })
-      navigation.navigate({
-        name: 'HomeRestaurants',
-        params: {title: 'Discount on delivery', restaurants: restaurantsFiltered}
-      });
-    }
-
-    else
-      console.log('Invalid selection of filter.')
+  const [restaurants, setRestaurantItems] = useState<restaurantItem[]>([]);
+  const [newRestaurant, setNewsetRestaurantItem] = useState('');
+  
+  const loadDataCallback = useCallback(async () => {
     
-  }
+    try {
+    
+      const initRestaurants: restaurantItem[] = [
+        {id: 0, name:'Omni Pizza', rating:'4.3', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0', image: 'https://i.imgur.com/nhxJhzV.jpeg'},
+        {id: 1, name:'Balls Apaca', rating:'4.7', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'10', image: 'https://i.imgur.com/ONaFgwn.jpeg'},
+        {id: 2, name:'Noodle Pack Veranda Mall', rating:'3.9', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0', image: 'https://i.imgur.com/6kkAFZR.png'},
+        {id: 3, name:'Circus Pub', rating:'4.6', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'0', image: 'https://i.imgur.com/KnuLgDK.png'},
+        {id: 4, name:'Shoteria - Statie de test test test testi t t ', rating:'4.2', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'40', image: 'https://i.imgur.com/RdY0gsz.png'},
+      ]
+      //const initRestaurants = [{ id: 0, value: 'go to shop' }, { id: 1, value: 'eat at least a one healthy foods' }, { id: 2, value: 'Do some exercises' }];
+      const db = await getDBConnection();
+      
+      // Test only
+      //await deleteTable(db);
 
+      await createTable(db);
+      const storedRestaurantItems = await getRestaurantItems(db);
+      if (storedRestaurantItems.length) {
+        setRestaurantItems(storedRestaurantItems);
+      } else {
+        await saveRestaurantItems(db, initRestaurants);
+        setRestaurantItems(initRestaurants);
+      }
+    } catch (error) {
+      console.error(error);
+      console.log(':(');
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDataCallback();
+  }, [loadDataCallback]);
+  
   return (
     <ScrollView>
       <View style={styles.pageContainer}>
@@ -62,7 +75,7 @@ const Home = ({ navigation }) => {
           route={{
             name: 'HomeRestaurants',
             params: {title: '🎁 Discount on the entire menu', 
-            restaurants: [...restaurants].filter((restaurant: Restaurant) => {
+            restaurants: [...restaurants].filter((restaurant) => {
               return restaurant.menuDiscount !== '0';
             })}
           }}
@@ -70,9 +83,9 @@ const Home = ({ navigation }) => {
 
         {/* Discount the entire menu filtering */}
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
-        {restaurants
-          .filter((restaurant: Restaurant) => {return restaurant.menuDiscount !== '0'})
-          .map((restaurant: Restaurant, i: number) => 
+        {[...restaurants]
+          .filter((restaurant) => {return restaurant.menuDiscount !== '0'})
+          .map((restaurant, i: number) => 
           <Card key={restaurant.name + i} 
             miniCard={true}
             restaurant={restaurant}/>
@@ -90,7 +103,7 @@ const Home = ({ navigation }) => {
           route={{
             name: 'HomeRestaurants',
             params: {title: 'Discount on delivery', 
-            restaurants: [...restaurants].filter((restaurant: Restaurant) => {
+            restaurants: [...restaurants].filter((restaurant) => {
               return restaurant.priceDelivery !== restaurant.priceDeliveryUsual;
             })}
           }}
@@ -98,9 +111,9 @@ const Home = ({ navigation }) => {
 
         {/* Discount on delivery */}
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardInline}>
-        {restaurants
-          .filter((restaurant: Restaurant) => {return restaurant.priceDelivery !== restaurant.priceDeliveryUsual})
-          .map((restaurant: Restaurant, i: number) => 
+        {[...restaurants]
+          .filter((restaurant) => {return restaurant.priceDelivery !== restaurant.priceDeliveryUsual})
+          .map((restaurant, i: number) => 
           <Card key={restaurant.name + i} 
             miniCard={true}
             restaurant={restaurant}
@@ -111,8 +124,8 @@ const Home = ({ navigation }) => {
         {/* Spotlight */}
         <View style={styles.spotlightContainer}>
           <View style={styles.spotlightLeft}>
-          <Text style={styles.spotlightTextBig}>Craving something sweet? </Text>
-          <Text style={styles.spotlightText}>Discover the selection.</Text>
+            <Text style={styles.spotlightTextBig}>Craving something sweet? </Text>
+            <Text style={styles.spotlightText}>Discover the selection.</Text>
           </View>
           <Image
             style={styles.spotlightImage}
@@ -131,7 +144,7 @@ const Home = ({ navigation }) => {
           route={{
             name: 'HomeRestaurants',
             params: {title: '✨Top Picks', 
-            restaurants: [...restaurants].filter((restaurant: Restaurant) => {
+            restaurants: [...restaurants].filter((restaurant) => {
               return restaurant.menuDiscount !== '0';
             })}
           }}
@@ -145,7 +158,7 @@ const Home = ({ navigation }) => {
             const parsedB = parseFloat(b.rating);
             return parsedA > parsedB ? -1 : 1;
           })
-          .map((restaurant: Restaurant, i: number) => 
+          .map((restaurant, i: number) => 
           <Card key={restaurant.name + i} 
             miniCard={true}
             restaurant={restaurant}/>
@@ -172,13 +185,7 @@ export type Restaurant = {
 }
 
 
-const restaurants: Restaurant[] = [
-  {name:'Omni Pizza', rating:'4.3', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0', image: require('./../../ui/images/image.jpg')},
-  {name:'Balls Apaca', rating:'4.7', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'10', image: require('./../../ui/images/image2.jpg')},
-  {name:'Noodle Pack Veranda Mall', rating:'3.9', priceDelivery:'0,00', priceDeliveryUsual:'3,49', menuDiscount:'0', image: require('./../../ui/images/image3.png')},
-  {name:'Circus Pub', rating:'4.6', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'0', image: require('./../../ui/images/image4.png')},
-  {name:'Shoteria - Statie de test test test test ', rating:'4.2', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'40', image: require('./../../ui/images/image5.png')},
-]
+
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -209,7 +216,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.quaternary,
     marginHorizontal: 16,
-    marginVertical: 8,
+    marginTop: 16,
+    marginBottom: 8,
     //paddingHorizontal: 16,
     borderRadius: 8,
   },
@@ -219,7 +227,6 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: fontSizes.l,
     fontWeight: '700',
-    
     lineHeight: 24,
   },
 

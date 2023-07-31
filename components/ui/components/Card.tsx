@@ -4,20 +4,22 @@ import { colors } from "../../../styles/defaults"
 import { card, minicard } from "../../../styles/ui"
 import { useEffect, useState } from "react"
 import { Restaurant } from "../../screens/Home/Home"
+import { useNavigation } from "@react-navigation/native"
+import { starXml } from "../images/svgs"
 
 type CardProps = {
-  restaurant: Restaurant,
+  restaurant: any,
   miniCard: boolean
 }
 
 const Card = ({restaurant, miniCard}: CardProps) => {
 
+  const navigator = useNavigation();
   const cardInUse = miniCard? minicard : card;
-  console.log(restaurant)
 
   return (
     <Pressable 
-      onPress={()=>Alert.alert('Pressed.')}
+      onPress={()=>navigator.navigate('HomeRestaurant', {restaurant: restaurant})}
       style={({pressed})  => [
         {opacity: pressed ?  0.9 : 1}  
       ]}>
@@ -25,7 +27,7 @@ const Card = ({restaurant, miniCard}: CardProps) => {
         <View style={cardInUse.cardImageContainer}>
           <Image 
             style={cardInUse.cardImage}
-            source={restaurant.image}
+            source={{uri: restaurant.image}}
           /> 
           {restaurant.menuDiscount > '0' && <Text style={cardInUse.cardMenuDiscount}>{'-' + restaurant.menuDiscount + '%'}</Text>}
         </View>
@@ -35,13 +37,12 @@ const Card = ({restaurant, miniCard}: CardProps) => {
             {restaurant.name}
           </Text>
           
-          <View style={cardInUse.cardRating}>
-            <SvgXml xml={starXml} width={miniCard ? 14 : 18} height={miniCard? 14 : 18} 
-                    fill={restaurant.rating >= '4.5'? colors.quaternary : colors.textBlack} />
+          {/* <View style={cardInUse.cardRating}> */}
             <Text style={cardInUse.cardRatingText}>
-              {restaurant.rating}
+              <SvgXml xml={starXml} style={cardInUse.cardStar} width={miniCard ? 14 : 18} height={miniCard? 14 : 18} 
+                      fill={restaurant.rating >= '4.5'? colors.quaternary : colors.textBlack} />{restaurant.rating}
             </Text>
-          </View>
+          {/* </View> */}
         </View>
         <View style={cardInUse.cardPriceContainer}>
           <Text style={cardInUse.cardPrice}>{restaurant.priceDeliveryUsual + ' lei'}</Text>
@@ -54,9 +55,7 @@ const Card = ({restaurant, miniCard}: CardProps) => {
   )
 }
 
-const starXml = `
-<svg width="800px" height="800px" viewBox="2 -3 24 24" id="star" data-name="Flat Color" xmlns="http://www.w3.org/2000/svg" class="icon flat-color"><path id="primary" d="M22,9.81a1,1,0,0,0-.83-.69l-5.7-.78L12.88,3.53a1,1,0,0,0-1.76,0L8.57,8.34l-5.7.78a1,1,0,0,0-.82.69,1,1,0,0,0,.28,1l4.09,3.73-1,5.24A1,1,0,0,0,6.88,20.9L12,18.38l5.12,2.52a1,1,0,0,0,.44.1,1,1,0,0,0,1-1.18l-1-5.24,4.09-3.73A1,1,0,0,0,22,9.81Z" ></path></svg>
-`
+
 
 
 //Water tempo:

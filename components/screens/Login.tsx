@@ -15,9 +15,9 @@ import { colors, fontSizes, fonts } from '../../styles/defaults';
 import { useDispatch, useSelector } from 'react-redux';
 import { DarkTheme, ParamListBase, useNavigation } from '@react-navigation/native';
 import { input } from '../../styles/ui';
-import { userSlice } from '../../redux/reducers';
-import { UserModel } from '../../redux/actions';
-import { _retrieveDataOnStartup, cacheUserDetails } from '../../redux/fetcher';
+import { userSlice } from '../../src/redux/reducers';
+import { UserModel } from '../../src/redux/actions';
+import { _retrieveDataOnStartup, cacheUserDetails } from '../../src/redux/fetcher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkPhone } from '../behavior/dataCheck';
 

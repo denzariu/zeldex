@@ -65,11 +65,7 @@ export const inputTextAbove = StyleSheet.create({
 export const card = StyleSheet.create({
   cardContainer: {
     flex: 1,
-    height: 242,
     display: "flex",
-    justifyContent: "center",
-    alignContent: "center",
-    //maxWidth: Dimensions.get('window').width - 50,
     marginBottom: 16
   },
 
@@ -96,30 +92,26 @@ export const card = StyleSheet.create({
   cardTextContainer: {
     display: 'flex',
     flexDirection: "row",
-    justifyContent: "space-between",
-    borderRightWidth: 0
-    
   },
+  cardStar: {
 
+  },
+  
   cardText: {
+    flex: 1,
     color: colors.textBlack,
     fontWeight: '700',
     fontSize: fontSizes.l,
-    maxWidth: 320,
-    paddingRight: 12,
-  },
-  
-  cardRating: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: "nowrap",
-    justifyContent: 'center',
+    //width: 318,
+    //paddingRight: 12,
+    paddingRight: 12
   },
 
   cardRatingText: {
     color: colors.textBlack,
     fontWeight: '700',
     fontSize: fontSizes.ml,
+    
   },
 
   cardPriceContainer: {
@@ -204,8 +196,8 @@ export const minicard = StyleSheet.create({
     color: colors.textBlack,
     fontWeight: '700',
     fontSize: fontSizes.m,
-    maxWidth: 138,
-    paddingRight: 8,
+    maxWidth: 176,
+    paddingRight: 4,
     paddingLeft: 4
   },
 
@@ -217,10 +209,16 @@ export const minicard = StyleSheet.create({
     paddingRight: 4
   },
 
+  
+  cardStar: {
+    paddingRight: 4,
+  },
+
   cardRatingText: {
     color: colors.textBlack,
     fontWeight: '700',
-    fontSize: fontSizes.sm
+    fontSize: fontSizes.sm,
+    paddingRight: 8
   },
   
   cardPriceContainer: {

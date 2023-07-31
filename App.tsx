@@ -21,7 +21,7 @@ import Profile from './components/screens/Profile';
 import { colors, fontSizes } from './styles/defaults';
 import Search from './components/screens/Search';
 import Orders from './components/screens/Orders';
-import { UserModel } from './redux/actions';
+import { UserModel } from './src/redux/actions';
 import Login from './components/screens/Login';
 import { Text } from 'react-native-svg';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -34,6 +34,7 @@ import ProfileHelp from './components/screens/secondary/ProfileHelp';
 import ProfileLanguage from './components/screens/secondary/ProfileLanguage';
 import ProfileCommunication from './components/screens/secondary/ProfileCommunication';
 import Restaurants from './components/screens/Home/Restaurants';
+import HomeRestaurant from './components/screens/Home/Restaurant';
 
 
 //TODO: styles revamp
@@ -84,6 +85,25 @@ function HomeStackScreen() {
         <HomeStack.Screen
               name="HomeRestaurants"
               component={Restaurants}
+              options={{
+                title: '',
+                headerShown: true,
+                headerBackVisible: true,
+                headerShadowVisible: false,
+                headerTitleAlign: 'center',
+                headerStyle: {
+                  backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xl,
+                },
+              }}
+            />
+        <HomeStack.Screen
+              name="HomeRestaurant"
+              component={HomeRestaurant}
               options={{
                 title: '',
                 headerShown: true,
@@ -308,11 +328,12 @@ function App(): JSX.Element {
               component={Login}
               options={{
                 title: 'Sign In',
+                statusBarColor: colors.quaternary,
+                statusBarStyle: 'light',
                 headerShown: false,
                 headerStyle: {
                   backgroundColor: colors.quaternary,
                 },
-                headerTintColor: colors.primary,
                 headerTitleStyle: {
                   fontWeight: 'bold',
                   fontSize: fontSizes.xxl,

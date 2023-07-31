@@ -4,9 +4,9 @@ import { useNavigationState } from '@react-navigation/native';
 import { colors, fontSizes } from '../../../styles/defaults';
 import { input } from '../../../styles/ui';
 import Input from '../../ui/components/Input';
-import { _retrieveDataOnStartup } from '../../../redux/fetcher';
+import { _retrieveDataOnStartup } from '../../../src/redux/fetcher';
 import { useDispatch, useSelector } from 'react-redux';
-import { userSlice } from '../../../redux/reducers';
+import { userSlice } from '../../../src/redux/reducers';
 
 
 
