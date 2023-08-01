@@ -31,19 +31,19 @@ const Card = ({restaurant, miniCard}: CardProps) => {
         </View>
         
         <View style={cardInUse.cardTextContainer}>
-          <Text numberOfLines={1} style={cardInUse.cardText}>
+          <Text allowFontScaling={false} numberOfLines={1} style={cardInUse.cardText}>
             {restaurant.name}
           </Text>
           
           {/* <View style={cardInUse.cardRating}> */}
-            <Text style={cardInUse.cardRatingText}>
-              <SvgXml xml={starXml} style={cardInUse.cardStar} width={miniCard ? 14 : 18} height={miniCard? 14 : 18} 
+            <Text allowFontScaling={false} style={cardInUse.cardRatingText}>
+              <SvgXml xml={starXml} style={cardInUse.cardStar} width={miniCard ? 12 : 18} height={miniCard? 12 : 18} 
                       fill={restaurant.rating >= '4.5'? colors.quaternary : colors.textBlack} />{restaurant.rating}
             </Text>
           {/* </View> */}
         </View>
         <View style={cardInUse.cardPriceContainer}>
-          <Text style={cardInUse.cardPrice}>{restaurant.priceDeliveryUsual + ' lei'}</Text>
+          <Text allowFontScaling={false} style={cardInUse.cardPrice}>{restaurant.priceDeliveryUsual + ' lei'}</Text>
           { restaurant.priceDelivery !== restaurant.priceDeliveryUsual && 
             <Text style={cardInUse.cardPriceDiscount}>{restaurant.priceDelivery + ' lei'}</Text>
           }

@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ImageSourcePropType,
-  Image
+  Image,
+  RefreshControl
 } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react'
 import { colors, fontSizes } from '../../../styles/defaults';
@@ -17,10 +18,23 @@ import { restaurantItem } from '../../../src/database/models';
 import CardLoader from '../../ui/loaders/CardLoader';
 import MiniCardLoader from '../../ui/loaders/MiniCardLoader';
 
+const wait = (timeout : number) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
 const Home = ({ navigation }) => {
 
   const [restaurants, setRestaurantItems] = useState<restaurantItem[]>([]);
   const [newRestaurant, setNewsetRestaurantItem] = useState('');
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => {
+      loadDataCallback()
+      setRefreshing(false)
+    });
+  }, []);
   
   const loadDataCallback = useCallback(async () => {
     
@@ -38,11 +52,12 @@ const Home = ({ navigation }) => {
       const db = await getDBConnection();
       
       // Test only
-      await deleteTable(db);
+      //await deleteTable(db);
+      console.info("Callback for data renewal");
 
       await createTable(db);
 
-      if(initRestaurants.length) {
+      if(initRestaurants.length) { 
         const storedRestaurantItems = await getRestaurantItems(db);
         if (storedRestaurantItems.length) {
           setRestaurantItems(storedRestaurantItems);
@@ -62,7 +77,14 @@ const Home = ({ navigation }) => {
   }, [loadDataCallback]);
   
   return (
-    <ScrollView>
+    <ScrollView refreshControl={
+      <RefreshControl 
+        refreshing={refreshing} 
+        onRefresh={onRefresh} 
+        progressBackgroundColor={colors.quaternary} 
+        colors={[colors.primary]}/>
+      }>
+
       <View style={styles.pageContainer}>
         {/* <TouchableOpacity onPress={() => showRestaurants('DISCOUNTS')}>
           <Text style={styles.textArea}>🌙 Late Night Munchies</Text>
@@ -106,14 +128,14 @@ const Home = ({ navigation }) => {
         <LabelArrow 
           paddingH={24}
           paddingV={16}
-          title='Discount on delivery'
+          title='🍲 Discount on delivery'
           isBlack={true}
           hasBorder={false}
           labelWeight='700'
           labelSize='xl'
           route={{
             name: 'HomeRestaurants',
-            params: {title: 'Discount on delivery', 
+            params: {title: '🍲 Discount on delivery', 
             restaurants: [...restaurants].filter((restaurant) => {
               return restaurant.priceDelivery !== restaurant.priceDeliveryUsual;
             })}
@@ -154,14 +176,14 @@ const Home = ({ navigation }) => {
         <LabelArrow 
           paddingH={24}
           paddingV={16}
-          title='✨Top Picks'
+          title='✨ Top Picks'
           isBlack={true}
           hasBorder={false}
           labelWeight='700'
           labelSize='xl'
           route={{
             name: 'HomeRestaurants',
-            params: {title: '✨Top Picks', 
+            params: {title: '✨ Top Picks', 
             restaurants: [...restaurants].filter((restaurant) => {
               return restaurant.menuDiscount !== '0';
             })}
@@ -262,13 +284,13 @@ const styles = StyleSheet.create({
   
   spotlightTextBig: {
     color: colors.primary,
-    fontSize: fontSizes.l,
+    fontSize: fontSizes.xl,
     fontWeight: '700',
     lineHeight: 24,
   },
 
   spotlightLeft: {
-    flex: 0.33,
+    flex: 0.45,
     alignSelf: 'center',
     paddingLeft: 16,
   },

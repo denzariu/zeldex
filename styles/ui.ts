@@ -66,19 +66,18 @@ export const card = StyleSheet.create({
   cardContainer: {
     flex: 1,
     display: "flex",
-    marginBottom: 16
+    marginBottom: 24
   },
 
   cardImageContainer: {
-    height: 194,
-    backgroundColor: colors.primary,
-    padding: 4,
-    display: "flex",
-    flexDirection: "column",
-    position: 'relative',
-    alignItems: "center",
-    borderWidth: 3,
-    borderColor: colors.primary,
+    // height: 194,
+    // backgroundColor: colors.primary,
+    // padding: 4,
+    // display: "flex",
+    // alignItems: "center",
+    // borderWidth: 3,
+    // borderColor: colors.primary,
+    paddingVertical: 8
   },
   
   cardImage: {
@@ -101,16 +100,16 @@ export const card = StyleSheet.create({
     flex: 1,
     color: colors.textBlack,
     fontWeight: '700',
-    fontSize: fontSizes.l,
+    fontSize: fontSizes.xl,
     //width: 318,
     //paddingRight: 12,
-    paddingRight: 12
+    paddingRight: 12,
   },
 
   cardRatingText: {
     color: colors.textBlack,
     fontWeight: '700',
-    fontSize: fontSizes.ml,
+    fontSize: fontSizes.l,
     
   },
 
@@ -122,33 +121,39 @@ export const card = StyleSheet.create({
   },
   
   cardPrice: {
+    alignSelf: 'center',
     color: colors.textBlack,
-    fontWeight: '500',
-    fontSize: fontSizes.m,
-    
+    fontWeight: '400',
+    fontSize: fontSizes.ml,
+    paddingVertical: 1.2,
+    verticalAlign: 'middle'
   },
 
   cardPriceDiscount: {
+    alignSelf: 'center',
     color: colors.primary,
-    fontWeight: '500',
+    fontWeight: '700',
     fontSize: fontSizes.m,
     backgroundColor: colors.quaternary,
-    borderRadius: 12,
+    borderRadius: 4,
     paddingHorizontal: 8,
-    paddingBottom: 1.4
+    paddingVertical: 2,
+    //paddingBottom: 1.4
+    //marginTop: 2,
+    verticalAlign: 'middle'
   },
 
   cardMenuDiscount: {
     position: "absolute",
-    top: 12,
-    left: 6,
+    top: 16,
+    left: 8,
     color: colors.quaternary,
-    fontWeight: '700',
-    fontSize: fontSizes.m,
+    fontWeight: '900',
+    fontSize: fontSizes.ml,
     backgroundColor: colors.primary,
     borderRadius: 12,
     paddingHorizontal: 8,
-    paddingVertical: 2
+    paddingVertical: 2,
   }
 })
 
@@ -242,7 +247,7 @@ export const minicard = StyleSheet.create({
     backgroundColor: colors.quaternary,
     borderRadius: 8,
     paddingHorizontal: 6,
-    paddingBottom: 1
+    paddingBottom: 1,
   },
 
   cardMenuDiscount: {

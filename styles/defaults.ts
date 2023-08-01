@@ -1,4 +1,4 @@
-import normalize from 'react-native-normalize'
+import normalize from 'react-native-responsive-fontsize'
 
 export const colors = {
   white: '#fff',
@@ -20,14 +20,23 @@ export const colors = {
 }
 
 export const fontSizes = {
-  s: normalize(14),
-  sm: normalize(15),
-  m: normalize(16),
-  ml: normalize(17),
-  l: normalize(18),
-  xl: normalize(20),
-  xxl: normalize(24),
-  xxxl: normalize(28)
+  // s: normalize(14,"width"),
+  // sm: normalize(15,"width"),
+  // m: normalize(16,"width"),
+  // ml: normalize(17,"width"),
+  // l: normalize(18,"width"),
+  // xl: normalize(20,"width"),
+  // xxl: normalize(24,"width"),
+  // xxxl: normalize(28,"width")
+
+  s: 14,
+  sm: 15,
+  m: 16,
+  ml: 17,
+  l: 18,
+  xl: 20,
+  xxl: 24,
+  xxxl: 28
 }
 
 export const fonts = {
