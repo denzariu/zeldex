@@ -5,6 +5,11 @@
 
 ## Newest shots:
 ![image](https://github.com/denzariu/zeldex/assets/40743579/6b172acf-99df-4dc8-ae23-e48eb03c9074)
+
+Loading before updating / fetching the information:
+
+
+![image](https://github.com/denzariu/zeldex/assets/40743579/c2009eb6-0515-47f3-bbf5-fd02bedec8b6)
 ![image](https://github.com/denzariu/zeldex/assets/40743579/c53a944f-f8ad-4fbb-b3db-fe20c4d68de7)
 ![image](https://github.com/denzariu/zeldex/assets/40743579/37f5cd91-21bb-492a-b167-2ff9277f30da)
 ![image](https://github.com/denzariu/zeldex/assets/40743579/56006ab5-395c-4bfb-919e-e904f5be8b96)
