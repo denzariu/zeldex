@@ -1,5 +1,5 @@
 import React from 'react';
-import {NavigationContainer, TabRouter} from '@react-navigation/native'
+import {NavigationContainer, TabRouter, useNavigation} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
@@ -8,7 +8,9 @@ import type {PropsWithChildren} from 'react';
 const Stack = createNativeStackNavigator();
 
 import {
+  Alert,
   Button,
+  Share,
   StatusBar,
   StyleSheet,
   View,
@@ -36,10 +38,9 @@ import ProfileCommunication from './components/screens/secondary/ProfileCommunic
 import Restaurants from './components/screens/Home/Restaurants';
 import HomeRestaurant from './components/screens/Home/Restaurant';
 
+import { HeaderBackButton, HeaderTitle, PlatformPressable } from '@react-navigation/elements'
 
 //TODO: styles revamp
-
-
 
 const HomeTabs = createBottomTabNavigator();
 
@@ -101,25 +102,7 @@ function HomeStackScreen() {
                 },
               }}
             />
-        <HomeStack.Screen
-              name="HomeRestaurant"
-              component={HomeRestaurant}
-              options={{
-                title: '',
-                headerShown: true,
-                headerBackVisible: true,
-                headerShadowVisible: false,
-                headerTitleAlign: 'center',
-                headerStyle: {
-                  backgroundColor: colors.primary,
-                },
-                headerTintColor: colors.quaternary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xl,
-                },
-              }}
-            />
+        
     </HomeStack.Navigator>
   )
 }
@@ -311,11 +294,24 @@ function ProfileStackScreen() {
 
 function App(): JSX.Element {
 
-  
+  const shareData = async () => {
+    try {
+        await Share.share({
+            title: 'Sharing this xoxo',
+            message:
+                'This is the demo text',
+        });
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
   const userDetails: UserModel = useSelector((state:any) => state.userReducer.user);
   const userFullName: string = useSelector((state:any) => (state.userReducer.user.firstName + ' ' + state.userReducer.user.lastName));
   const userPhone: string = useSelector((state:any) => (state.userReducer.user.phone));
-
+  
+ 
+  
   return (
     
       <SafeAreaProvider>
@@ -357,6 +353,71 @@ function App(): JSX.Element {
                   fontSize: fontSizes.xxl,
                 },
               }}
+            />
+
+            <Stack.Screen
+              name="HomeRestaurant"
+              component={HomeRestaurant}
+              options={ (navigation)=> ({
+                title: '',
+                statusBarColor: colors.primary,
+                statusBarStyle: 'dark',
+                headerShown: true,
+                headerTransparent: true,
+                headerBackVisible: false,
+                headerShadowVisible: false,
+                headerTitleAlign: 'center',
+
+                // headerStyle: {
+                //   backgroundColor: colors.primary,
+                // },
+
+                headerTitle: (title) => (
+                    <HeaderTitle
+                      {...title}
+                      numberOfLines={1}
+                      allowFontScaling={false} 
+                      style={{
+                        maxWidth: 200,
+                        paddingVertical: 5, 
+                        paddingHorizontal: 12, 
+                        borderRadius: 12, 
+                        backgroundColor: colors.primary, 
+                        fontWeight: 'bold',
+                        fontSize: fontSizes.m}}
+                    >
+                      
+                    </HeaderTitle>
+                ),
+                headerLeft: (props) => (
+                    <HeaderBackButton
+                      {...props}
+                      onPress={() => navigation.navigation.goBack(null)}
+                      //color={colors.quaternary}
+                      style={{borderRadius: 48, backgroundColor: colors.primary}}
+                      tintColor={colors.quaternary}
+                    />
+                ),
+                //headerSearchBarOptions: {shouldShowHintSearchIcon:true},
+                headerRight: (props) => (
+                  <HeaderBackButton
+                      {...props}
+                      onPress={shareData}
+                      tintColor={colors.quaternary}
+                      style={{borderRadius: 48, backgroundColor: colors.primary, transform: ([{rotate: '130deg'}]) }}
+                      // //tintColor={colors.quaternary}
+                      // pressColor={colors.quaternary}
+                      pressOpacity={0}
+                    />
+              ),
+                
+
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xl,
+                },
+              })}
             />
 {/*             
             <Stack.Screen 
@@ -418,23 +479,5 @@ function App(): JSX.Element {
   );
 }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;

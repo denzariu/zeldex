@@ -1,24 +1,41 @@
-import { ScrollView, StyleSheet, Text } from "react-native";
+import { FlatList, ScrollView, StyleSheet, Text } from "react-native";
 import Card from "../../ui/components/Card";
 import { Restaurant } from "./Home";
 import { colors, fontSizes } from "../../../styles/defaults";
 
 // Switch to FlatList
 
+const RenderHeader = ({title} : any) => {
+  if (title) 
+  return (
+    <Text style={styles.textArea}>{title}</Text>
+  )
+
+  return <></>
+}
+
 const Restaurants = ({route, navigation} : any) => {
 
   const { title, restaurants } = route.params;
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.pageContainer}>
-      {title && <Text style={styles.textArea}>{title}</Text>}
-
-      {restaurants.map((restaurant: Restaurant, i: number) => 
-      <Card key={restaurant.name + i} 
-        miniCard={false}
-        restaurant={restaurant}/>
-        
+    <FlatList 
+      data={restaurants}
+      renderItem={({item, index}) => (
+        <>
+          
+          <Card key={item.name + index} 
+            miniCard={false}
+            restaurant={item}/>
+        </>
       )}
-    </ScrollView>
+        contentInsetAdjustmentBehavior="automatic" 
+        style={styles.pageContainer}
+        ListHeaderComponent={<RenderHeader title={title}/>}
+        stickyHeaderHiddenOnScroll={false}
+        
+        >
+        
+      </FlatList>
   )
 }
 

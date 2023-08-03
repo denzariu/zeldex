@@ -184,8 +184,10 @@ const Home = ({ navigation }) => {
           route={{
             name: 'HomeRestaurants',
             params: {title: '✨ Top Picks', 
-            restaurants: [...restaurants].filter((restaurant) => {
-              return restaurant.menuDiscount !== '0';
+            restaurants: [...restaurants] .sort((a, b) => {
+              const parsedA = parseFloat(a.rating);
+              const parsedB = parseFloat(b.rating);
+              return parsedA > parsedB ? -1 : 1;
             })}
           }}
         />
