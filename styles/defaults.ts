@@ -28,7 +28,8 @@ export const fontSizes = {
   // xl: normalize(20,"width"),
   // xxl: normalize(24,"width"),
   // xxxl: normalize(28,"width")
-
+  
+  ultras: 12, // For tab menu
   s: 14,
   sm: 15,
   m: 16,

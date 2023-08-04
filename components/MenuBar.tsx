@@ -34,7 +34,7 @@ const MenuBar = ({ navigation }) => {
         MenuButtons.map((buttonMenu) => (
         
         <TouchableOpacity style={styles.menuItem} key={"ButtonMenu" + buttonMenu.name} onPress={() => handleSelection(buttonMenu.name)}>
-          <SvgXml xml={buttonMenu.icon} width={24} height={24} fill={selectedButton === buttonMenu.name ? menuItemStyleActive : menuItemStyle}/>
+          <SvgXml xml={buttonMenu.icon} width={20} height={20} fill={selectedButton === buttonMenu.name ? menuItemStyleActive : menuItemStyle}/>
           <Text style={selectedButton === buttonMenu.name ? styles.menuItemTextActive : styles.menuItemText}>{buttonMenu.name}</Text>
         </TouchableOpacity>
         ))
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.primary,
-    paddingVertical: 5,
+    paddingVertical: 4,
     paddingHorizontal: 20,
     borderTopWidth: 2,
     borderTopColor: colors.quaternary,
@@ -64,12 +64,12 @@ const styles = StyleSheet.create({
   },
   
   menuItemText: {
-    fontSize: fontSizes.m,
+    fontSize: fontSizes.ultras,
     color: colors.gray,
   },
 
   menuItemTextActive: {
-    fontSize: fontSizes.m,
+    fontSize: fontSizes.ultras,
     color: colors.quaternary,
   },
 

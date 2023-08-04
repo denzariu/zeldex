@@ -6,17 +6,19 @@ import {
   Text,
   StatusBar,
   Animated,
+  NativeSyntheticEvent,
+  Image,
 } from 'react-native';
 
 import TabSectionList from './../../ui/components/TabSectionList';
-// import {mockPlaceDetails} from './src/data/mock-data';
-// import DishItem from './src/components/DishItem';
-import { Restaurant } from '@material-ui/icons';
 import { faker } from '@faker-js/faker';
 import { colors, fontSizes } from '../../../styles/defaults';
 import { useNavigation } from '@react-navigation/native';
 import { addListener } from '@reduxjs/toolkit';
 import { getDefaultHeaderHeight, useHeaderHeight } from '@react-navigation/elements'
+import { SvgXml } from 'react-native-svg';
+import { HeaderTitle } from '@react-navigation/elements'
+import { starXml, svgDiscount } from '../../ui/images/svgs';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -26,9 +28,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
 
 
   const { restaurant } = route.params;
-  
-  const [restaurantTitle, setTitle]= useState('');
-  const [opacity, setOpacity]= useState('');
+
   const [SECTIONS, setSECTIONS] = useState([
     {
       title: 'Burgers',
@@ -46,23 +46,23 @@ const HomeRestaurant = ({route, navigation} : any) => {
         .fill(0)
         .map(_ => ({
           title: faker.commerce.productName(),
-          description: faker.lorem.lines(2),
+          description: faker.lorem.lines(1),
           price: faker.commerce.price()
         }))
     },
     {
       title: 'Sushi and rolls',
-      data: Array(10)
+      data: Array(5)
         .fill(0)
         .map(_ => ({
           title: faker.commerce.productName(),
-          description: faker.lorem.lines(2),
+          description: faker.lorem.lines(3),
           price: faker.commerce.price()
         }))
     },
     {
       title: 'Salads',
-      data: Array(10)
+      data: Array(5)
         .fill(0)
         .map(_ => ({
           title: faker.commerce.productName(),
@@ -72,7 +72,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
     },
     {
       title: 'Dessert',
-      data: Array(10)
+      data: Array(5)
         .fill(0)
         .map(_ => ({
           title: faker.commerce.productName(),
@@ -81,6 +81,12 @@ const HomeRestaurant = ({route, navigation} : any) => {
         }))
     }
   ]);
+
+  useEffect (() => {
+    navigation.setOptions({
+      title: restaurant.name
+    })
+  }, [navigation])
 
   const [scrollY] = React.useState(new Animated.Value(0));
 
@@ -101,40 +107,13 @@ const HomeRestaurant = ({route, navigation} : any) => {
     extrapolate: 'clamp',
   });
 
-  // const titleBarOpacity = scrollY.interpolate({
-  //   inputRange: [50, 225],
-  //   outputRange: [0, 99],
-  //   extrapolate: 'clamp',
-  // });
-
-
-  // const headerHeight = useHeaderHeight();
-  // useEffect(() => {
-  //   // console.log(JSON.stringify(tabBarOpacity)
-  //   navigator.setOptions({
-      
-  //     headerBackground: () => (
-  //       <>
-  //         <View style={{position: 'absolute', left: 10, borderRadius: 24, top: headerHeight/2 - fontSizes.l, padding: fontSizes.l, backgroundColor: colors.primary}}/>
-  //         <View style={{position: 'absolute', left: , borderRadius: 24, top: headerHeight/2 - fontSizes.l, padding: fontSizes.l, backgroundColor: colors.primary}}/>
-  //       </>
-  //     ),
-  //     //headerTintColor: colors.quaternary + tabBarOpacity.toString(16)
-  //   });
-  // }, [navigator]);
-  
-  useEffect(() => {
-    navigation.setOptions({
-      title: restaurant.name,
-    });
-  }, [restaurantTitle, navigation]);
-
   return (
     <>
       {/*<StatusBar barStyle="light-content" /> */}
       <SafeAreaView style={styles.safeArea}>
         
         <TabSectionList
+          showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior='automatic'
           style={styles.sectionList}
           sections={SECTIONS || []}
@@ -158,7 +137,8 @@ const HomeRestaurant = ({route, navigation} : any) => {
                 ]}>
                 {SECTIONS[0].title && (
                   <Animated.Image
-                    source={require('../../ui/images/image.jpg')}
+                    //source={require('../../ui/images/image.jpg')}
+                    source={{uri: restaurant.image}}
                     style={[
                       styles.coverPhoto,
                       {
@@ -172,13 +152,25 @@ const HomeRestaurant = ({route, navigation} : any) => {
                   />
                 )}
               </Animated.View>
-              <View style={styles.sectionHeaderText}>
-                <View style={styles.resturantRow}>
-                  <Text style={styles.restaurantTitle}>{restaurant.name}</Text>
-                  <Text style={styles.restaurantPrice}>{restaurant.priceDelivery} lei</Text>
-                </View>
-                <Text style={styles.itemDescription}>{restaurant.name}</Text>
+              {/* <View style={styles.sectionHeaderText}> */}
+              <View style={styles.resturantRow}>
+                {restaurant.name && <Text style={styles.textArea}>{restaurant.name}</Text>}
+
+                <Text numberOfLines={1} style={styles.textAreaRating}><SvgXml xml={starXml} height={18} width={18}
+                      fill={restaurant.rating >= '4.5'? colors.quaternary : colors.textBlack}/>{restaurant.rating}</Text>
               </View>
+              {
+                restaurant.menuDiscount !== '0' && 
+  
+                <>
+                  <View style={[styles.restaurantDiscount, {flexDirection: 'row'}]}>
+                    <SvgXml xml={svgDiscount} height={32} width={32}
+                          fill={colors.quaternary}/>
+                    <Text style={styles.restaurantDiscountText}>{restaurant.menuDiscount}% off everything</Text>
+                  </View>
+                  <View style={styles.divider}></View>
+                </>
+              }
             </>
           }
           renderTab={({title, isActive}) => {
@@ -201,10 +193,15 @@ const HomeRestaurant = ({route, navigation} : any) => {
           renderItem={({item}) => {
             return <View style={styles.itemContainer}>
                       <View style={styles.itemRow}>
-                        <Text style={styles.itemTitle}>{item.title}</Text>
-                        <Text style={styles.itemPrice}>${item.price}</Text>
-                      </View>
-                      <Text style={styles.itemDescription}>{item.description}</Text>
+                        <View style={styles.itemColumn}>
+                          <Text style={styles.itemTitle}>{item.title}</Text>
+                          <Text style={styles.itemDescription} numberOfLines={2}>{item.description}</Text>
+                          <Text style={styles.itemPrice}>{item.price/10} lei</Text>  
+                        </View>
+                        <Image
+                          source={{uri: restaurant.image}}
+                          style={styles.itemImage}/>
+                        </View>
                     </View>
           }}
           onScroll={Animated.event(
@@ -237,12 +234,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     backgroundColor: colors.primary
   },
+
   restaurantTitle: {
     flex: 1,
     fontSize: fontSizes.xl,
     color: colors.textBlack,
     fontWeight: '700'
   },
+  
   restaurantPrice: {
     
     fontSize: fontSizes.m,
@@ -254,48 +253,106 @@ const styles = StyleSheet.create({
     color: '#b6b6b6',
     fontSize: fontSizes.s,
   },
+
   resturantRow: {
-    flexDirection: 'row'
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: colors.primary,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+
+  restaurantDiscount: {
+    marginHorizontal: 20,
+    paddingVertical: 12,
+    marginBottom: 12,
+    backgroundColor: colors.grayLight,
+    borderRadius: 12, 
+    alignItems: 'center',
+    paddingLeft: 8,
+    gap: 8
+  },
+
+  restaurantDiscountText: {
+    color: colors.textBlack,
+    fontSize: fontSizes.sm,
+    fontWeight: '700',
+  },
+
+  textArea: {
+    flex: 1,
+    fontSize: fontSizes.xxl,
+    fontWeight: 'bold',
+    color: colors.textBlack,
+    paddingRight: 16,
+  },
+
+  textAreaRating: {
+    fontSize: fontSizes.ml,
+    fontWeight: '800',
+    color: colors.textBlack,
   },
 
   itemContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     backgroundColor: colors.primary
   },
   itemTitle: {
     flex: 1,
-    fontSize: fontSizes.m,
+    fontSize: fontSizes.sm,
     color: colors.textBlack,
     fontWeight: '700'
   },
-  itemPrice: {
-    
+
+  itemPrice: {  
     fontSize: fontSizes.m,
     color: colors.textBlack,
     fontWeight: '300',
   },
+
   itemDescription: {
-    marginTop: 10,
+    marginVertical: 8,
     color: '#b6b6b6',
     fontSize: fontSizes.s,
   },
+  
   itemRow: {
-    flexDirection: 'row'
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+
+  itemColumn: {
+    flex: 0.66,
+    flexDirection: 'column'
+  },
+  
+  itemImage: {
+    flex: 0.30,
+    aspectRatio: 1.3,
+    borderRadius: 4
   },
 
   container: {
     flex: 1,
   },
+
   coverPhotoContainer: {
     // maxHeight: 225,
     height: 165
   },
+
   coverPhoto: {
     height: 180,
     // width: '100%',
     // height: '100%',
   },
+
   tabBar: {
     backgroundColor: colors.primary,
     
@@ -313,41 +370,48 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: 80,
   },
+
   tabItem: {
     borderColor: colors.quaternary,
     backgroundColor: colors.primary,
   },
+
   tabText: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 8,
     marginTop: 42,
     justifyContent: 'flex-end',
     fontSize: fontSizes.sm,
     fontWeight: 'bold',
   },
+
   sectionHeaderText: {
     backgroundColor: colors.primary,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     color: colors.quaternary,
-    fontSize: fontSizes.xl,
+    fontSize: fontSizes.xxl,
     fontWeight: 'bold',
-    paddingTop: 15,
-    paddingBottom: 15,
-    paddingHorizontal: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
   },
+
   divider: {
-    width: '100%',
+    marginHorizontal: 20,
+    flex: 1,
     height: 1,
     backgroundColor: colors.grayLight,
   },
+
   sectionList: {
     backgroundColor: colors.primary,
   },
+
   safeArea: {
     flex: 1,
     backgroundColor: colors.quaternary,
   },
+
 });
 
 export default HomeRestaurant;

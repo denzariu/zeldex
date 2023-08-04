@@ -21,12 +21,9 @@ const Restaurants = ({route, navigation} : any) => {
     <FlatList 
       data={restaurants}
       renderItem={({item, index}) => (
-        <>
-          
           <Card key={item.name + index} 
             miniCard={false}
             restaurant={item}/>
-        </>
       )}
         contentInsetAdjustmentBehavior="automatic" 
         style={styles.pageContainer}
