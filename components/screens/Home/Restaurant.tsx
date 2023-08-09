@@ -8,6 +8,9 @@ import {
   Animated,
   NativeSyntheticEvent,
   Image,
+  TouchableOpacity,
+  Dimensions,
+  Modal,
 } from 'react-native';
 
 import TabSectionList from './../../ui/components/TabSectionList';
@@ -18,7 +21,7 @@ import { addListener } from '@reduxjs/toolkit';
 import { getDefaultHeaderHeight, useHeaderHeight } from '@react-navigation/elements'
 import { SvgXml } from 'react-native-svg';
 import { HeaderTitle } from '@react-navigation/elements'
-import { starXml, svgDiscount } from '../../ui/images/svgs';
+import { starXml, svgClose, svgDiscount } from '../../ui/images/svgs';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -107,6 +110,27 @@ const HomeRestaurant = ({route, navigation} : any) => {
     extrapolate: 'clamp',
   });
 
+  
+
+  // Height needed for bottom-up drawer 
+  const windowHeight = Dimensions.get('window').height;
+
+  // This state would determine if the drawer sheet is visible or not
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [foodItem, setCurrentFoodItem] = useState('None');
+
+  // Function to open the bottom sheet for the 'title' product
+  const handleOpenBottomSheet = (title : string) => {
+    setCurrentFoodItem(title)
+    setIsBottomSheetOpen(true);
+  };
+
+  // Function to close the bottom sheet
+  const handleCloseBottomSheet = () => {
+    setIsBottomSheetOpen(false);
+  };
+
+
   return (
     <>
       {/*<StatusBar barStyle="light-content" /> */}
@@ -135,22 +159,61 @@ const HomeRestaurant = ({route, navigation} : any) => {
                     ],
                   },
                 ]}>
-                {SECTIONS[0].title && (
+                <Animated.Image
+                  //source={require('../../ui/images/image.jpg')}
+                  source={{uri: restaurant.image}}
+                  style={[
+                    styles.coverPhoto,
+                    {
+                      transform: [
+                        {
+                          scale: coverScale,
+                        },
+                      ],
+                    },
+                  ]}
+                />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+        // We use the state here to toggle visibility of Bottom Sheet 
+          visible={isBottomSheetOpen}
+        // We pass our function as default function to close the Modal
+          onRequestClose={handleCloseBottomSheet} >
+
+            <View style={[styles.bottomSheet, ]}>
+            {/* //  First Section of Bottom sheet with Header and close button */}
+
+              <View style={styles.modalHeader}>
+                <TouchableOpacity onPress={handleCloseBottomSheet}>
+                  <SvgXml xml={svgClose} height={24} width={24}
+                      fill={colors.quaternary}/> 
+                </TouchableOpacity>
+              </View>
+            {/* // First Section of Bottom sheet with Header and close button
+
+            // Section with Information  */}
+              <View style={styles.modalInfo}>
+                <View style={styles.modalSection}>
                   <Animated.Image
-                    //source={require('../../ui/images/image.jpg')}
                     source={{uri: restaurant.image}}
-                    style={[
-                      styles.coverPhoto,
-                      {
-                        transform: [
-                          {
-                            scale: coverScale,
-                          },
-                        ],
-                      },
-                    ]}
+                    style={[styles.modalImage, styles.coverPhoto]}
                   />
-                )}
+                  <Text style={styles.modalTitle}>{foodItem}</Text>
+                  <Text style={styles.modalPrice}>9,00 lei</Text>
+                  <Text style={styles.modalDescription}>This product is really good. You should definitely buy this product.</Text>
+                </View>
+                  {/* <View style={styles.modalDivider} />   */}
+            
+                  <View style={styles.modalSection}>
+                    <Text style={styles.modalNote}>Leave a note for the kitchen</Text>
+                    <View style={styles.modalDivider} />
+                  </View>
+              </View>
+            </View>
+          </Modal>
+
               </Animated.View>
               {/* <View style={styles.sectionHeaderText}> */}
               <View style={styles.resturantRow}>
@@ -191,7 +254,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
             <Text style={styles.sectionHeaderText}>{section.title}</Text>
           )}
           renderItem={({item}) => {
-            return <View style={styles.itemContainer}>
+            return <TouchableOpacity onPress={ ()  => { handleOpenBottomSheet(item.title) }} style={styles.itemContainer}>
                       <View style={styles.itemRow}>
                         <View style={styles.itemColumn}>
                           <Text style={styles.itemTitle}>{item.title}</Text>
@@ -202,7 +265,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
                           source={{uri: restaurant.image}}
                           style={styles.itemImage}/>
                         </View>
-                    </View>
+                    </TouchableOpacity>
           }}
           onScroll={Animated.event(
             [
@@ -226,8 +289,98 @@ const HomeRestaurant = ({route, navigation} : any) => {
 
 
 
-
 const styles = StyleSheet.create({
+
+  // Modal styles
+  // containerModal: {
+  //     flex: 1,
+  //     justifyContent: 'center',
+  //     alignItems: 'center',
+  // },
+  bottomSheet: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      justifyContent: 'flex-start',
+      backgroundColor: colors.primary,
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16,
+      bottom: 0,
+      // borderWidth: 1.5,
+      // borderColor: colors.quaternary
+  },
+
+  modalHeader: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    backgroundColor: colors.primary,
+    zIndex: 12,
+    borderRadius: 16,
+  },
+  
+  modalImage: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+
+  modalInfo: {
+    width: '100%',
+    backgroundColor: colors.primary,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  modalSection: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    color: colors.quaternary,
+    fontSize: fontSizes.xxl,
+    fontWeight: 'bold',
+    marginBottom: 8
+  },
+
+  modalTitle: {
+    color: colors.textBlack,
+    fontSize: fontSizes.xxl,
+    fontWeight: 'bold',
+    paddingVertical: 12,
+    paddingHorizontal: 20
+  },
+
+  modalPrice: {
+    color: colors.textBlack,
+    fontSize: fontSizes.m,
+    fontWeight: '400',
+    marginBottom: 16,
+    paddingHorizontal: 20
+  },
+
+  modalDescription: {
+    color: colors.gray,
+    fontSize: fontSizes.m,
+    fontWeight: '400',
+    marginBottom: 16,
+    paddingHorizontal: 20
+  },
+
+  modalNote: {
+    color: colors.grayLight,
+    fontSize: fontSizes.s,
+    fontWeight: '400',
+    marginVertical: 16,
+    paddingHorizontal: 20
+  },
+
+  modalSubTitle: {
+    color: colors.textBlack,
+    fontSize: fontSizes.xl,
+    fontWeight: '400',
+    paddingVertical: 12,
+    paddingHorizontal: 20
+  },
+
+  modalDivider: { opacity: .2, height: 1, borderWidth: 1, borderColor: colors.quaternary},
+  // Other styles
 
   restaurantContainer: {
     paddingVertical: 20,

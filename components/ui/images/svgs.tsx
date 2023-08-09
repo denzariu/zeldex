@@ -22,3 +22,4 @@ export const svgDiscount = `
   <path d="M15.375 16.5C16.2034 16.5 16.875 15.8284 16.875 15C16.875 14.1716 16.2034 13.5 15.375 13.5C14.5466 13.5 13.875 14.1716 13.875 15C13.875 15.8284 14.5466 16.5 15.375 16.5Z" stroke="${colors.primary}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 `
+export const svgClose = `<svg fill="#000000" width="800px" height="800px" viewBox="-6 -6 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin" class="jam jam-close"><path d='M7.314 5.9l3.535-3.536A1 1 0 1 0 9.435.95L5.899 4.485 2.364.95A1 1 0 1 0 .95 2.364l3.535 3.535L.95 9.435a1 1 0 1 0 1.414 1.414l3.535-3.535 3.536 3.535a1 1 0 1 0 1.414-1.414L7.314 5.899z' /></svg>`
