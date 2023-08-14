@@ -13,6 +13,7 @@ import {
   Modal,
 } from 'react-native';
 
+import GestureRecognizer from 'react-native-swipe-gestures' 
 import TabSectionList from './../../ui/components/TabSectionList';
 import { faker } from '@faker-js/faker';
 import { colors, fontSizes } from '../../../styles/defaults';
@@ -117,11 +118,18 @@ const HomeRestaurant = ({route, navigation} : any) => {
 
   // This state would determine if the drawer sheet is visible or not
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [foodItem, setCurrentFoodItem] = useState('None');
+  const [foodItem, setCurrentFoodItem] = useState<itemType>({title:'', description: '', price: 0});
 
   // Function to open the bottom sheet for the 'title' product
-  const handleOpenBottomSheet = (title : string) => {
-    setCurrentFoodItem(title)
+  /// TODO: modify from 'any' to real data typeof
+  type itemType = {
+    title: string,
+    description: string,
+    price: number
+  }
+
+  const handleOpenBottomSheet = (item : itemType) => {
+    setCurrentFoodItem(item)
     setIsBottomSheetOpen(true);
   };
 
@@ -148,6 +156,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
           ItemSeparatorComponent={() => <View style={styles.divider} />}
           ListHeaderComponent={
             <>
+              
               <Animated.View
                 style={[
                   styles.coverPhotoContainer,
@@ -159,63 +168,65 @@ const HomeRestaurant = ({route, navigation} : any) => {
                     ],
                   },
                 ]}>
+
+                {/* // Photo cover of the selected product */}
                 <Animated.Image
-                  //source={require('../../ui/images/image.jpg')}
                   source={{uri: restaurant.image}}
-                  style={[
-                    styles.coverPhoto,
-                    {
-                      transform: [
-                        {
-                          scale: coverScale,
-                        },
-                      ],
-                    },
-                  ]}
+                  style={[styles.coverPhoto,]}
                 />
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-        // We use the state here to toggle visibility of Bottom Sheet 
-          visible={isBottomSheetOpen}
-        // We pass our function as default function to close the Modal
-          onRequestClose={handleCloseBottomSheet} >
+                {/* // Modal which pops up when you select a product */}
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                // We use the state here to toggle visibility of Bottom Sheet 
+                  visible={isBottomSheetOpen}
+                // We pass our function as default function to close the Modal
+                  onRequestClose={handleCloseBottomSheet}>
 
-            <View style={[styles.bottomSheet, ]}>
-            {/* //  First Section of Bottom sheet with Header and close button */}
+                    {/* // Define outside-View area where the user can press in order to close the modal */}
+                    <TouchableOpacity onPress={handleCloseBottomSheet} style={[styles.modalOutside, {height: '40%'}]}>
+                      <GestureRecognizer
+                        style={{flex: 1}}
+                        // onSwipeUp={ () => this.setModalVisible() }
+                        onSwipeDown={ () => handleCloseBottomSheet() }
+                      />
+                    </TouchableOpacity>
+                    
+                    <View style={[styles.bottomSheet, {height: '60%'}]}>
+                    {/* //  First Section of Bottom sheet with Header and close button */}
 
-              <View style={styles.modalHeader}>
-                <TouchableOpacity onPress={handleCloseBottomSheet}>
-                  <SvgXml xml={svgClose} height={24} width={24}
-                      fill={colors.quaternary}/> 
-                </TouchableOpacity>
-              </View>
-            {/* // First Section of Bottom sheet with Header and close button
+                      <View style={styles.modalHeader}>
+                        <TouchableOpacity onPress={handleCloseBottomSheet}>
+                          <SvgXml xml={svgClose} height={24} width={24}
+                              fill={colors.quaternary}/>
+                        </TouchableOpacity>
+                      </View>
+                    {/* // First Section of Bottom sheet with Header and close button
 
-            // Section with Information  */}
-              <View style={styles.modalInfo}>
-                <View style={styles.modalSection}>
-                  <Animated.Image
-                    source={{uri: restaurant.image}}
-                    style={[styles.modalImage, styles.coverPhoto]}
-                  />
-                  <Text style={styles.modalTitle}>{foodItem}</Text>
-                  <Text style={styles.modalPrice}>9,00 lei</Text>
-                  <Text style={styles.modalDescription}>This product is really good. You should definitely buy this product.</Text>
-                </View>
-                  {/* <View style={styles.modalDivider} />   */}
-            
-                  <View style={styles.modalSection}>
-                    <Text style={styles.modalNote}>Leave a note for the kitchen</Text>
-                    <View style={styles.modalDivider} />
-                  </View>
-              </View>
-            </View>
-          </Modal>
+                    // Section with Information  */}
+                      <View style={styles.modalInfo}>
+                        <View style={styles.modalSection}>
+                          <Animated.Image
+                            source={{uri: restaurant.image}}
+                            style={[styles.modalImage, styles.coverPhoto]}
+                          />
+                          <Text style={styles.modalTitle}>{foodItem.title}</Text>
+                          <Text style={styles.modalPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(foodItem.price / 10).toLowerCase()}</Text>
+                          <Text style={styles.modalDescription}>{foodItem.description}</Text>
+                        </View>
+                          {/* <View style={styles.modalDivider} />   */}
+                    
+                          <View style={styles.modalSection}>
+                            <Text style={styles.modalNote}>Leave a note for the kitchen</Text>
+                            <View style={styles.modalDivider} />
+                          </View>
+                      </View>
+                    </View>
+                  </Modal>
 
               </Animated.View>
-              {/* <View style={styles.sectionHeaderText}> */}
+              
               <View style={styles.resturantRow}>
                 {restaurant.name && <Text style={styles.textArea}>{restaurant.name}</Text>}
 
@@ -254,12 +265,12 @@ const HomeRestaurant = ({route, navigation} : any) => {
             <Text style={styles.sectionHeaderText}>{section.title}</Text>
           )}
           renderItem={({item}) => {
-            return <TouchableOpacity onPress={ ()  => { handleOpenBottomSheet(item.title) }} style={styles.itemContainer}>
+            return <TouchableOpacity onPress={ ()  => { handleOpenBottomSheet(item) }} style={styles.itemContainer}>
                       <View style={styles.itemRow}>
                         <View style={styles.itemColumn}>
                           <Text style={styles.itemTitle}>{item.title}</Text>
                           <Text style={styles.itemDescription} numberOfLines={2}>{item.description}</Text>
-                          <Text style={styles.itemPrice}>{item.price/10} lei</Text>  
+                          <Text style={styles.itemPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(item.price / 10).toLowerCase()}</Text>  
                         </View>
                         <Image
                           source={{uri: restaurant.image}}
@@ -310,6 +321,13 @@ const styles = StyleSheet.create({
       // borderColor: colors.quaternary
   },
 
+  modalOutside: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+  },
+
   modalHeader: {
     position: 'absolute',
     top: 12,
@@ -330,6 +348,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
   },
+  
   modalSection: {
     backgroundColor: colors.white,
     borderRadius: 12,
