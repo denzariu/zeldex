@@ -16,9 +16,10 @@ const RenderHeader = ({title} : any) => {
 
 const Restaurants = ({route, navigation} : any) => {
 
-  const { title, restaurants } = route.params;
+  const { title, restaurants, unscrollable } = route.params;
   return (
     <FlatList 
+      scrollEnabled={unscrollable ? false : true}
       data={restaurants}
       renderItem={({item, index}) => (
           <Card key={item.name + index} 

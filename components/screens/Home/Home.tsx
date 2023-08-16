@@ -56,7 +56,8 @@ const Home = ({ navigation }) => {
       console.info("Callback for data renewal");
 
       await createTable(db);
-
+      //await deleteTable(db);
+      
       if(initRestaurants.length) { 
         const storedRestaurantItems = await getRestaurantItems(db);
         if (storedRestaurantItems.length) {
@@ -77,14 +78,17 @@ const Home = ({ navigation }) => {
   }, [loadDataCallback]);
   
   return (
-    <ScrollView refreshControl={
-      <RefreshControl 
-        refreshing={refreshing} 
-        onRefresh={onRefresh} 
-        progressBackgroundColor={colors.quaternary} 
-        colors={[colors.primary]}/>
-      }>
-
+    <ScrollView 
+      horizontal={false}
+      refreshControl={
+        <RefreshControl 
+          refreshing={refreshing} 
+          onRefresh={onRefresh} 
+          progressBackgroundColor={colors.quaternary} 
+          colors={[colors.primary]}
+        />
+      }
+    >
       <View style={styles.pageContainer}>
         {/* <TouchableOpacity onPress={() => showRestaurants('DISCOUNTS')}>
           <Text style={styles.textArea}>🌙 Late Night Munchies</Text>
@@ -222,14 +226,14 @@ const Home = ({ navigation }) => {
       <Text style={[styles.textArea, {paddingHorizontal: 24}]}>All restaurants and Stores</Text>
       {
         restaurants.length ?
-        <Restaurants route={{params:{restaurants: restaurants}}}/>
+        <Restaurants route={{params:{restaurants: restaurants, unscrollable: true}}}/>
         :
         <>
           <CardLoader/>
           <CardLoader/>
           <CardLoader/>   
         </>
-  }
+      }
         
     </ScrollView>
   )

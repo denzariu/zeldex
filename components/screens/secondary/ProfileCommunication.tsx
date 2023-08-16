@@ -41,16 +41,18 @@ const styles = StyleSheet.create({
 pageContainer: {
   backgroundColor: colors.primary,
   padding: 24,
-  gap: 24
+  gap: 24,
+  flex: 1
 },
 
 checkboxContainer: {
   flexDirection: 'row',
+  flexWrap: 'nowrap',
   alignItems: 'center',
   gap: 12,
   borderBottomColor: colors.grayLight,
   borderBottomWidth: 1.5,
-  paddingVertical: 8
+  paddingVertical: 8,
 },
 
 textArea: {
@@ -61,10 +63,12 @@ textArea: {
 },
 
 textAreaCheckbox: {
+  flexShrink: 1,
   fontSize: fontSizes.ml,
   color: colors.textBlack,
   fontWeight: '400',
-  textAlign: 'justify'
+  textAlign: 'justify',
+  
 },
 
 checkboxBase: {

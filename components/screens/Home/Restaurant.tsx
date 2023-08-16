@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,9 +11,10 @@ import {
   TouchableOpacity,
   Dimensions,
   Modal,
+  ScrollView
 } from 'react-native';
 
-import GestureRecognizer from 'react-native-swipe-gestures' 
+// import GestureRecognizer from 'react-native-swipe-gestures' 
 import TabSectionList from './../../ui/components/TabSectionList';
 import { faker } from '@faker-js/faker';
 import { colors, fontSizes } from '../../../styles/defaults';
@@ -23,6 +24,8 @@ import { getDefaultHeaderHeight, useHeaderHeight } from '@react-navigation/eleme
 import { SvgXml } from 'react-native-svg';
 import { HeaderTitle } from '@react-navigation/elements'
 import { starXml, svgClose, svgDiscount } from '../../ui/images/svgs';
+import { Modalize } from 'react-native-modalize';
+import zIndex from '@material-ui/core/styles/zIndex';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -41,7 +44,8 @@ const HomeRestaurant = ({route, navigation} : any) => {
         .map(_ => ({
           title: faker.commerce.productName(),
           description: faker.lorem.lines(2),
-          price: faker.commerce.price()
+          price: faker.commerce.price({ min: 1035, max: 6500, dec: 2}),
+          picture: faker.image.urlLoremFlickr({ category: 'burger', width: 400, height: 200})
         }))
     },
     {
@@ -51,7 +55,8 @@ const HomeRestaurant = ({route, navigation} : any) => {
         .map(_ => ({
           title: faker.commerce.productName(),
           description: faker.lorem.lines(1),
-          price: faker.commerce.price()
+          price: faker.commerce.price({ min: 2500, max: 5500, dec: 2}),
+          picture: faker.image.urlLoremFlickr({ category: 'pizza', width: 400, height: 200})
         }))
     },
     {
@@ -61,7 +66,8 @@ const HomeRestaurant = ({route, navigation} : any) => {
         .map(_ => ({
           title: faker.commerce.productName(),
           description: faker.lorem.lines(3),
-          price: faker.commerce.price()
+          price: faker.commerce.price({ min: 800, max: 2600, dec: 2}),
+          picture: faker.image.urlLoremFlickr({ category: 'sushi', width: 400, height: 200})
         }))
     },
     {
@@ -71,7 +77,8 @@ const HomeRestaurant = ({route, navigation} : any) => {
         .map(_ => ({
           title: faker.commerce.productName(),
           description: faker.lorem.lines(2),
-          price: faker.commerce.price()
+          price: faker.commerce.price({ min: 1600, max: 3500, dec: 2}),
+          picture: faker.image.urlLoremFlickr({ category: 'salad', width: 400, height: 200})
         }))
     },
     {
@@ -81,7 +88,8 @@ const HomeRestaurant = ({route, navigation} : any) => {
         .map(_ => ({
           title: faker.commerce.productName(),
           description: faker.lorem.lines(2),
-          price: faker.commerce.price()
+          price: faker.commerce.price({ min: 800, max: 2800, dec: 2}),
+          picture: faker.image.urlLoremFlickr({ category: 'dessert', width: 400, height: 200})
         }))
     }
   ]);
@@ -111,39 +119,101 @@ const HomeRestaurant = ({route, navigation} : any) => {
     extrapolate: 'clamp',
   });
 
-  
-
-  // Height needed for bottom-up drawer 
-  const windowHeight = Dimensions.get('window').height;
-
   // This state would determine if the drawer sheet is visible or not
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [foodItem, setCurrentFoodItem] = useState<itemType>({title:'', description: '', price: 0});
+  const [foodItem, setCurrentFoodItem] = useState<itemType>({title:'', description: '', price: 0, picture: ''});
+  const modalizeRef = useRef<Modalize>(null);
 
   // Function to open the bottom sheet for the 'title' product
   /// TODO: modify from 'any' to real data typeof
   type itemType = {
     title: string,
     description: string,
-    price: number
+    price: number,
+    picture: string,
   }
 
   const handleOpenBottomSheet = (item : itemType) => {
     setCurrentFoodItem(item)
-    setIsBottomSheetOpen(true);
+    //setIsBottomSheetOpen(true);
+    try {
+      modalizeRef.current?.open();
+    } catch (e) {
+      console.log('Error when opening Modal: ' + e)
+    }
   };
 
   // Function to close the bottom sheet
   const handleCloseBottomSheet = () => {
-    setIsBottomSheetOpen(false);
+    //setIsBottomSheetOpen(false);
+    try {
+      modalizeRef.current?.close();
+    } catch (e) {
+      console.log('Error when closing Modal: ' + e)
+    }
   };
 
+  const renderContent = () => [
+    <View key="0">
+      {/* Header section - (with a close button) */}
+      {/* <View style={styles.modalHeader}>
+        <TouchableOpacity onPress={handleCloseBottomSheet}>
+          <SvgXml xml={svgClose} height={24} width={24}
+              fill={colors.quaternary}
+          />
+        </TouchableOpacity>
+      </View> */}
+      
+      {/* Section with Information  */}
+      <View style={styles.modalInfo}>
+        <View style={styles.modalSection}>
+          <Animated.Image
+            source={{uri: foodItem.picture}}
+            style={[styles.modalImage, styles.coverPhoto]}
+          />
+          <Text style={styles.modalTitle}>{foodItem.title}</Text>
+          <Text style={styles.modalPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(foodItem.price / 100).toLowerCase()}</Text>
+          <Text style={styles.modalDescription}>{foodItem.description}</Text>
+        </View>
+          {/* <View style={styles.modalDivider} />   */}
+    
+        <View style={styles.modalSection}>
+          <Text style={styles.modalNote}>Leave a note for the kitchen</Text>
+          {/* <View style={styles.modalDivider} /> */}
+        </View>
+      </View>
+    </View>
+  ]
 
   return (
     <>
-      {/*<StatusBar barStyle="light-content" /> */}
+
       <SafeAreaView style={styles.safeArea}>
         
+          
+        
+          <Modalize
+              ref={modalizeRef}
+              scrollViewProps={{
+                showsVerticalScrollIndicator: false,
+                stickyHeaderIndices: [0]
+              }}
+              //rootStyle={{backgroundColor: colors.quaternary + '10'}}
+              snapPoint={350}
+              //adjustToContentHeight={true}
+              handleStyle={{
+                backgroundColor: colors.primary + '00',
+                height: 170, 
+                width: '100%',
+                zIndex: 1,
+              }}
+              handlePosition='inside'
+            >
+              {renderContent()}
+            </Modalize>  
+        
+
+        
+
         <TabSectionList
           showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior='automatic'
@@ -175,55 +245,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
                   style={[styles.coverPhoto,]}
                 />
 
-                {/* // Modal which pops up when you select a product */}
-                <Modal
-                  animationType="slide"
-                  transparent={true}
-                // We use the state here to toggle visibility of Bottom Sheet 
-                  visible={isBottomSheetOpen}
-                // We pass our function as default function to close the Modal
-                  onRequestClose={handleCloseBottomSheet}>
-
-                    {/* // Define outside-View area where the user can press in order to close the modal */}
-                    <TouchableOpacity onPress={handleCloseBottomSheet} style={[styles.modalOutside, {height: '40%'}]}>
-                      <GestureRecognizer
-                        style={{flex: 1}}
-                        // onSwipeUp={ () => this.setModalVisible() }
-                        onSwipeDown={ () => handleCloseBottomSheet() }
-                      />
-                    </TouchableOpacity>
-                    
-                    <View style={[styles.bottomSheet, {height: '60%'}]}>
-                    {/* //  First Section of Bottom sheet with Header and close button */}
-
-                      <View style={styles.modalHeader}>
-                        <TouchableOpacity onPress={handleCloseBottomSheet}>
-                          <SvgXml xml={svgClose} height={24} width={24}
-                              fill={colors.quaternary}/>
-                        </TouchableOpacity>
-                      </View>
-                    {/* // First Section of Bottom sheet with Header and close button
-
-                    // Section with Information  */}
-                      <View style={styles.modalInfo}>
-                        <View style={styles.modalSection}>
-                          <Animated.Image
-                            source={{uri: restaurant.image}}
-                            style={[styles.modalImage, styles.coverPhoto]}
-                          />
-                          <Text style={styles.modalTitle}>{foodItem.title}</Text>
-                          <Text style={styles.modalPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(foodItem.price / 10).toLowerCase()}</Text>
-                          <Text style={styles.modalDescription}>{foodItem.description}</Text>
-                        </View>
-                          {/* <View style={styles.modalDivider} />   */}
-                    
-                          <View style={styles.modalSection}>
-                            <Text style={styles.modalNote}>Leave a note for the kitchen</Text>
-                            <View style={styles.modalDivider} />
-                          </View>
-                      </View>
-                    </View>
-                  </Modal>
+                
 
               </Animated.View>
               
@@ -235,7 +257,6 @@ const HomeRestaurant = ({route, navigation} : any) => {
               </View>
               {
                 restaurant.menuDiscount !== '0' && 
-  
                 <>
                   <View style={[styles.restaurantDiscount, {flexDirection: 'row'}]}>
                     <SvgXml xml={svgDiscount} height={32} width={32}
@@ -270,10 +291,10 @@ const HomeRestaurant = ({route, navigation} : any) => {
                         <View style={styles.itemColumn}>
                           <Text style={styles.itemTitle}>{item.title}</Text>
                           <Text style={styles.itemDescription} numberOfLines={2}>{item.description}</Text>
-                          <Text style={styles.itemPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(item.price / 10).toLowerCase()}</Text>  
+                          <Text style={styles.itemPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(item.price / 100).toLowerCase()}</Text>  
                         </View>
                         <Image
-                          source={{uri: restaurant.image}}
+                          source={{uri: item.picture}}
                           style={styles.itemImage}/>
                         </View>
                     </TouchableOpacity>
@@ -333,13 +354,13 @@ const styles = StyleSheet.create({
     top: 12,
     left: 12,
     backgroundColor: colors.primary,
-    zIndex: 12,
+    zIndex: 100,
     borderRadius: 16,
   },
   
   modalImage: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
 
   modalInfo: {
