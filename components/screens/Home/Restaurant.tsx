@@ -25,7 +25,7 @@ import { SvgXml } from 'react-native-svg';
 import { HeaderTitle } from '@react-navigation/elements'
 import { starXml, svgClose, svgDiscount } from '../../ui/images/svgs';
 import { Modalize } from 'react-native-modalize';
-import zIndex from '@material-ui/core/styles/zIndex';
+import { Button } from '@material-ui/core';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -152,6 +152,31 @@ const HomeRestaurant = ({route, navigation} : any) => {
     }
   };
 
+  const [presses, setPresses] = useState<number>(0);
+  const handleAddToCart = () => {
+    console.log('testpress' + presses);
+
+    setPresses(presses+1)
+  }
+
+  const renderFooter = () => (
+    <View style={styles.modalFooter}>
+      
+      <View style={[styles.modalQuantityContainer, {flex: 0.33}]}>
+        <Text style={[{fontSize: fontSizes.xxxl, color: colors.quaternary}]}>–</Text>
+        <Text style={[{fontSize: fontSizes.l, color: colors.quaternary}]}>1</Text>
+        <Text style={[{fontSize: fontSizes.xxxl, color: colors.quaternary}]}>+</Text>
+      </View>
+      <TouchableOpacity
+        style={[styles.modalFooterBuyButton, {flex: 0.66}]}
+        onPress={handleAddToCart}
+      >
+        <Text numberOfLines={1} style={styles.modalFooterBuyButtonText}>Add</Text>
+        <Text numberOfLines={1} style={styles.modalFooterBuyButtonTextPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(foodItem.price / 100).toLowerCase()}</Text>
+      </TouchableOpacity>
+    </View>
+  )
+
   const renderContent = () => [
     <View key="0">
       {/* Header section - (with a close button) */}
@@ -164,7 +189,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
       </View> */}
       
       {/* Section with Information  */}
-      <View style={styles.modalInfo}>
+      <View style={styles.modalHeader}>
         <View style={styles.modalSection}>
           <Animated.Image
             source={{uri: foodItem.picture}}
@@ -175,13 +200,16 @@ const HomeRestaurant = ({route, navigation} : any) => {
           <Text style={styles.modalDescription}>{foodItem.description}</Text>
         </View>
           {/* <View style={styles.modalDivider} />   */}
-    
-        <View style={styles.modalSection}>
+      </View>
+    </View>,
+  
+    <View key="6">
+      <View style={styles.modalInfo}>
+        <View style={[styles.modalSection, {marginBottom: '15%'}]}>
           <Text style={styles.modalNote}>Leave a note for the kitchen</Text>
-          {/* <View style={styles.modalDivider} /> */}
         </View>
       </View>
-    </View>
+    </View>,
   ]
 
   return (
@@ -189,29 +217,37 @@ const HomeRestaurant = ({route, navigation} : any) => {
 
       <SafeAreaView style={styles.safeArea}>
         
-          
         
           <Modalize
               ref={modalizeRef}
               scrollViewProps={{
                 showsVerticalScrollIndicator: false,
-                stickyHeaderIndices: [0]
+                // stickyHeaderIndices: [0]
               }}
               //rootStyle={{backgroundColor: colors.quaternary + '10'}}
-              snapPoint={350}
-              //adjustToContentHeight={true}
+              //snapPoint={350}
+              adjustToContentHeight={true}
               handleStyle={{
                 backgroundColor: colors.primary + '00',
                 height: 170, 
                 width: '100%',
-                zIndex: 1,
+                zIndex: 100,
               }}
+              HeaderComponent={renderFooter()}
+              // modalStyle={{
+              //   zIndex: 10,
+              //   marginBottom: 80,
+              //   marginTop: 80
+              // }}
               handlePosition='inside'
-            >
+            >              
               {renderContent()}
             </Modalize>  
-        
+            
+            
 
+        
+            
         
 
         <TabSectionList
@@ -338,6 +374,8 @@ const styles = StyleSheet.create({
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,
       bottom: 0,
+      height: '120%',
+      top: '-30%'
       // borderWidth: 1.5,
       // borderColor: colors.quaternary
   },
@@ -350,14 +388,67 @@ const styles = StyleSheet.create({
   },
 
   modalHeader: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
+    width: '100%',
     backgroundColor: colors.primary,
-    zIndex: 100,
-    borderRadius: 16,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+
+  modalFooter: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '15%',
+    backgroundColor: colors.white,
+    zIndex: 1,
+    borderTopColor: colors.primary,
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    gap: 20
   },
   
+  modalQuantityContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    color: colors.quaternary,
+    fontSize: fontSizes.l,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 24,
+    height: 40
+  },
+
+  modalFooterBuyButton: {
+    paddingVertical: 6,
+    zIndex: 1,
+    // paddingHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: colors.quaternary,
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
+
+  modalFooterBuyButtonText: {
+    color: colors.white,
+    fontSize: fontSizes.xl,
+    fontWeight: '700'
+  },
+
+  modalFooterBuyButtonTextPrice: {
+    color: colors.primary,
+    fontSize: fontSizes.sm,
+    fontWeight: '700'
+  },
+
   modalImage: {
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
@@ -366,8 +457,6 @@ const styles = StyleSheet.create({
   modalInfo: {
     width: '100%',
     backgroundColor: colors.primary,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
   },
   
   modalSection: {
@@ -408,7 +497,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.s,
     fontWeight: '400',
     marginVertical: 16,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
 
   modalSubTitle: {
