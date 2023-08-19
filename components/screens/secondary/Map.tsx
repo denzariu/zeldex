@@ -1,18 +1,31 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { PROVIDER_GOOGLE} from 'react-native-maps'
 
-const Map = () => {
+// enableLatestRenderer();
+
+type MapProps = {
+  route: any,
+  navigation: any
+}
+
+const Map = ({ route, navigation } : MapProps) => {
+  
+  const { locationProp } = route.params;
+
+  console.log(locationProp)
   return (
+    
+    // <Text>{locationProp?.longitude}</Text>
     <MapView
        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
        style={styles.map}
-      //  region={{
-      //    latitude: 37.78825,
-      //    longitude: -122.4324,
-      //    latitudeDelta: 0.015,
-      //    longitudeDelta: 0.0121,
-      //  }}
+       region={{
+         latitude: locationProp.latitude,
+         longitude: locationProp.longitude,
+         latitudeDelta: 0.008,
+         longitudeDelta: 0.008,
+       }}
       scrollEnabled={true}
       liteMode={true}
      >

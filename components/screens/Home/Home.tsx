@@ -17,16 +17,47 @@ import { createTable, deleteTable, getDBConnection, getRestaurantItems, saveRest
 import { restaurantItem } from '../../../src/database/models';
 import CardLoader from '../../ui/loaders/CardLoader';
 import MiniCardLoader from '../../ui/loaders/MiniCardLoader';
-import MapView, { enableLatestRenderer } from 'react-native-maps';
-
+import { PERMISSIONS, check, request } from 'react-native-permissions';
+import Geolocation, { GeoCoordinates, GeoPosition } from 'react-native-geolocation-service';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const wait = (timeout : number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
-const Home = ({ navigation }) => {
+/* Make sure that the user has all needed permissions and then redirect to the Map */
+const requestLocationPermission = async () => {
+  
+  try {
+    const granted = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION, {
+          title: 'Geolocation Permission',
+          message: 'Can we access your location?',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+    })
+    .catch((error) => {
+      console.log('PERMISSION REQ ERR: ', error)
+      return false;
+    })
 
-  enableLatestRenderer();
+    if (granted == 'granted')
+      console.log('Permission GRANTED')
+      return true;
+
+    console.log('Permission NOT GRANTED')
+    return false;
+  }
+  catch (error) {
+    console.log('Permission Request Error: Geolocation (fine)', error)
+    return false;
+  }
+}
+
+const Home = () => {
+
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();  
 
   const [restaurants, setRestaurantItems] = useState<restaurantItem[]>([]);
   const [newRestaurant, setNewsetRestaurantItem] = useState('');
@@ -81,9 +112,30 @@ const Home = ({ navigation }) => {
     loadDataCallback();
   }, [loadDataCallback]);
   
-  const handleRedirectMap = () => {
-    navigation.navigate('Map')
-  }
+  const [location, setLocation] = useState<GeoCoordinates>();
+
+  const getLocation = () => {
+    const result = requestLocationPermission();
+    result.then(res => {
+      console.log('res is:', res);
+      if (res) {
+        Geolocation.getCurrentPosition(
+          (position) => {
+            console.log(position.coords);
+            setLocation(position.coords);
+            navigation.navigate('Map', {locationProp: position.coords})
+          },
+          (error) => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            setLocation(undefined);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+        );
+      }
+    });
+    console.log(location);
+  };  
 
   return (
     <ScrollView 
@@ -98,7 +150,7 @@ const Home = ({ navigation }) => {
       }
     >
       <View style={{paddingVertical: '4%', flex: 1, backgroundColor: colors.tertiary}}>
-        <TouchableOpacity style={{flex:1, alignItems: 'center'}} onPress={handleRedirectMap}>
+        <TouchableOpacity style={{flex:1, alignItems: 'center'}} onPress={getLocation}>
           <Text style={{color: colors.quaternary, textAlign: 'center', fontSize: fontSizes.l, fontWeight: '700'}}>TO MAP</Text>
         </TouchableOpacity>
       </View>
@@ -118,10 +170,12 @@ const Home = ({ navigation }) => {
           labelSize='xl'
           route={{
             name: 'HomeRestaurants',
-            params: {title: '🎁 Discount on the entire menu', 
-            restaurants: [...restaurants].filter((restaurant) => {
+            params: {
+              title: '🎁 Discount on the entire menu', 
+              restaurants: [...restaurants].filter((restaurant) => {
               return restaurant.menuDiscount !== '0';
-            })}
+              })
+            }
           }}
         />
 
