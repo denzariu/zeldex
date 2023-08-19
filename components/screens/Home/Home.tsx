@@ -17,12 +17,16 @@ import { createTable, deleteTable, getDBConnection, getRestaurantItems, saveRest
 import { restaurantItem } from '../../../src/database/models';
 import CardLoader from '../../ui/loaders/CardLoader';
 import MiniCardLoader from '../../ui/loaders/MiniCardLoader';
+import MapView, { enableLatestRenderer } from 'react-native-maps';
+
 
 const wait = (timeout : number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
 const Home = ({ navigation }) => {
+
+  enableLatestRenderer();
 
   const [restaurants, setRestaurantItems] = useState<restaurantItem[]>([]);
   const [newRestaurant, setNewsetRestaurantItem] = useState('');
@@ -37,7 +41,7 @@ const Home = ({ navigation }) => {
   }, []);
   
   const loadDataCallback = useCallback(async () => {
-    
+
     try {
     
       const initRestaurants: restaurantItem[] = [
@@ -77,6 +81,10 @@ const Home = ({ navigation }) => {
     loadDataCallback();
   }, [loadDataCallback]);
   
+  const handleRedirectMap = () => {
+    navigation.navigate('Map')
+  }
+
   return (
     <ScrollView 
       horizontal={false}
@@ -89,6 +97,12 @@ const Home = ({ navigation }) => {
         />
       }
     >
+      <View style={{paddingVertical: '4%', flex: 1, backgroundColor: colors.tertiary}}>
+        <TouchableOpacity style={{flex:1, alignItems: 'center'}} onPress={handleRedirectMap}>
+          <Text style={{color: colors.quaternary, textAlign: 'center', fontSize: fontSizes.l, fontWeight: '700'}}>TO MAP</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.pageContainer}>
         {/* <TouchableOpacity onPress={() => showRestaurants('DISCOUNTS')}>
           <Text style={styles.textArea}>🌙 Late Night Munchies</Text>

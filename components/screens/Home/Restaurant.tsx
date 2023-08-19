@@ -152,20 +152,30 @@ const HomeRestaurant = ({route, navigation} : any) => {
     }
   };
 
-  const [presses, setPresses] = useState<number>(0);
-  const handleAddToCart = () => {
-    console.log('testpress' + presses);
+  const [noItems, setNoItems] = useState<number>(0);
+  const handleDecrement = () => {
+    if (noItems > 0)
+      setNoItems(noItems - 1);
+  }
+  const handleIncrement = () => {
+    setNoItems(noItems + 1);
+  }
 
-    setPresses(presses+1)
+  const handleAddToCart = () => {
+    setNoItems(noItems + 1)
   }
 
   const renderFooter = () => (
     <View style={styles.modalFooter}>
       
       <View style={[styles.modalQuantityContainer, {flex: 0.33}]}>
-        <Text style={[{fontSize: fontSizes.xxxl, color: colors.quaternary}]}>–</Text>
-        <Text style={[{fontSize: fontSizes.l, color: colors.quaternary}]}>1</Text>
-        <Text style={[{fontSize: fontSizes.xxxl, color: colors.quaternary}]}>+</Text>
+        <TouchableOpacity style={{padding: 4}} onPress={handleDecrement}>
+          <Text style={[{fontSize: fontSizes.xxxl, color: colors.quaternary}]}>–</Text>
+        </TouchableOpacity>
+        <Text style={[{fontSize: fontSizes.xl, color: colors.quaternary}]}>{noItems}</Text>
+        <TouchableOpacity style={{padding: 4}} onPress={handleIncrement}>
+          <Text style={[{fontSize: fontSizes.xxxl, color: colors.quaternary}]}>+</Text>
+        </TouchableOpacity>
       </View>
       <TouchableOpacity
         style={[styles.modalFooterBuyButton, {flex: 0.66}]}
@@ -214,7 +224,6 @@ const HomeRestaurant = ({route, navigation} : any) => {
 
   return (
     <>
-
       <SafeAreaView style={styles.safeArea}>
         
         
@@ -423,7 +432,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     borderRadius: 24,
-    height: 40
+    height: 50
   },
 
   modalFooterBuyButton: {

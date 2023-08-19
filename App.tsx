@@ -37,6 +37,7 @@ import ProfileLanguage from './components/screens/secondary/ProfileLanguage';
 import ProfileCommunication from './components/screens/secondary/ProfileCommunication';
 import Restaurants from './components/screens/Home/Restaurants';
 import HomeRestaurant from './components/screens/Home/Restaurant';
+import Map from './components/screens/secondary/Map'
 
 import { HeaderBackButton, HeaderTitle, PlatformPressable } from '@react-navigation/elements'
 
@@ -410,6 +411,71 @@ function App(): JSX.Element {
                       pressOpacity={0}
                     />
               ),
+                
+
+                headerTintColor: colors.quaternary,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.xl,
+                },
+              })}
+            />
+
+            <Stack.Screen
+              name="Map"
+              component={Map}
+              options={ (navigation)=> ({
+                title: '',
+                statusBarColor: colors.primary,
+                statusBarStyle: 'dark',
+                headerShown: true,
+                headerTransparent: true,
+                headerBackVisible: false,
+                headerShadowVisible: false,
+                headerTitleAlign: 'center',
+
+                // headerStyle: {
+                //   backgroundColor: colors.primary,
+                // },
+
+              //   headerTitle: (title) => (
+              //       <HeaderTitle
+              //         {...title}
+              //         numberOfLines={1}
+              //         allowFontScaling={false} 
+              //         style={{
+              //           maxWidth: 200,
+              //           paddingVertical: 5, 
+              //           paddingHorizontal: 12, 
+              //           borderRadius: 12, 
+              //           backgroundColor: colors.primary, 
+              //           fontWeight: 'bold',
+              //           fontSize: fontSizes.m}}
+              //       >
+                      
+              //       </HeaderTitle>
+              //   ),
+              //   headerLeft: (props) => (
+              //       <HeaderBackButton
+              //         {...props}
+              //         onPress={() => navigation.navigation.goBack(null)}
+              //         //color={colors.quaternary}
+              //         style={{borderRadius: 48, backgroundColor: colors.primary}}
+              //         tintColor={colors.quaternary}
+              //       />
+              //   ),
+              //   //headerSearchBarOptions: {shouldShowHintSearchIcon:true},
+              //   headerRight: (props) => (
+              //     <HeaderBackButton
+              //         {...props}
+              //         onPress={shareData}
+              //         tintColor={colors.quaternary}
+              //         style={{borderRadius: 48, backgroundColor: colors.primary, transform: ([{rotate: '130deg'}]) }}
+              //         // //tintColor={colors.quaternary}
+              //         // pressColor={colors.quaternary}
+              //         pressOpacity={0}
+              //       />
+              // ),
                 
 
                 headerTintColor: colors.quaternary,
