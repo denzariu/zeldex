@@ -73,4 +73,5 @@ build.gradle*
 android/app/src/debug/AndroidManifest.xml
 android/app/src/main/AndroidManifest.xml
 
-components/ui/utils/secrets
+# API keys & secrets
+components/ui/utils/secrets.tsx

@@ -426,7 +426,7 @@ function App(): JSX.Element {
               component={Map}
               options={ (navigation)=> ({
                 title: '',
-                statusBarColor: colors.primary,
+                statusBarColor: colors.quaternary,
                 statusBarStyle: 'dark',
                 headerShown: true,
                 headerTransparent: true,

@@ -40,6 +40,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const loggedin: boolean = useSelector((state:any) => (state.userReducer.isAuthenticated));
   const phone: string = useSelector((state:any) => (state.userReducer.user.phone));
+  const user = useSelector((state:any) => (state.userReducer.user));
 
 
   const [loading, onLoading] = React.useState(true);
@@ -70,11 +71,12 @@ const Login = () => {
     }
     
     const userLoginData = {
-      firstName: textGivenName,
-      lastName: textName,
+      ...user,
+      // firstName: textGivenName,
+      // lastName: textName,
       countryCode: callingCode,
       phone: textPhone,
-      password: textPassword
+      // password: textPassword
     } as UserModel;
 
     dispatch(userSlice.actions.login(userLoginData))

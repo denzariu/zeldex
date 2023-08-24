@@ -1,8 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { Dictionary, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 // export const ON_LOGIN = 'ON_LOGIN';
 // export const ON_ERROR = 'ON_ERROR';
+
+
 
 export interface UserModel {
   firstName: string;
@@ -10,7 +12,12 @@ export interface UserModel {
   phone: string;
   email: string;
   countryCode: string;
-  password: string;
+  address: string,
+  coordinates: {
+    longitude: number | undefined,
+    latitude: number | undefined
+  },
+  password: string;  
 }
 
 // export interface LoginAction {

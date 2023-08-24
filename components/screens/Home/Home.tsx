@@ -21,6 +21,10 @@ import { PERMISSIONS, check, request } from 'react-native-permissions';
 import Geolocation, { GeoCoordinates, GeoPosition } from 'react-native-geolocation-service';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useDispatch, useSelector } from 'react-redux';
+import { userSlice } from '../../../src/redux/reducers';
+import { SvgXml } from 'react-native-svg';
+import { svgLocation } from '../../ui/images/svgs';
 
 const wait = (timeout : number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -57,11 +61,15 @@ const requestLocationPermission = async () => {
 
 const Home = () => {
 
+  const dispatch = useDispatch();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();  
 
   const [restaurants, setRestaurantItems] = useState<restaurantItem[]>([]);
   const [newRestaurant, setNewsetRestaurantItem] = useState('');
+  const [location, setLocation] = useState<GeoCoordinates>();
+  const address: string = useSelector((state:any) => (state.userReducer.user.address));
   const [refreshing, setRefreshing] = React.useState(false);
+
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -112,7 +120,6 @@ const Home = () => {
     loadDataCallback();
   }, [loadDataCallback]);
   
-  const [location, setLocation] = useState<GeoCoordinates>();
 
   const getLocation = () => {
     const result = requestLocationPermission();
@@ -140,6 +147,8 @@ const Home = () => {
   return (
     <ScrollView 
       horizontal={false}
+      stickyHeaderIndices={[0]}
+      stickyHeaderHiddenOnScroll={true}
       refreshControl={
         <RefreshControl 
           refreshing={refreshing} 
@@ -149,11 +158,12 @@ const Home = () => {
         />
       }
     >
-      <View style={{paddingVertical: '4%', flex: 1, backgroundColor: colors.tertiary}}>
-        <TouchableOpacity style={{flex:1, alignItems: 'center'}} onPress={getLocation}>
-          <Text style={{color: colors.quaternary, textAlign: 'center', fontSize: fontSizes.l, fontWeight: '700'}}>TO MAP</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity activeOpacity={0.75} onPress={getLocation} style={{paddingTop: 16, paddingBottom: 8, paddingHorizontal: 20, flex: 1, backgroundColor: colors.primary}}>
+        <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4}}>
+          <SvgXml xml={svgLocation} height={18} width={18}></SvgXml>
+          <Text numberOfLines={1} style={{color: colors.quaternary, textAlign: 'center', fontSize: fontSizes.m, fontWeight: '700'}}>{address? address : "Set Your Delivery Address"}</Text>
+        </View>
+      </TouchableOpacity>
 
       <View style={styles.pageContainer}>
         {/* <TouchableOpacity onPress={() => showRestaurants('DISCOUNTS')}>
@@ -316,9 +326,6 @@ export type Restaurant = {
   menuDiscount: string;
   image: ImageSourcePropType;
 }
-
-
-
 
 const styles = StyleSheet.create({
   pageContainer: {

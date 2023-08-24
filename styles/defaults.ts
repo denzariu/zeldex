@@ -1,4 +1,4 @@
-import normalize from 'react-native-responsive-fontsize'
+// import normalize from 'react-native-responsive-fontsize'
 
 export const colors = {
   white: '#fff',

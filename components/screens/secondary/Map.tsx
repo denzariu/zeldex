@@ -1,10 +1,12 @@
 import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, Animated as AnimatedMap, Region, Marker, MarkerAnimated } from 'react-native-maps'
-import { useAnimatedRegion } from '../../ui/components/useAnimatedRegion'
 import { colors, fontSizes } from '../../../styles/defaults'
-import { mapsApiKey } from '../../ui/utils/secrets'
+import { mapsApiKeyGeo } from '../../ui/utils/secrets'
 import Geocoder from 'react-native-geocoding'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { userSlice } from '../../../src/redux/reducers'
+import { useDispatch, useSelector } from 'react-redux'
 
 type MapProps = {
   route: any,
@@ -23,18 +25,20 @@ const ITEM_PREVIEW = 10;
 const ITEM_WIDTH = screen.width - 2 * ITEM_SPACING - 2 * ITEM_PREVIEW;
 const ITEM_PREVIEW_HEIGHT = 150;
 
-
+const MIDSCREEN_CENTER_POINT = screen.width / 2 - 4;
 
 const Map = ({ route, navigation } : MapProps) => {
   
-  Geocoder.init(mapsApiKey);
+  Geocoder.init(mapsApiKeyGeo);
+  const dispatch = useDispatch();
 
   const { locationProp } = route.params;
+  
   const [LATITUDE, setLATITUDE] = useState(locationProp.latitude);
   const [LONGITUDE, setLONGITUDE] = useState(locationProp.longitude);
-  const [fullAddress, setAddress] = useState('');
+  const fullAddressCached: string = useSelector((state:any) => (state.userReducer.user.address));
+  const [fullAddress, setAddress] = useState(fullAddressCached ? fullAddressCached : '');
   const marker = useRef<MarkerAnimated>(null);
-
   const [markersData, setMarkersData] = useState([
     {
       id: 0,
@@ -61,22 +65,13 @@ const Map = ({ route, navigation } : MapProps) => {
       latitude: LATITUDE,
       longitude: LONGITUDE
     }
-  })
-
-  console.log(locationProp)
+  })  
   
-  // const state = useAnimatedRegion({
-  //     latitude: locationProp.latitude,
-  //     longitude: locationProp.longitude,
-  //     latitudeDelta: LATITUDE_DELTA,
-  //     longitudeDelta: LONGITUDE_DELTA,
-  //   }, markersData)
-  
-  // const { markers, region, panY} = state;
-
-  // const onRegionChange = (_region : any) => {
-  //   region.setValue(_region);
-  // }
+  const onSelectLocation = () => {
+    dispatch(userSlice.actions.setUserCoordinates({longitude:LONGITUDE, latitude:LATITUDE}));
+    dispatch(userSlice.actions.setUserLocation(fullAddress));
+    navigation.goBack();
+  }
 
   const fetchLocation = async (coords : any) => {
     Geocoder.from(coords.latitude, coords.longitude)
@@ -93,13 +88,28 @@ const Map = ({ route, navigation } : MapProps) => {
     fetchLocation(coords)
   }
 
+
   return (
     <View style={{flex: 1}}>
+      
       <View style={styles.addressView}>
         <View style={styles.addressInput}>
           <Text style={styles.addressField}>{fullAddress}</Text>
         </View>
       </View>
+
+      <View style={{position: 'absolute', top: '50%', left: MIDSCREEN_CENTER_POINT, zIndex: 10, backgroundColor: colors.quaternary, padding: 3, borderRadius: 4, borderWidth: 1, borderColor: colors.primary}}></View>
+      
+      <View style={{position: 'absolute', flex: 1, bottom: 0, zIndex: 10, backgroundColor: colors.primary, width: '100%', paddingVertical: 12, borderTopLeftRadius: 16, borderTopRightRadius: 16}}>
+        <TouchableOpacity 
+            onPress={onSelectLocation}
+            activeOpacity={0.9}
+            style={{backgroundColor: colors.quaternary, marginHorizontal: 12, paddingVertical: 16, borderRadius: 8}}
+        >
+          <Text style={{textAlign: 'center', textAlignVertical: 'center', fontSize: fontSizes.l, fontWeight: '700', color: colors.white}}>Set location</Text>
+        </TouchableOpacity>
+      </View>
+
       <AnimatedMap
         provider={PROVIDER_GOOGLE} // remove if not using Google Maps
         style={styles.map}
@@ -122,7 +132,6 @@ const Map = ({ route, navigation } : MapProps) => {
           coordinate={markerUser.coordinate}
           // pinColor={'tan'}
           image={require('../../ui/images/marker.png')}
-          
         >
 
         </MarkerAnimated>
@@ -149,12 +158,12 @@ const styles = StyleSheet.create({
 
   addressView: {
     zIndex: 10,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.quaternary,
     // borderTopWidth: 0,
     // borderWidth: 2,
     // borderColor: colors.quaternary,
     paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingVertical: 16,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16
   },
@@ -173,10 +182,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     fontSize: fontSizes.m,
-    fontWeight: '500'
+    fontWeight: '500',
+    paddingHorizontal: 8
   }
  });
 
-function getInitialState() {
-  throw new Error('Function not implemented.')
-}
+

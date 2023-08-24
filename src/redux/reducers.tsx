@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { Dictionary, PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { UserModel } from "./actions";
 import { act } from "react-test-renderer";
 //import { ON_ERROR, ON_LOGIN, UserAction, UserModel } from "./actions";
@@ -15,8 +15,14 @@ const initialState = {
     phone: '',
     email: '',
     countryCode: '',
+    address: '',
+    coordinates: {
+      longitude: 0.0,
+      latitude: 0.0
+    },
     password: '' //Test purposes only
   } as UserModel,
+
   error: '' as string | undefined,
   isAuthenticated: false as boolean
 }
@@ -52,6 +58,12 @@ export const userSlice = createSlice({
     setEmail(state, action: PayloadAction<string>) {
       state.user.email = action.payload;
     },
+    setUserLocation(state, action: PayloadAction<string>) {
+      state.user.address = action.payload;
+    },
+    setUserCoordinates(state, action: PayloadAction<{longitude: number | undefined, latitude: number | undefined}>) {
+      state.user.coordinates = action.payload;
+    }
   }
 })
 
