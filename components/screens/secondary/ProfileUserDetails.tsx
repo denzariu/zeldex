@@ -4,7 +4,7 @@ import { useNavigationState } from '@react-navigation/native';
 import { colors, fontSizes } from '../../../styles/defaults';
 import { input } from '../../../styles/ui';
 import Input from '../../ui/components/Input';
-import { _retrieveDataOnStartup } from '../../../src/redux/fetcher';
+import { _retrieveDataOnStartup, cacheData, cacheUserDetails } from '../../../src/redux/fetcher';
 import { useDispatch, useSelector } from 'react-redux';
 import { userSlice } from '../../../src/redux/reducers';
 
@@ -28,19 +28,40 @@ const ProfileUserDetails = () => {
   const onChangeGivenName = (value: string) => {
     setGivenName(value)
     dispatch(userSlice.actions.setFirstName(value));
+    try {
+      cacheData('firstName', value);
+    } catch (e) {
+      console.log('Could not cache firstName: ', value);
+    }
   }
   const onChangeFamilyName = (value: string) => {
     setFamilyName(value)
     dispatch(userSlice.actions.setLastName(value));
+    try {
+      cacheData('lastName', value);
+    } catch (e) {
+      console.log('Could not cache lastName: ', value);
+    }
   }
   const onChangeEmail = (value: string) => {
     setEmail(value)
     dispatch(userSlice.actions.setEmail(value));
+    try {
+      cacheData('email', value);
+    } catch (e) {
+      console.log('Could not cache email: ', value);
+    }
   }
   const onChangePhone = (value: string) => {
     setPhone(value)
     dispatch(userSlice.actions.setPhone(value));
+    try {
+      cacheData('phone', value);
+    } catch (e) {
+      console.log('Could not cache phone: ', value);
+    }
   }
+
   useEffect(() => {
     setGivenName(givenNameState);
     setFamilyName(familyNameState);
@@ -63,7 +84,7 @@ const ProfileUserDetails = () => {
         onTextChange={onChangeGivenName}
         defaultValue={givenName}
         disabled={false}/>
-      <Input 
+      <Input
         keyboardType='default'
         autoComplete='family-name'
         upperText='Family name'

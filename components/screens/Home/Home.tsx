@@ -341,12 +341,13 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.xl,
     fontWeight: '700',
     color: colors.textBlack,
-    paddingVertical: 8,
+    paddingVertical: 12,
+    backgroundColor: colors.primary
   },
 
   cardInline: {
     gap: 8,
-    paddingLeft: 16
+    paddingLeft: 20
   },
 
   spotlightContainer: {
@@ -357,7 +358,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.quaternary,
     marginHorizontal: 20,
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 12,
     //paddingHorizontal: 16,
     borderRadius: 8,
   },

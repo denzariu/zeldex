@@ -148,10 +148,10 @@ export const card = StyleSheet.create({
     top: 16,
     left: 8,
     color: colors.quaternary,
-    fontWeight: '900',
-    fontSize: fontSizes.ml,
+    fontWeight: '700',
+    fontSize: fontSizes.sm,
     backgroundColor: colors.primary,
-    borderRadius: 12,
+    borderRadius: 4,
     paddingHorizontal: 8,
     paddingVertical: 2,
   }
@@ -172,6 +172,7 @@ export const minicard = StyleSheet.create({
   cardImageContainer: {
     height: 126,
     backgroundColor: colors.primary,
+    marginTop: 8,
     padding: 4,
     display: "flex",
     flexDirection: "column",
@@ -202,7 +203,7 @@ export const minicard = StyleSheet.create({
     color: colors.textBlack,
     fontWeight: '700',
     fontSize: fontSizes.m,
-    paddingRight: 4,
+    paddingRight: 6,
     paddingLeft: 4
   },
 
@@ -214,7 +215,6 @@ export const minicard = StyleSheet.create({
     paddingRight: 4
   },
 
-  
   cardStar: {
     paddingRight: 4,
   },
@@ -256,9 +256,9 @@ export const minicard = StyleSheet.create({
     left: 6,
     color: colors.quaternary,
     fontWeight: '800',
-    fontSize: fontSizes.s,
+    fontSize: fontSizes.ultras,
     backgroundColor: colors.primary,
-    borderRadius: 12,
+    borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 2
   }

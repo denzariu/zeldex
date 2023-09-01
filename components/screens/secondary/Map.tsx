@@ -7,6 +7,7 @@ import Geocoder from 'react-native-geocoding'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { userSlice } from '../../../src/redux/reducers'
 import { useDispatch, useSelector } from 'react-redux'
+import { cacheData } from '../../../src/redux/fetcher'
 
 type MapProps = {
   route: any,
@@ -38,7 +39,7 @@ const Map = ({ route, navigation } : MapProps) => {
   const [LONGITUDE, setLONGITUDE] = useState(locationProp.longitude);
   const fullAddressCached: string = useSelector((state:any) => (state.userReducer.user.address));
   const [fullAddress, setAddress] = useState(fullAddressCached ? fullAddressCached : '');
-  const marker = useRef<MarkerAnimated>(null);
+  const marker = useRef<any>(null); // | MarkerAnimated unresolved type 
   const [markersData, setMarkersData] = useState([
     {
       id: 0,
@@ -70,6 +71,11 @@ const Map = ({ route, navigation } : MapProps) => {
   const onSelectLocation = () => {
     dispatch(userSlice.actions.setUserCoordinates({longitude:LONGITUDE, latitude:LATITUDE}));
     dispatch(userSlice.actions.setUserLocation(fullAddress));
+    try {
+      cacheData('address', fullAddress);
+    } catch (e) {
+      console.log('Could not cache address: ', fullAddress);
+    }
     navigation.goBack();
   }
 

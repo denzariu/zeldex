@@ -1,7 +1,8 @@
 import { enablePromise, openDatabase, SQLiteDatabase } from 'react-native-sqlite-storage';
-import { restaurantItem } from './models';
+import { foodItem, restaurantItem } from './models';
 
-const tableName = 'restaurantData';
+const restaurantTableName = 'restaurantData';
+const foodItemsTableName = 'foodItemData';
 
 enablePromise(true);
 
@@ -9,9 +10,12 @@ export const getDBConnection = async () => {
   return openDatabase({ name: 'restaurant-data.db', location: 'default' });
 };
 
+
+// Restaurants Section //
+
 export const createTable = async (db: SQLiteDatabase) => {
   // create table if not exists
-  const query = `CREATE TABLE IF NOT EXISTS ${tableName}(
+  const query = `CREATE TABLE IF NOT EXISTS ${restaurantTableName}(
         name TEXT NOT NULL,
         rating TEXT NOT NULL,
         price_delivery TEXT NOT NULL,
@@ -26,7 +30,7 @@ export const createTable = async (db: SQLiteDatabase) => {
 export const getRestaurantItems = async (db: SQLiteDatabase): Promise<restaurantItem[]> => {
   try {
     const restaurantItems: restaurantItem[] = [];
-    const results = await db.executeSql(`SELECT rowid as id, name, rating, price_delivery as priceDelivery, price_delivery_usual as priceDeliveryUsual, menu_discount as menuDiscount, image FROM ${tableName}`);
+    const results = await db.executeSql(`SELECT rowid as id, name, rating, price_delivery as priceDelivery, price_delivery_usual as priceDeliveryUsual, menu_discount as menuDiscount, image FROM ${restaurantTableName}`);
     results.forEach(result => {
       for (let index = 0; index < result.rows.length; index++) {
         restaurantItems.push(result.rows.item(index))
@@ -42,7 +46,7 @@ export const getRestaurantItems = async (db: SQLiteDatabase): Promise<restaurant
 export const saveRestaurantItems = async (db: SQLiteDatabase, restaurantItems: restaurantItem[]) => {
   try{
     const insertQuery =
-    `INSERT OR REPLACE INTO ${tableName}(rowid, name, rating, price_delivery, price_delivery_usual, menu_discount, image) values` +
+    `INSERT OR REPLACE INTO ${restaurantTableName}(rowid, name, rating, price_delivery, price_delivery_usual, menu_discount, image) values` +
     restaurantItems.map(i => `(${i.id}, '${i.name}', '${i.rating}', '${i.priceDelivery}', '${i.priceDeliveryUsual}', '${i.menuDiscount}', '${i.image}')`).join(',');
     return db.executeSql(insertQuery);
 
@@ -53,12 +57,52 @@ export const saveRestaurantItems = async (db: SQLiteDatabase, restaurantItems: r
 };
 
 export const deleteRestaurantItem = async (db: SQLiteDatabase, id: number) => {
-  const deleteQuery = `DELETE from ${tableName} where rowid = ${id}`;
+  const deleteQuery = `DELETE from ${restaurantTableName} where rowid = ${id}`;
   await db.executeSql(deleteQuery);
 };
 
 export const deleteTable = async (db: SQLiteDatabase) => {
-  const query = `drop table ${tableName}`;
+  const query = `drop table ${restaurantTableName}`;
 
   await db.executeSql(query);
+};
+
+
+// Restaurant Food Items Section //
+
+export const createFoodItemTable = async (db: SQLiteDatabase) => {
+  // create table if not exists
+  const query = `CREATE TABLE IF NOT EXISTS ${foodItemsTableName}(
+        restaurant_id INT NOT NULL
+        category_id INTEGER NOT NULL
+        name TEXT NOT NULL,
+        price INTEGER NOT NULL,
+        description TEXT NOT NULL,
+        discount INTEGER NOT NULL,
+        image TEXT NOT NULL,
+        popular BOOLEAN NOT NULL CHECK (popular IN (0, 1)),
+        available BOOLEAN NOT NULL CHECK (available IN (0, 1))
+    );`;
+
+  await db.executeSql(query);
+};
+
+export const getFoodItemsByRestaurantId = async (db: SQLiteDatabase, restaurantId: number): Promise<foodItem[]> => {
+  try {
+    const foodItems: foodItem[] = [];
+    const results = await db.executeSql(`
+        SELECT rowid as id, restaurant_id as restaurantId, category_id as categoryId, name, price, description, discount, image, popular, available
+        FROM ${foodItemsTableName}
+        WHERE restaurantId = ${restaurantId}
+    `);
+    results.forEach(result => {
+      for (let index = 0; index < result.rows.length; index++) {
+        foodItems.push(result.rows.item(index))
+      }
+    });
+    return foodItems;
+  } catch (error) {
+    console.error(error);
+    throw Error(`Failed to get foodItems for restaurant ${restaurantId} !!!`);
+  }
 };
