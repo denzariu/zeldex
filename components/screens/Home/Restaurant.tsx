@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -26,6 +26,13 @@ import { HeaderTitle } from '@react-navigation/elements'
 import { starXml, svgClose, svgDiscount } from '../../ui/images/svgs';
 import { Modalize } from 'react-native-modalize';
 import { Button } from '@material-ui/core';
+import { useDispatch, useStore } from 'react-redux';
+import { userSlice } from '../../../src/redux/reducers';
+import { CartModel } from '../../../src/redux/actions';
+import { store } from '../../../src/redux/store';
+import { foodItem } from '../../../src/database/models';
+import { cacheData } from '../../../src/redux/fetcher';
+import { getDBConnection, getFoodItemsByRestaurantId } from '../../../src/database/db-service';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -33,65 +40,31 @@ declare const global: {HermesInternal: null | {}};
 
 const HomeRestaurant = ({route, navigation} : any) => {
 
+  const dispatch = useDispatch();
 
   const { restaurant } = route.params;
 
   const [SECTIONS, setSECTIONS] = useState([
     {
       title: 'Burgers',
-      data: Array(5)
-        .fill(0)
-        .map(_ => ({
-          title: faker.commerce.productName(),
-          description: faker.lorem.lines(2),
-          price: faker.commerce.price({ min: 1035, max: 6500, dec: 2}),
-          picture: faker.image.urlLoremFlickr({ category: 'burger', width: 400, height: 200})
-        }))
+      data: {} as foodItem[]
     },
     {
       title: 'Pizza',
-      data: Array(5)
-        .fill(0)
-        .map(_ => ({
-          title: faker.commerce.productName(),
-          description: faker.lorem.lines(1),
-          price: faker.commerce.price({ min: 2500, max: 5500, dec: 2}),
-          picture: faker.image.urlLoremFlickr({ category: 'pizza', width: 400, height: 200})
-        }))
+      data: {} as foodItem[]
     },
     {
       title: 'Sushi and rolls',
-      data: Array(5)
-        .fill(0)
-        .map(_ => ({
-          title: faker.commerce.productName(),
-          description: faker.lorem.lines(3),
-          price: faker.commerce.price({ min: 800, max: 2600, dec: 2}),
-          picture: faker.image.urlLoremFlickr({ category: 'sushi', width: 400, height: 200})
-        }))
+      data: {} as foodItem[]
     },
     {
       title: 'Salads',
-      data: Array(5)
-        .fill(0)
-        .map(_ => ({
-          title: faker.commerce.productName(),
-          description: faker.lorem.lines(2),
-          price: faker.commerce.price({ min: 1600, max: 3500, dec: 2}),
-          picture: faker.image.urlLoremFlickr({ category: 'salad', width: 400, height: 200})
-        }))
+      data: {} as foodItem[]
     },
     {
       title: 'Dessert',
-      data: Array(5)
-        .fill(0)
-        .map(_ => ({
-          title: faker.commerce.productName(),
-          description: faker.lorem.lines(2),
-          price: faker.commerce.price({ min: 800, max: 2800, dec: 2}),
-          picture: faker.image.urlLoremFlickr({ category: 'dessert', width: 400, height: 200})
-        }))
-    }
+      data: {} as foodItem[]
+    },
   ]);
 
   useEffect (() => {
@@ -120,19 +93,61 @@ const HomeRestaurant = ({route, navigation} : any) => {
   });
 
   // This state would determine if the drawer sheet is visible or not
-  const [foodItem, setCurrentFoodItem] = useState<itemType>({title:'', description: '', price: 0, picture: ''});
+  const [foodItem, setCurrentFoodItem] = useState<foodItem>({
+    id: 0,
+    restaurantId: restaurant.id,
+    categoryId: 0,
+    name: '',
+    price: 0,
+    description: '',
+    discount: 0,
+    image: '',
+    popular: 0,
+    available: 0,
+  });
   const modalizeRef = useRef<Modalize>(null);
 
-  // Function to open the bottom sheet for the 'title' product
-  /// TODO: modify from 'any' to real data typeof
-  type itemType = {
-    title: string,
-    description: string,
-    price: number,
-    picture: string,
-  }
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const handleOpenBottomSheet = (item : itemType) => {
+  // Load the food items of a restaurant
+  const loadData = useCallback( async () => {
+    const db = await getDBConnection();
+    const items: foodItem[] = await getFoodItemsByRestaurantId(db, restaurant.id);
+    const sections: Array<{title: string, data: Array<foodItem>}> = [];
+
+    items.map((item: foodItem) => {
+      const {categoryId} = item;
+      // group[categoryId] = group[categoryId] ?? [];
+      // group[categoryId].push(item);
+      
+      let categoryExists = false; 
+      sections.forEach((element: {title: string, data: Array<foodItem>}) => {
+        if (element.title == categoryId.toString()) {
+          element.data.push(item);
+          categoryExists = true;
+        }
+      });
+
+      if (!categoryExists)
+        sections.push({title: categoryId.toString(), data: [item]});
+        
+      
+    }, {});
+    
+    console.log('sections', sections);
+    setSECTIONS(sections);
+    setLoading(false);
+
+  }, [restaurant]); 
+
+  useEffect(() => {
+    setLoading(true);
+    loadData();
+  }, [loadData])
+
+  // Function to open the bottom sheet for the 'title' product
+
+  const handleOpenBottomSheet = (item : foodItem) => {
     setCurrentFoodItem(item)
     //setIsBottomSheetOpen(true);
     try {
@@ -162,7 +177,34 @@ const HomeRestaurant = ({route, navigation} : any) => {
   }
 
   const handleAddToCart = () => {
-    setNoItems(noItems + 1)
+    // console.log('Check if this gets triggered when there is no press.'); // Test
+    
+    let noItemsToAdd = noItems;
+
+    if (store.getState().userReducer.cart.restaurantId != restaurant.id) {
+      dispatch(userSlice.actions.setCart({
+        restaurantId: restaurant.id,
+        restaurantName: restaurant.name,
+        items: []
+      } as CartModel));
+      cacheData('cartRestaurantId', restaurant.id.toString());
+      cacheData('cartRestaurantName', restaurant.name);
+    }
+    
+    // Cache number of items in cart and then each item as {'cartItem' + index} => id 
+    const itemsInCart = store.getState().userReducer.cart.items.length;
+    // console.log('ITEMS IN CART (BEFORE CACHING): ', itemsInCart)
+    // console.log('ITEMS TO ADD (BEFORE CACHING): ', noItemsToAdd)
+
+    while (noItemsToAdd) {
+      dispatch(userSlice.actions.appendCart(foodItem));
+      cacheData('cartItem' + (itemsInCart + noItemsToAdd).toString(), foodItem.id.toString())
+      // console.log('CACHED ----- POS: ', (itemsInCart + noItemsToAdd), ' --- ', foodItem.id);
+      noItemsToAdd = noItemsToAdd - 1;
+    }
+    cacheData('cartNoItems', (itemsInCart + noItems).toString());
+
+    setNoItems(0);
   }
 
   const renderFooter = () => (
@@ -202,10 +244,10 @@ const HomeRestaurant = ({route, navigation} : any) => {
       <View style={styles.modalHeader}>
         <View style={styles.modalSection}>
           <Animated.Image
-            source={{uri: foodItem.picture}}
+            source={{uri: foodItem.image}}
             style={[styles.modalImage, styles.coverPhoto]}
           />
-          <Text style={styles.modalTitle}>{foodItem.title}</Text>
+          <Text style={styles.modalTitle}>{foodItem.name}</Text>
           <Text style={styles.modalPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(foodItem.price / 100).toLowerCase()}</Text>
           <Text style={styles.modalDescription}>{foodItem.description}</Text>
         </View>
@@ -222,6 +264,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
     </View>,
   ]
 
+  if (!loading)
   return (
     <>
       <SafeAreaView style={styles.safeArea}>
@@ -264,7 +307,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
           contentInsetAdjustmentBehavior='automatic'
           style={styles.sectionList}
           sections={SECTIONS || []}
-          keyExtractor={(item) => item.title}
+          keyExtractor={(item) => item.id}
           stickySectionHeadersEnabled={false}
           scrollToLocationOffset={5}
           tabBarStyle={[styles.tabBar, {opacity: tabBarOpacity}]}
@@ -334,12 +377,12 @@ const HomeRestaurant = ({route, navigation} : any) => {
             return <TouchableOpacity onPress={ ()  => { handleOpenBottomSheet(item) }} style={styles.itemContainer}>
                       <View style={styles.itemRow}>
                         <View style={styles.itemColumn}>
-                          <Text style={styles.itemTitle}>{item.title}</Text>
+                          <Text style={styles.itemTitle}>{item.name}</Text>
                           <Text style={styles.itemDescription} numberOfLines={2}>{item.description}</Text>
                           <Text style={styles.itemPrice}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(item.price / 100).toLowerCase()}</Text>  
                         </View>
                         <Image
-                          source={{uri: item.picture}}
+                          source={{uri: item.image}}
                           style={styles.itemImage}/>
                         </View>
                     </TouchableOpacity>
@@ -656,7 +699,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 1.25,
     shadowRadius: 3.84,
     elevation: 5,
     height: 80,

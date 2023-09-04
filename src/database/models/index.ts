@@ -18,6 +18,6 @@ export type foodItem = {
   description: string;
   discount: number;
   image: string;
-  popular: boolean;
-  available: boolean;
+  popular: number;
+  available: number;
 }

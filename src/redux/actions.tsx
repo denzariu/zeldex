@@ -1,5 +1,6 @@
 import { Dictionary, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { foodItem } from "../database/models";
 
 // export const ON_LOGIN = 'ON_LOGIN';
 // export const ON_ERROR = 'ON_ERROR';
@@ -18,6 +19,12 @@ export interface UserModel {
     latitude: number | undefined
   },
   password: string;  
+}
+
+export interface CartModel {
+  restaurantName: string,
+  restaurantId: number,
+  items: Array<foodItem>,
 }
 
 // export interface LoginAction {

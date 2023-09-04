@@ -1,63 +1,108 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { foodItem } from '../src/database/models'
-import { getDBConnection, getFoodItemsByRestaurantId } from '../src/database/db-service'
+import { foodItem, restaurantItem } from '../src/database/models'
+import { getDBConnection, getFoodItemsByRestaurantId, getRestaurantById } from '../src/database/db-service'
+import { colors, fontSizes } from '../styles/defaults'
+import { useSelector, useStore } from 'react-redux'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { useNavigation } from '@react-navigation/native'
 
-type CartProps = {
-  restaurantId: number,
-  itemsId: Array<number>
-}
-
-const Cart = ({restaurantId, itemsId}: CartProps) => {
+const Cart = () => {
+  const navigator = useNavigation();
+  const restaurantName: string = useSelector((state:any) => (state.userReducer.cart.restaurantName));
+  const restaurantId: number = useSelector((state:any) => (state.userReducer.cart.restaurantId));
+  const items: Array<foodItem> = useSelector((state:any) => (state.userReducer.cart.items));
+  const cachingComplete: number = useSelector((state:any) => (state.userReducer.cachingComplete));
   
-  const [items, setItems] = useState(null)
-
-  const loadDataCallback = useCallback(async () => {
-
+  const [restaurant, setRestaurant] = useState<restaurantItem>();
+  const [sum, setSum] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(true)
+  
+  const loadRestaurant = useCallback(async () => {
     try {
-    
-      const testCart: foodItem[] = [
-        {id: 0, restaurantId: restaurantId, categoryId: 0, name: 'Pizza Triforce', price: 31, description: 'MMM GOOD PIZZA', discount: 0, image: '', popular: false, available: true},
-        {id: 1, restaurantId: restaurantId, categoryId: 0, name: 'Pizza Nomnomo', price: 30, description: 'MMM GOOD PIZZA', discount: 0, image: '', popular: false, available: true},
-        {id: 2, restaurantId: restaurantId, categoryId: 0, name: 'Pizza Alcalia', price: 25, description: 'MMM GOOD PIZZA', discount: 0, image: '', popular: false, available: true}
-      ]
-      // // const initRestaurants: restaurantItem[] = [
-      // // ]
-      // const db = await getDBConnection();
-      
-      // // Test only
-      // //await deleteTable(db);
-      // console.info("Callback for data renewal");
+      const db = await getDBConnection();
+      console.info("Callback for restaurant data.");
+      await getRestaurantById(db, restaurantId).then((result) => {
+        console.log("Restaurant set: ", result)
+        setRestaurant(result);
+        setLoading(false);
+      });
 
-      // await getFoodItemsByRestaurantId(db, restaurantId);
-      // //await deleteTable(db);
-      
-      // if(initRestaurants.length) { 
-      //   const storedRestaurantItems = await getRestaurantItems(db);
-      //   if (storedRestaurantItems.length) {
-      //     setRestaurantItems(storedRestaurantItems);
-      //   } else {
-      //     await saveRestaurantItems(db, initRestaurants);
-      //     setRestaurantItems(initRestaurants);
-      //   }
-      // }
     } catch (error) {
       console.error(error);
       console.log(':(');
+      setRestaurant(undefined);
     }
   }, []);
 
+  useEffect(() => {
+    // console.log("Loading...");
+    setLoading(true)
+    // console.log('i: ', items);
+    loadRestaurant();
+    // console.log("Loaded");
+  }, [])
+
+  const handleRedirectToRestaurant = () => {
+    console.log('Loading: ', loading);
+    if (!loading)
+      navigator.navigate('HomeRestaurant', {restaurant: restaurant})
+  }
+
   useEffect (() => {
-    
-  }, [restaurantId, itemsId])
-  
-  // return (
-  //   <View>
-  //     <Text>Cart</Text>
-  //   </View>
-  // )
+    // console.log("Items: ", items);
+    // console.log("itemsno: ", items.length);
+
+    const newSum = items.reduce((accumulator, currentValue) => {
+      return accumulator + (currentValue?.price ?? 0)
+    }, 0) ?? 0
+
+    setSum(newSum);
+
+    // console.log("Cart sum: ", sum);
+  }, [[], items.length])
+
+
+  if (cachingComplete && items.length)
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity activeOpacity={0.75} style={styles.textContainer} onPress={handleRedirectToRestaurant}>
+          <Text style={styles.text} numberOfLines={1}>{restaurantName}</Text>
+          <Text style={styles.subtext}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(sum / 100).toLowerCase()}</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  return <></>
 }
 
 export default Cart
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    backgroundColor: colors.primary,
+    
+  },
+
+  textContainer: {
+    paddingVertical: 8,
+    backgroundColor: colors.quaternary,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 48,
+    alignItems: 'center'
+  },
+
+  text: {
+    fontSize: fontSizes.xl,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+
+  subtext: {
+    fontSize: fontSizes.ml,
+    fontWeight: '300',
+    color: colors.primary,
+  }
+})

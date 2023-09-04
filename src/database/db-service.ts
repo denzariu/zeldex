@@ -27,6 +27,22 @@ export const createTable = async (db: SQLiteDatabase) => {
   await db.executeSql(query);
 };
 
+
+export const getRestaurantById = async (db: SQLiteDatabase, restaurantId: number): Promise<restaurantItem> => {
+  try {
+    const result = await db.executeSql(`
+        SELECT rowid as id, name, rating, price_delivery as priceDelivery, price_delivery_usual as priceDeliveryUsual, menu_discount as menuDiscount, image 
+        FROM ${restaurantTableName}
+        WHERE id = ${restaurantId}     
+    `);
+    console.log(result[0].rows.item(0))
+    return result[0].rows.item(0);
+  } catch (error) {
+    console.error(error);
+    throw Error(`Failed to get restaurantItem no ${restaurantId} !!!`);
+  }
+}
+
 export const getRestaurantItems = async (db: SQLiteDatabase): Promise<restaurantItem[]> => {
   try {
     const restaurantItems: restaurantItem[] = [];
@@ -72,20 +88,49 @@ export const deleteTable = async (db: SQLiteDatabase) => {
 
 export const createFoodItemTable = async (db: SQLiteDatabase) => {
   // create table if not exists
+  // removed CHECK (popular IN (0, 1)) for now, TODO: fix Check failing
   const query = `CREATE TABLE IF NOT EXISTS ${foodItemsTableName}(
-        restaurant_id INT NOT NULL
-        category_id INTEGER NOT NULL
+        restaurant_id INT NOT NULL,
+        category_id INTEGER NOT NULL,
         name TEXT NOT NULL,
         price INTEGER NOT NULL,
         description TEXT NOT NULL,
         discount INTEGER NOT NULL,
         image TEXT NOT NULL,
-        popular BOOLEAN NOT NULL CHECK (popular IN (0, 1)),
-        available BOOLEAN NOT NULL CHECK (available IN (0, 1))
+        popular INTEGER NOT NULL,
+        available INTEGER NOT NULL
     );`;
 
   await db.executeSql(query);
 };
+
+export const setFoodItems = async (db: SQLiteDatabase, foodItems: foodItem[]) => {
+  try{
+    const insertQuery =
+    `INSERT OR REPLACE INTO ${foodItemsTableName}(rowid, restaurant_id, category_id, name, price, description, discount, image, popular, available) values` +
+    foodItems.map(i => `(${i.id}, '${i.restaurantId}', '${i.categoryId}', '${i.name}', '${i.price}', '${i.description}', '${i.discount}', '${i.image}', '${i.popular}', '${i.available}')`).join(',');
+    return db.executeSql(insertQuery);
+
+  } catch (error) {
+    console.log(error);
+    throw Error('Failed to insert foodItems !!!');
+  }
+};
+
+export const getFoodItemById = async (db: SQLiteDatabase, restaurantId: number, itemId: number): Promise<foodItem> => {
+  try {
+    const result = await db.executeSql(`
+        SELECT rowid as id, restaurant_id as restaurantId, category_id as categoryId, name, price, description, discount, image, popular, available
+        FROM ${foodItemsTableName}
+        WHERE id = ${itemId} AND restaurantId = ${restaurantId}
+    `);
+    console.log(result[0].rows.item(0))
+    return result[0].rows.item(0);
+  } catch (error) {
+    console.error(error);
+    throw Error(`Failed to get foodItem no ${itemId} in restaurant no ${restaurantId} !!!`);
+  }
+}
 
 export const getFoodItemsByRestaurantId = async (db: SQLiteDatabase, restaurantId: number): Promise<foodItem[]> => {
   try {
@@ -105,4 +150,10 @@ export const getFoodItemsByRestaurantId = async (db: SQLiteDatabase, restaurantI
     console.error(error);
     throw Error(`Failed to get foodItems for restaurant ${restaurantId} !!!`);
   }
+};
+
+export const deleteFoodItemsTable = async (db: SQLiteDatabase) => {
+  const query = `drop table ${foodItemsTableName}`;
+
+  await db.executeSql(query);
 };

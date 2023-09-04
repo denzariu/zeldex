@@ -13,18 +13,19 @@ import { colors, fontSizes } from '../../../styles/defaults';
 import Restaurants from './Restaurants';
 import Card from '../../ui/components/Card';
 import LabelArrow from '../../ui/components/LabelArrow';
-import { createTable, deleteTable, getDBConnection, getRestaurantItems, saveRestaurantItems } from '../../../src/database/db-service';
-import { restaurantItem } from '../../../src/database/models';
+import { createFoodItemTable, createTable, deleteFoodItemsTable, deleteTable, getDBConnection, getFoodItemsByRestaurantId, getRestaurantItems, saveRestaurantItems, setFoodItems } from '../../../src/database/db-service';
+import { foodItem, restaurantItem } from '../../../src/database/models';
 import CardLoader from '../../ui/loaders/CardLoader';
 import MiniCardLoader from '../../ui/loaders/MiniCardLoader';
 import { PERMISSIONS, check, request } from 'react-native-permissions';
 import Geolocation, { GeoCoordinates, GeoPosition } from 'react-native-geolocation-service';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import { userSlice } from '../../../src/redux/reducers';
 import { SvgXml } from 'react-native-svg';
 import { svgLocation } from '../../ui/images/svgs';
+import { faker } from '@faker-js/faker';
 
 const wait = (timeout : number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -46,10 +47,10 @@ const requestLocationPermission = async () => {
       return false;
     })
 
-    if (granted == 'granted')
+    if (granted == 'granted') {
       console.log('Permission GRANTED')
       return true;
-
+    }
     console.log('Permission NOT GRANTED')
     return false;
   }
@@ -90,10 +91,100 @@ const Home = () => {
         {id: 3, name:'Circus Pub', rating:'4.6', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'0', image: 'https://i.imgur.com/KnuLgDK.png'},
         {id: 4, name:'Shoteria - Statie de test test test testi t t ', rating:'4.2', priceDelivery:'3,49', priceDeliveryUsual:'3,49', menuDiscount:'40', image: 'https://i.imgur.com/RdY0gsz.png'},
       ]
-      // const initRestaurants: restaurantItem[] = [
-      // ]
+
       const db = await getDBConnection();
       
+      //await deleteFoodItemsTable(db);
+      await createFoodItemTable(db);
+
+      // Test data init only - exclusive to Debug Version
+      initRestaurants.forEach( async (restaurant) => {
+        const foodItems = await getFoodItemsByRestaurantId(db, restaurant.id);
+        // Add mock data if not already added
+        if (!foodItems.length) {
+          let index = 25 * restaurant.id; // for each restaurant we are adding 25 mock data items
+          const itemsToAdd: Array<foodItem[]> = [
+                                Array(5)
+                                  .fill(0)
+                                  .map((_, i) => ({
+                                    id: index + i,
+                                    restaurantId: restaurant.id,
+                                    categoryId: 91,
+                                    name: faker.commerce.productName(),
+                                    price: Number(faker.commerce.price({ min: 1035, max: 6500, dec: 2})),
+                                    description: faker.lorem.lines(2),
+                                    discount: Number(restaurant.menuDiscount),
+                                    image: faker.image.urlLoremFlickr({ category: 'burger', width: 400, height: 200}),
+                                    popular: 0,
+                                    available: 1,
+                                  } as foodItem)),
+                                Array(5)
+                                  .fill(0)
+                                  .map((_, i) => ({
+                                    id: index + i + 5,
+                                    restaurantId: restaurant.id,
+                                    categoryId: 1,
+                                    name: faker.commerce.productName(),
+                                    price: Number(faker.commerce.price({ min: 2500, max: 5500, dec: 2})),
+                                    description: faker.lorem.lines(1),
+                                    discount: Number(restaurant.menuDiscount),
+                                    image: faker.image.urlLoremFlickr({ category: 'pizza', width: 400, height: 200}),
+                                    popular: 1,
+                                    available: 1,
+                                  } as foodItem)),
+                                Array(5)
+                                  .fill(0)
+                                  .map((_, i) => ({
+                                    id: index + i + 10,
+                                    restaurantId: restaurant.id,
+                                    categoryId: 0,
+                                    name: faker.commerce.productName(),
+                                    price: Number(faker.commerce.price({ min: 800, max: 2600, dec: 2})),
+                                    description: faker.lorem.lines(3),
+                                    discount: Number(restaurant.menuDiscount),
+                                    image: faker.image.urlLoremFlickr({ category: 'sushi', width: 400, height: 200}),
+                                    popular: 1,
+                                    available: 0,
+                                  } as foodItem)),
+                                Array(5)
+                                  .fill(0)
+                                  .map((_, i) => ({
+                                    id: index + i + 15,
+                                    restaurantId: restaurant.id,
+                                    categoryId: 0,
+                                    name: faker.commerce.productName(),
+                                    price: Number(faker.commerce.price({ min: 1600, max: 3500, dec: 2})),
+                                    description: faker.lorem.lines(2),
+                                    discount: Number(restaurant.menuDiscount),
+                                    image: faker.image.urlLoremFlickr({ category: 'salad', width: 400, height: 200}),
+                                    popular: 0,
+                                    available: 0,
+                                  } as foodItem)),
+                                Array(5)
+                                  .fill(0)
+                                  .map((_, i) => ({
+                                    id: index + i + 20,
+                                    restaurantId: restaurant.id,
+                                    categoryId: 0,
+                                    name: faker.commerce.productName(),
+                                    price: Number(faker.commerce.price({ min: 800, max: 2500, dec: 2})),
+                                    description: faker.lorem.lines(2),
+                                    discount: Number(restaurant.menuDiscount),
+                                    image: faker.image.urlLoremFlickr({ category: 'dessert', width: 400, height: 200}),
+                                    popular: 0,
+                                    available: 1,
+                                  } as foodItem)),
+                              ]
+
+          // Add each individual section of items, based on Category ID
+          setFoodItems(db, itemsToAdd[0]); // Burgers
+          setFoodItems(db, itemsToAdd[1]); // Pizza
+          setFoodItems(db, itemsToAdd[2]); // Sushi
+          setFoodItems(db, itemsToAdd[3]); // Salad
+          setFoodItems(db, itemsToAdd[4]); // Desert
+        }
+      })
+
       // Test only
       //await deleteTable(db);
       console.info("Callback for data renewal");

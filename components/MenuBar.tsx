@@ -6,6 +6,7 @@ import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { svgMenuIcons } from './ui/images/svgs';
+import Cart from './Cart';
 
 const MenuBar = ({ navigation }) => {
 
@@ -29,19 +30,22 @@ const MenuBar = ({ navigation }) => {
   };
 
   if (loggedin)
-  return (
-    <View style={styles.container}>
-      {
-        MenuButtons.map((buttonMenu) => (
-        
-        <TouchableOpacity style={styles.menuItem} key={"ButtonMenu" + buttonMenu.name} onPress={() => handleSelection(buttonMenu.name)}>
-          <SvgXml xml={buttonMenu.icon} width={20} height={20} fill={selectedButton === buttonMenu.name ? menuItemStyleActive : menuItemStyle}/>
-          <Text style={selectedButton === buttonMenu.name ? styles.menuItemTextActive : styles.menuItemText}>{buttonMenu.name}</Text>
-        </TouchableOpacity>
-        ))
-      }
-    </View>
-  )
+    return (
+      <>
+        <Cart/>
+        <View style={styles.container}>
+          {
+            MenuButtons.map((buttonMenu) => (
+            
+            <TouchableOpacity style={styles.menuItem} key={"ButtonMenu" + buttonMenu.name} onPress={() => handleSelection(buttonMenu.name)}>
+              <SvgXml xml={buttonMenu.icon} width={22} height={22} fill={selectedButton === buttonMenu.name ? menuItemStyleActive : menuItemStyle}/>
+              <Text style={selectedButton === buttonMenu.name ? styles.menuItemTextActive : styles.menuItemText}>{buttonMenu.name}</Text>
+            </TouchableOpacity>
+            ))
+          }
+        </View>
+      </>
+    )
   return <></>
 };
 
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.primary,
-    paddingVertical: 4,
+    paddingVertical: 6,
     paddingHorizontal: 20,
     borderTopWidth: 2,
     borderTopColor: colors.quaternary,

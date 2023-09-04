@@ -24,6 +24,7 @@ import { checkPhone } from '../../src/behavior/dataCheck';
 import CountryPicker from 'react-native-country-picker-modal'
 import { CountryCode, Country } from '../ui/types'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //Use modal
 
@@ -91,13 +92,12 @@ const Login = () => {
     onLoading(true)
     _retrieveDataOnStartup().then(res => {
       onFetchLoad(true);
-      console.log(fetchLoaded, loggedin)
       if (loggedin)
         onLoading(false)
     });
     
     //TEST PURPOSES - TODELETE
-    //AsyncStorage.clear();
+    // AsyncStorage.clear();
   }, [])
 
   useEffect(() => {

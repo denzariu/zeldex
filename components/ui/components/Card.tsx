@@ -4,6 +4,7 @@ import { colors } from "../../../styles/defaults"
 import { card, minicard } from "../../../styles/ui"
 import { useNavigation } from "@react-navigation/native"
 import { starXml } from "../images/svgs"
+import { TouchableOpacity } from "react-native-gesture-handler"
 
 type CardProps = {
   restaurant: any,
@@ -16,11 +17,9 @@ const Card = ({restaurant, miniCard}: CardProps) => {
   const cardInUse = miniCard? minicard : card;
  
   return (
-    <Pressable 
-      onPress={()=>navigator.navigate('HomeRestaurant', {restaurant: restaurant})}
-      style={({pressed})  => [
-        {opacity: pressed ?  0.9 : 1}  
-      ]}>
+    <TouchableOpacity 
+      onPress={() => navigator.navigate('HomeRestaurant', {restaurant: restaurant})}
+      activeOpacity={0.75}>
       <View style={cardInUse.cardContainer}>
         <View style={cardInUse.cardImageContainer}>
           <Image 
@@ -49,7 +48,7 @@ const Card = ({restaurant, miniCard}: CardProps) => {
           }
         </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   )
 }
 

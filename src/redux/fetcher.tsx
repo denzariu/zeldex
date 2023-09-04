@@ -5,6 +5,8 @@ import { userSlice } from "./reducers";
 import { DispatchProp, useDispatch } from "react-redux";
 import { Dispatch } from "react";
 import { store } from "./store";
+import { getDBConnection, getFoodItemById, getFoodItemsByRestaurantId } from "../database/db-service";
+import { foodItem } from "../database/models";
 
 
 export const cacheData = async (key: string, value: string) => {
@@ -60,13 +62,13 @@ export const fetchData = async (key: string) => {
 
 export const fetchDataArray = async (keyArray: Array<string>) => {
 
-  let promises = [] as Array<any>;
+  let promises: Array<Promise<string | undefined>> = [];
   
   try {
     keyArray.forEach(key => {
       promises.push(fetchData(key))
     })
-    const values = await Promise.all(promises.map(promise => promise()));
+    const values = await Promise.all(promises.map(promise => promise));
     return {values};
   } catch (error) {
     console.log(error);
@@ -87,17 +89,9 @@ export const cacheUserDetails = (userData : UserModel, userIsLogged : boolean) =
 ]))
 }
 
-// const ActionType = {
-//   state: 'firstName' | 'lastName' | 'phone' | 'isAuthenticated' | 'countryCode'
-// };
-
-export const cacheSpecific = (userData : UserModel, userIsLogged : boolean) => {
-  
-}
-
 export const _retrieveDataOnStartup = async () => {
 
-  const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated', 'countryCode', 'email', 'address']  
+  const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated', 'countryCode', 'email', 'address', 'cartRestaurantId', 'cartNoItems']  
   
   try {
     for (const item in dataToRetrieveUser) {
@@ -124,6 +118,33 @@ export const _retrieveDataOnStartup = async () => {
             break;
           case 'address':
             store.dispatch(userSlice.actions.setUserLocation(value));
+            break;
+          case 'cartRestaurantId':
+            const restaurantName: string | null = await AsyncStorage.getItem('cartRestaurantName');
+            store.dispatch(userSlice.actions.setCart({
+              restaurantId: Number(value),
+              restaurantName: restaurantName? restaurantName : '',
+              items: []
+            }))
+            break;
+          case 'cartNoItems':
+            let noItemsCart: number | null = await AsyncStorage.getItem('cartNoItems').then((value) => {return Number(value)});
+            // console.log('CACHED noItemsCart: ', noItemsCart);
+            const restaurantId: number | null = store.getState().userReducer.cart.restaurantId;
+            const db = await getDBConnection();
+            
+            while (noItemsCart) {
+              try {
+              const itemId: string | null = await AsyncStorage.getItem('cartItem' + noItemsCart);
+              const itemCart: foodItem = await getFoodItemById(db, restaurantId, Number(itemId))
+              store.dispatch(userSlice.actions.appendCart(itemCart))
+              } catch {
+                console.log("Coudn't fetch foodItem from cache.")
+              }
+              noItemsCart = noItemsCart - 1;
+            }
+            store.dispatch(userSlice.actions.cachingComplete());
+            break;
           default:
             console.log("None of the provided options has been found in data retrieval." + dataToRetrieveUser[item])
         }

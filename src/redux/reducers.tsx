@@ -1,6 +1,7 @@
 import { Dictionary, PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { UserModel } from "./actions";
+import { CartModel, UserModel } from "./actions";
 import { act } from "react-test-renderer";
+import { foodItem } from "../database/models";
 //import { ON_ERROR, ON_LOGIN, UserAction, UserModel } from "./actions";
 
 // type UserState = {
@@ -23,14 +24,23 @@ const initialState = {
     password: '' //Test purposes only
   } as UserModel,
 
+  cart: {
+    restaurantName: '',
+    restaurantId: 0,
+    items: []
+  } as CartModel,
+
   error: '' as string | undefined,
-  isAuthenticated: false as boolean
+  isAuthenticated: false as boolean,
+  cachingComplete: false as boolean,
 }
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+
+    // User Actions
     login(state, action: PayloadAction<UserModel>) {
       state.user = action.payload;
       state.isAuthenticated = true;
@@ -40,6 +50,12 @@ export const userSlice = createSlice({
       state.error = '';
     },
 
+    // Flag for finishing caching operation / state init
+    cachingComplete(state) {
+      state.cachingComplete = true;
+    },
+
+    // User Information Actions
     setFirstName(state, action: PayloadAction<string>) {
       state.user.firstName = action.payload;
     },
@@ -63,6 +79,18 @@ export const userSlice = createSlice({
     },
     setUserCoordinates(state, action: PayloadAction<{longitude: number | undefined, latitude: number | undefined}>) {
       state.user.coordinates = action.payload;
+    },
+
+    // Cart Actions
+    setCart(state, action: PayloadAction<CartModel>) {
+      state.cart = action.payload;
+    },
+    appendCart(state, action: PayloadAction<foodItem>) {
+      // console.log('<--------------------------------')
+      // console.log('PAYLOAD: ', action.payload);
+      // console.log('ITEMS: ', state.cart.items);
+      state.cart.items.push(action.payload);
+      // console.log('--------------------------------->')
     }
   }
 })
