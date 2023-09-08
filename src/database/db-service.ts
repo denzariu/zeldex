@@ -3,6 +3,8 @@ import { foodItem, restaurantItem } from './models';
 
 const restaurantTableName = 'restaurantData';
 const foodItemsTableName = 'foodItemData';
+const userItemsTableName = 'userItemData';
+
 
 enablePromise(true);
 
@@ -14,7 +16,7 @@ export const getDBConnection = async () => {
 // Restaurants Section //
 
 export const createTable = async (db: SQLiteDatabase) => {
-  // create table if not exists
+  // create table if it does not exist
   const query = `CREATE TABLE IF NOT EXISTS ${restaurantTableName}(
         name TEXT NOT NULL,
         rating TEXT NOT NULL,
@@ -87,7 +89,7 @@ export const deleteTable = async (db: SQLiteDatabase) => {
 // Restaurant Food Items Section //
 
 export const createFoodItemTable = async (db: SQLiteDatabase) => {
-  // create table if not exists
+  // create table if it does not exist
   // removed CHECK (popular IN (0, 1)) for now, TODO: fix Check failing
   const query = `CREATE TABLE IF NOT EXISTS ${foodItemsTableName}(
         restaurant_id INT NOT NULL,
@@ -154,6 +156,25 @@ export const getFoodItemsByRestaurantId = async (db: SQLiteDatabase, restaurantI
 
 export const deleteFoodItemsTable = async (db: SQLiteDatabase) => {
   const query = `drop table ${foodItemsTableName}`;
+
+  await db.executeSql(query);
+};
+
+// User Item Section
+
+export const createUserItemTable = async (db: SQLiteDatabase) => {
+  // create table if it does not exist
+  const query = `CREATE TABLE IF NOT EXISTS ${userItemsTableName}(
+        first_name TEXT NOT NULL,
+        last_name TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT NOT NULL,
+        country_code TEXT NOT NULL,
+        address TEXT,
+        latitude TEXT,
+        password_encrypted TEXT NOT NULL,
+        type TEXT,
+    );`;
 
   await db.executeSql(query);
 };

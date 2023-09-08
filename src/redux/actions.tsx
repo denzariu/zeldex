@@ -13,12 +13,13 @@ export interface UserModel {
   phone: string;
   email: string;
   countryCode: string;
-  address: string,
+  address: string;
   coordinates: {
     longitude: number | undefined,
     latitude: number | undefined
   },
-  password: string;  
+  token: string;  
+  type: string;
 }
 
 export interface CartModel {

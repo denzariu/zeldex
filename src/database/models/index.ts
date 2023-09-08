@@ -21,3 +21,17 @@ export type foodItem = {
   popular: number;
   available: number;
 }
+
+export type userItem = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  countryCode: string;
+  address: string,
+  coordinates: {
+    longitude: number | undefined,
+    latitude: number | undefined
+  },
+  token: string; 
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {NavigationContainer, TabRouter, useNavigation} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import type {PropsWithChildren} from 'react';
 const Stack = createNativeStackNavigator();
 
 import {
+  ActivityIndicator,
   Alert,
   Button,
   Share,
@@ -24,7 +25,7 @@ import { colors, fontSizes } from './styles/defaults';
 import Search from './components/screens/Search';
 import Orders from './components/screens/Orders';
 import { UserModel } from './src/redux/actions';
-import Login from './components/screens/Login';
+import Login from './components/screens/Login/Login';
 import { Text } from 'react-native-svg';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileUserDetails from './components/screens/secondary/ProfileUserDetails';
@@ -40,6 +41,10 @@ import HomeRestaurant from './components/screens/Home/Restaurant';
 import Map from './components/screens/secondary/Map'
 
 import { HeaderBackButton, HeaderTitle, PlatformPressable } from '@react-navigation/elements'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { _retrieveDataOnStartup } from './src/redux/fetcher';
+import { store } from './src/redux/store';
+import { userSlice } from './src/redux/reducers';
 
 //TODO: styles revamp
 
@@ -307,238 +312,172 @@ function App(): JSX.Element {
     }
   };
 
-  const userDetails: UserModel = useSelector((state:any) => state.userReducer.user);
-  const userFullName: string = useSelector((state:any) => (state.userReducer.user.firstName + ' ' + state.userReducer.user.lastName));
-  const userPhone: string = useSelector((state:any) => (state.userReducer.user.phone));
+  // const userDetails: UserModel = useSelector((state:any) => state.userReducer.user);
+  // const userFullName: string = useSelector((state:any) => (state.userReducer.user.firstName + ' ' + state.userReducer.user.lastName));
+  // const userPhone: string = useSelector((state:any) => (state.userReducer.user.phone));
+  const isAuthenticated: string = useSelector((state:any) => (state.userReducer.isAuthenticated));
+  const [fetchedAndLoaded, setFetchedAndLoaded] = useState<Boolean>(false);
+  const loadFromCache = useCallback( async () => {
+    setFetchedAndLoaded(false);
+    await _retrieveDataOnStartup().then(res => {
+      
+      store.dispatch(userSlice.actions.cachingComplete());
+      setFetchedAndLoaded(true);
+      console.log("Data received. REST CART NAME: ", store.getState().userReducer.cart.restaurantName);
+    });
+
+    //TEST PURPOSES: DELETING ALL CACHE
+    AsyncStorage.clear();  
+  }, []) 
+
+  useEffect(() => {
+    loadFromCache();
+  }, [loadFromCache])
+
   
- 
+  useEffect(() => {
+    console.log('auth: ', isAuthenticated);
+  }, [isAuthenticated])
   
+
+  if (!fetchedAndLoaded)
+    return (<ActivityIndicator style={{flex: 1}} color={colors.primary} size="large"/>)
+
   return (
     
       <SafeAreaProvider>
         <StatusBar/>
         <NavigationContainer>
-          
-          <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false, contentStyle: {backgroundColor: colors.quaternary}}}>
-          <Stack.Screen
-              name="Login"
-              component={Login}
-              options={{
-                title: 'Sign In',
-                statusBarColor: colors.quaternary,
-                statusBarStyle: 'light',
-                headerShown: false,
-                headerStyle: {
-                  backgroundColor: colors.quaternary,
-                },
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
-                },
-              }}
-            />
-            <Stack.Screen
-              name="MainTabScreen"
-              component={MainTabScreen}
-              options={{
-                // headerShown: false,
-                animation: 'fade_from_bottom',
-                title: 'My home',
-                headerBackVisible: false,
-                headerStyle: {
-                  backgroundColor: colors.quaternary,
-                },
-                headerTintColor: colors.primary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
-                },
-              }}
-            />
+          <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: {backgroundColor: colors.quaternary}}}>
 
-            <Stack.Screen
-              name="HomeRestaurant"
-              component={HomeRestaurant}
-              options={ (navigation)=> ({
-                title: '',
-                statusBarColor: colors.primary,
-                statusBarStyle: 'dark',
-                headerShown: true,
-                headerTransparent: true,
-                headerBackVisible: false,
-                headerShadowVisible: false,
-                headerTitleAlign: 'center',
+          {isAuthenticated ?
+            <>
+              <Stack.Screen
+                name="MainTabScreen"
+                component={MainTabScreen}
+                options={{
+                  // headerShown: false,
+                  animation: 'fade_from_bottom',
+                  title: 'My home',
+                  headerBackVisible: false,
+                  headerStyle: {
+                    backgroundColor: colors.quaternary,
+                  },
+                  headerTintColor: colors.primary,
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: fontSizes.xxl,
+                  },
+                }}
+              />          
+              <Stack.Screen
+                name="HomeRestaurant"
+                component={HomeRestaurant}
+                options={ (navigation)=> ({
+                  title: '',
+                  statusBarColor: colors.primary,
+                  statusBarStyle: 'dark',
+                  headerShown: true,
+                  headerTransparent: true,
+                  headerBackVisible: false,
+                  headerShadowVisible: false,
+                  headerTitleAlign: 'center',
 
-                // headerStyle: {
-                //   backgroundColor: colors.primary,
-                // },
+                  // headerStyle: {
+                  //   backgroundColor: colors.primary,
+                  // },
 
-                headerTitle: (title) => (
-                    <HeaderTitle
-                      {...title}
-                      numberOfLines={1}
-                      allowFontScaling={false} 
-                      style={{
-                        maxWidth: 200,
-                        paddingVertical: 5, 
-                        paddingHorizontal: 12, 
-                        borderRadius: 12, 
-                        backgroundColor: colors.primary, 
-                        fontWeight: 'bold',
-                        fontSize: fontSizes.m}}
-                    >
-                      
-                    </HeaderTitle>
-                ),
-                headerLeft: (props) => (
+                  headerTitle: (title) => (
+                      <HeaderTitle
+                        {...title}
+                        numberOfLines={1}
+                        allowFontScaling={false} 
+                        style={{
+                          maxWidth: 200,
+                          paddingVertical: 5, 
+                          paddingHorizontal: 12, 
+                          borderRadius: 12, 
+                          backgroundColor: colors.primary, 
+                          fontWeight: 'bold',
+                          fontSize: fontSizes.m}}
+                      >
+                        
+                      </HeaderTitle>
+                  ),
+                  headerLeft: (props) => (
+                      <HeaderBackButton
+                        {...props}
+                        onPress={() => navigation.navigation.goBack(null)}
+                        //color={colors.quaternary}
+                        style={{borderRadius: 48, backgroundColor: colors.primary}}
+                        tintColor={colors.quaternary}
+                      />
+                  ),
+                  //headerSearchBarOptions: {shouldShowHintSearchIcon:true},
+                  headerRight: (props) => (
                     <HeaderBackButton
-                      {...props}
-                      onPress={() => navigation.navigation.goBack(null)}
-                      //color={colors.quaternary}
-                      style={{borderRadius: 48, backgroundColor: colors.primary}}
-                      tintColor={colors.quaternary}
-                    />
+                        {...props}
+                        onPress={shareData}
+                        tintColor={colors.quaternary}
+                        style={{borderRadius: 48, backgroundColor: colors.primary, transform: ([{rotate: '130deg'}]) }}
+                        // //tintColor={colors.quaternary}
+                        // pressColor={colors.quaternary}
+                        pressOpacity={0}
+                      />
                 ),
-                //headerSearchBarOptions: {shouldShowHintSearchIcon:true},
-                headerRight: (props) => (
-                  <HeaderBackButton
-                      {...props}
-                      onPress={shareData}
-                      tintColor={colors.quaternary}
-                      style={{borderRadius: 48, backgroundColor: colors.primary, transform: ([{rotate: '130deg'}]) }}
-                      // //tintColor={colors.quaternary}
-                      // pressColor={colors.quaternary}
-                      pressOpacity={0}
-                    />
-              ),
-                
+                  
 
-                headerTintColor: colors.quaternary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xl,
-                },
-              })}
-            />
+                  headerTintColor: colors.quaternary,
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: fontSizes.xl,
+                  },
+                })}
+              />
 
-            <Stack.Screen
-              name="Map"
-              component={Map}
-              options={ (navigation)=> ({
-                title: '',
-                statusBarColor: colors.quaternary,
-                statusBarStyle: 'dark',
-                headerShown: true,
-                headerTransparent: true,
-                headerBackVisible: false,
-                headerShadowVisible: false,
-                headerTitleAlign: 'center',
-
-                // headerStyle: {
-                //   backgroundColor: colors.primary,
-                // },
-
-              //   headerTitle: (title) => (
-              //       <HeaderTitle
-              //         {...title}
-              //         numberOfLines={1}
-              //         allowFontScaling={false} 
-              //         style={{
-              //           maxWidth: 200,
-              //           paddingVertical: 5, 
-              //           paddingHorizontal: 12, 
-              //           borderRadius: 12, 
-              //           backgroundColor: colors.primary, 
-              //           fontWeight: 'bold',
-              //           fontSize: fontSizes.m}}
-              //       >
-                      
-              //       </HeaderTitle>
-              //   ),
-              //   headerLeft: (props) => (
-              //       <HeaderBackButton
-              //         {...props}
-              //         onPress={() => navigation.navigation.goBack(null)}
-              //         //color={colors.quaternary}
-              //         style={{borderRadius: 48, backgroundColor: colors.primary}}
-              //         tintColor={colors.quaternary}
-              //       />
-              //   ),
-              //   //headerSearchBarOptions: {shouldShowHintSearchIcon:true},
-              //   headerRight: (props) => (
-              //     <HeaderBackButton
-              //         {...props}
-              //         onPress={shareData}
-              //         tintColor={colors.quaternary}
-              //         style={{borderRadius: 48, backgroundColor: colors.primary, transform: ([{rotate: '130deg'}]) }}
-              //         // //tintColor={colors.quaternary}
-              //         // pressColor={colors.quaternary}
-              //         pressOpacity={0}
-              //       />
-              // ),
-                
-
-                headerTintColor: colors.quaternary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xl,
-                },
-              })}
-            />
-{/*             
-            <Stack.Screen 
-              name="Search"
-              component={Search}
-              options={{
-                title: 'Search',
-                headerBackVisible: false,
-                headerStyle: {
-                  backgroundColor: colors.quaternary,
-                },
-                headerTintColor: colors.primary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
-                },
-              }}
-            />
-            <Stack.Screen 
-              name="Orders"
-              component={Orders}
-              options={{
-                title: 'Orders',
-                headerBackVisible: false,
-                headerStyle: {
-                  backgroundColor: colors.quaternary,
-                },
-                headerTintColor: colors.primary,
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                  fontSize: fontSizes.xxl,
-                },
-              }}
-            />
-            <Stack.Screen 
-              name="Profile"
-              component={Profile}
-              options={{
-                headerShown: false,
-                // title: '',
-                // headerBackVisible: false,
-                // //headerLeft: () => (<View style={{width: 500}}><Text>Hi {userFullName}</Text></View>),
-                // headerStyle: {
-                //   backgroundColor: colors.quaternary,
-                // },
-                // headerTintColor: colors.primary,
-                // headerTitleStyle: {
-                //   fontWeight: 'bold',
-                //   fontSize: fontSizes.xxl,
-                // },
-              }}
-            /> */}
-
-          </Stack.Navigator>
-          
+              <Stack.Screen
+                name="Map"
+                component={Map}
+                options={ (navigation)=> ({
+                  title: '',
+                  statusBarColor: colors.quaternary,
+                  statusBarStyle: 'dark',
+                  headerShown: true,
+                  headerTransparent: true,
+                  headerBackVisible: false,
+                  headerShadowVisible: false,
+                  headerTitleAlign: 'center',
+                  headerTintColor: colors.quaternary,
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: fontSizes.xl,
+                  },
+                })}
+              />
+            </>
+          :
+            <>
+              <Stack.Screen
+                  name="Login"
+                  component={Login}
+                  options={{
+                    title: 'Sign In',
+                    statusBarColor: colors.quaternary,
+                    statusBarStyle: 'light',
+                    headerShown: false,
+                    headerStyle: {
+                      backgroundColor: colors.quaternary,
+                    },
+                    headerTitleStyle: {
+                      fontWeight: 'bold',
+                      fontSize: fontSizes.xxl,
+                    },
+                  }}
+                />
+            </>
+          }
+          </Stack.Navigator> 
+        
         {/*<MenuBar/>*/}
         </NavigationContainer>
       </SafeAreaProvider>

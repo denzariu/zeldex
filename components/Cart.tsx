@@ -6,11 +6,11 @@ import { colors, fontSizes } from '../styles/defaults'
 import { useSelector, useStore } from 'react-redux'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
+import { store } from '../src/redux/store'
 
 const Cart = () => {
   const navigator = useNavigation();
   const restaurantName: string = useSelector((state:any) => (state.userReducer.cart.restaurantName));
-  const restaurantId: number = useSelector((state:any) => (state.userReducer.cart.restaurantId));
   const items: Array<foodItem> = useSelector((state:any) => (state.userReducer.cart.items));
   const cachingComplete: number = useSelector((state:any) => (state.userReducer.cachingComplete));
   
@@ -22,15 +22,14 @@ const Cart = () => {
     try {
       const db = await getDBConnection();
       console.info("Callback for restaurant data.");
-      await getRestaurantById(db, restaurantId).then((result) => {
-        console.log("Restaurant set: ", result)
+      await getRestaurantById(db, store.getState().userReducer.cart.restaurantId).then((result) => {
         setRestaurant(result);
         setLoading(false);
       });
 
     } catch (error) {
       console.error(error);
-      console.log(':(');
+      console.log(':( Callback for restaurant data failed. Could not fetch Restaurant by id.');
       setRestaurant(undefined);
     }
   }, []);
@@ -41,7 +40,7 @@ const Cart = () => {
     // console.log('i: ', items);
     loadRestaurant();
     // console.log("Loaded");
-  }, [])
+  }, [loadRestaurant, restaurantName])
 
   const handleRedirectToRestaurant = () => {
     console.log('Loading: ', loading);
@@ -53,12 +52,15 @@ const Cart = () => {
     // console.log("Items: ", items);
     // console.log("itemsno: ", items.length);
 
-    const newSum = items.reduce((accumulator, currentValue) => {
-      return accumulator + (currentValue?.price ?? 0)
-    }, 0) ?? 0
+    if (items.length) {
+      const newSum = items.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price;
+      }, 0) ?? 0
 
-    setSum(newSum);
-
+      console.log("CACHING: ", cachingComplete);
+      console.log("ITEM LNG: ", items.length);
+      setSum(newSum);
+    }
     // console.log("Cart sum: ", sum);
   }, [[], items.length])
 

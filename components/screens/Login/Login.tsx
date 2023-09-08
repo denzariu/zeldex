@@ -8,25 +8,29 @@ import {
   Alert,
   ActivityIndicator,
   Pressable,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
+  BackHandler
 } from 'react-native';
 import React, { useEffect, useState } from 'react'
-import { colors, fontSizes, fonts } from '../../styles/defaults';
+import { colors, fontSizes, fonts } from '../../../styles/defaults';
 import { useDispatch, useSelector } from 'react-redux';
 import { DarkTheme, ParamListBase, useNavigation } from '@react-navigation/native';
-import { input } from '../../styles/ui';
-import { userSlice } from '../../src/redux/reducers';
-import { UserModel } from '../../src/redux/actions';
-import { _retrieveDataOnStartup, cacheUserDetails } from '../../src/redux/fetcher';
-import { checkPhone } from '../../src/behavior/dataCheck';
+import { input } from '../../../styles/ui';
+import { userSlice } from '../../../src/redux/reducers';
+import { UserModel } from '../../../src/redux/actions';
+import { _retrieveDataOnStartup, cacheUserDetails } from '../../../src/redux/fetcher';
+import { checkPhone } from '../../../src/behavior/dataCheck';
 
 
 import CountryPicker from 'react-native-country-picker-modal'
-import { CountryCode, Country } from '../ui/types'
+import { CountryCode, Country } from '../../ui/types'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { store } from '../../../src/redux/store';
 
-//Use modal
+const {height, width} = Dimensions.get('window');
 
 const Login = () => {
 
@@ -39,17 +43,35 @@ const Login = () => {
 
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const dispatch = useDispatch();
-  const loggedin: boolean = useSelector((state:any) => (state.userReducer.isAuthenticated));
+  const isAuthenticated: boolean = useSelector((state:any) => (state.userReducer.isAuthenticated));
+
+  // First screen
   const phone: string = useSelector((state:any) => (state.userReducer.user.phone));
   const user = useSelector((state:any) => (state.userReducer.user));
 
+  const viewPosition = useSharedValue(0);
+  
+  const loginFirstViewAnimation = useAnimatedStyle(() => {
+    const interpolation = interpolate(viewPosition.value, [0, 1], [0, -width])
+    return {
+      transform: [{translateX: withTiming(interpolation, {duration: 1000})}]
+    }
+  })
+
+  // Second screen
+  const [textName, onChangeTextName] = React.useState('');
+  const [textGivenName, onChangeTextGivenName] = React.useState('');
+
+  const loginSecondViewAnimation = useAnimatedStyle(() => {
+    const interpolation = interpolate(viewPosition.value, [0, 1], [width, 0])
+    return {
+      transform: [{translateX: withTiming(interpolation, {duration: 1000})}]
+    }
+  })
 
   const [loading, onLoading] = React.useState(true);
   const [fetchLoaded, onFetchLoad] = React.useState(false);
-  const [textName, onChangeTextName] = React.useState('');
-  const [textGivenName, onChangeTextGivenName] = React.useState('');
   const [textPhone, onChangePhone] = React.useState(phone);
-  const [textPassword, onChangePassword] = React.useState('');
 
   const [countryCode, setCountryCode] = useState<CountryCode>('RO')
   const [country, setCountry] = useState<Country>()
@@ -62,7 +84,30 @@ const Login = () => {
     setCountryCallingCode(country.callingCode[0])
   }
 
-  const onUserLogIn = () => {
+  function onUserLogIn(): void {
+
+    
+    const userLoginData = {
+      ...user,
+      firstName: textGivenName,
+      lastName: textName,
+    } as UserModel;
+
+    store.dispatch(userSlice.actions.login(userLoginData))
+    // cacheUserDetails(userLoginData, true)
+    cacheUserDetails(userLoginData, true).then(() => {
+      console.log('letsgooo?');
+      // console.log(isAuthenticated)
+    });
+
+    try {
+
+    } catch (e){ 
+      throw new Error('Function not implemented.')
+    }
+  }
+  
+  const onContinue = () => {
 
     //TODO: check data
     console.log('e'+ callingCode + textPhone)
@@ -73,71 +118,67 @@ const Login = () => {
     
     const userLoginData = {
       ...user,
-      // firstName: textGivenName,
-      // lastName: textName,
       countryCode: callingCode,
       phone: textPhone,
-      // password: textPassword
     } as UserModel;
 
-    dispatch(userSlice.actions.login(userLoginData))
-    cacheUserDetails(userLoginData, true)
-    
-    if (loggedin) {
-      onLoading(false)
-      navigation.navigate('MainTabScreen');
-    }
-  }
-  useEffect(() => {
-    onLoading(true)
-    _retrieveDataOnStartup().then(res => {
-      onFetchLoad(true);
-      if (loggedin)
-        onLoading(false)
+    dispatch(userSlice.actions.setPhone(textPhone))
+    dispatch(userSlice.actions.setCountryCode(callingCode))
+
+    // cacheUserDetails(userLoginData, true)
+    cacheUserDetails(userLoginData, false).then(() => {
+      viewPosition.value = 1;
+      // navigation.navigate("LoginUserDetails");
     });
-    
-    //TEST PURPOSES - TODELETE
-    // AsyncStorage.clear();
+  }
+  
+  useEffect(() => {
+    // MOVED TO 'App.tsx' (protected routing change) 
+
+    // onLoading(true)
+    // _retrieveDataOnStartup().then(res => {
+    //   onFetchLoad(true);
+    //   if (loggedin)
+    //     onLoading(false)
+    // });
+
+
+    // Back action overwrite
+    function handleBackButtonClick() {
+      if (viewPosition.value == 1)
+        viewPosition.value = 0;
+      //navigation.goBack();
+      
+      return true;
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", handleBackButtonClick);
+    };
+  
   }, [])
 
   useEffect(() => {
-    console.log(fetchLoaded, loggedin)
-    if (loggedin)
+    console.log(fetchLoaded, isAuthenticated)
+    if (isAuthenticated)
       navigation.navigate('MainTabScreen');
     else if (fetchLoaded)
       onLoading(false);
 
-  }, [loggedin, fetchLoaded]);
+  }, [isAuthenticated, fetchLoaded]);
 
 
   //Test Activity Indicator
   //if (true) return (<ActivityIndicator style={styles.loading} color={colors.primary} size="large"/>) 
   
-  if (!fetchLoaded || loading)
-    return (<ActivityIndicator style={styles.loading} color={colors.primary} size="large"/>)
-  else
   return (
     
     <View style={styles.pageContainer}>
       <Text style={styles.title}>Zeldex</Text>
-      <View style={styles.container}>
-        {/* <Text style={styles.textArea}>Given Name</Text>
-        <TextInput
-          style={input}
-          onChangeText={onChangeTextGivenName}
-          value={textGivenName}
-          placeholder=""
-          autoComplete={"given-name"}>
-        </TextInput>  
-        <Text style={styles.textArea}>Name</Text>
-        <TextInput
-          style={input}
-          onChangeText={onChangeTextName}
-          value={textName}
-          placeholder=""
-          autoComplete={"name"}>
-        </TextInput>   */}
-        {/* <Text style={styles.textArea}>Phone</Text> */}
+      
+      {/* First login screen */}
+      <Animated.View style={[styles.container, loginFirstViewAnimation]}>
         <View style={[styles.inline]}>
           <CountryPicker containerButtonStyle={styles.containerButtonStyle}
             {...{
@@ -154,21 +195,6 @@ const Login = () => {
             }}
             visible={false}
           />
-          {/* <PhoneInput
-            ref={phoneInput}
-            defaultValue={value}
-            defaultCode="DM"
-            layout="first"
-            onChangeText={(text) => {
-              setValue(text);
-            }}
-            onChangeFormattedText={(text) => {
-              setFormattedValue(text);
-            }}
-            withDarkTheme
-            withShadow
-            autoFocus
-          /> */}
           <TextInput
             style={[input, {flex: 1, margin: 0}]}
             onChangeText={onChangePhone}
@@ -178,15 +204,35 @@ const Login = () => {
             keyboardType='phone-pad'>
           </TextInput>
         </View>    
-        {/* <Text style={styles.textArea}>Password</Text>
+        <Pressable
+          onPress={onContinue}
+          style={({pressed}) => [ 
+            {backgroundColor: pressed? colors.quaternary : colors.tertiary},
+            styles.button,
+          ]}>
+            <Text style={styles.buttonText}>Continue</Text>
+        </Pressable>
+      </Animated.View>
+
+      {/* Second login screen */}
+      <Animated.View style={[styles.container, loginSecondViewAnimation]}>
+        <Text style={styles.textArea}>First Name</Text>
         <TextInput
           style={input}
-          onChangeText={onChangePassword}
-          value={textPassword}
+          onChangeText={onChangeTextGivenName}
+          value={textGivenName}
           placeholder=""
-          secureTextEntry={true}
-          autoComplete={"current-password"}>
-        </TextInput>     */}
+          autoComplete={"given-name"}>
+        </TextInput>  
+        <Text style={styles.textArea}>Last Name</Text>
+        <TextInput
+          style={input}
+          onChangeText={onChangeTextName}
+          value={textName}
+          placeholder=""
+          autoComplete={"name"}>
+        </TextInput>   
+        
         <Pressable
           onPress={onUserLogIn}
           style={({pressed}) => [ 
@@ -195,7 +241,7 @@ const Login = () => {
           ]}>
             <Text style={styles.buttonText}>Continue</Text>
         </Pressable>
-      </View>
+      </Animated.View>
     </View>
   );
 }
@@ -209,6 +255,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignContent: 'center',
     justifyContent: 'center',
+    
   },
 
   title: {
@@ -222,6 +269,13 @@ const styles = StyleSheet.create({
   },
 
   container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+
+    alignContent: 'center',
+    justifyContent: 'center',
+
     borderRadius: 20,
     margin: 10,
     padding: 10,
@@ -241,10 +295,6 @@ const styles = StyleSheet.create({
     //fontFamily: fonts.helveticaBold,
     fontWeight: "600",
     color: colors.quaternary
-  },
-
-  loading: {
-    flex: 1
   },
 
   button: {

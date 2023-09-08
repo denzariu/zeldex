@@ -26,7 +26,7 @@ import { HeaderTitle } from '@react-navigation/elements'
 import { starXml, svgClose, svgDiscount } from '../../ui/images/svgs';
 import { Modalize } from 'react-native-modalize';
 import { Button } from '@material-ui/core';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import { userSlice } from '../../../src/redux/reducers';
 import { CartModel } from '../../../src/redux/actions';
 import { store } from '../../../src/redux/store';
@@ -36,14 +36,13 @@ import { getDBConnection, getFoodItemsByRestaurantId } from '../../../src/databa
 
 declare const global: {HermesInternal: null | {}};
 
-//const headerHeight = useHeaderHeight();
-
 const HomeRestaurant = ({route, navigation} : any) => {
 
   const dispatch = useDispatch();
 
   const { restaurant } = route.params;
 
+  const restaurantCart = useSelector((state:any) => (state.userReducer.cart.restaurantName));
   const [SECTIONS, setSECTIONS] = useState([
     {
       title: 'Burgers',
@@ -189,6 +188,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
       } as CartModel));
       cacheData('cartRestaurantId', restaurant.id.toString());
       cacheData('cartRestaurantName', restaurant.name);
+      console.log("CACHED REST ID: ", restaurant.id);
     }
     
     // Cache number of items in cart and then each item as {'cartItem' + index} => id 
@@ -199,7 +199,6 @@ const HomeRestaurant = ({route, navigation} : any) => {
     while (noItemsToAdd) {
       dispatch(userSlice.actions.appendCart(foodItem));
       cacheData('cartItem' + (itemsInCart + noItemsToAdd).toString(), foodItem.id.toString())
-      // console.log('CACHED ----- POS: ', (itemsInCart + noItemsToAdd), ' --- ', foodItem.id);
       noItemsToAdd = noItemsToAdd - 1;
     }
     cacheData('cartNoItems', (itemsInCart + noItems).toString());
@@ -261,7 +260,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
           <Text style={styles.modalNote}>Leave a note for the kitchen</Text>
         </View>
       </View>
-    </View>,
+    </View>
   ]
 
   if (!loading)
@@ -296,12 +295,6 @@ const HomeRestaurant = ({route, navigation} : any) => {
               {renderContent()}
             </Modalize>  
             
-            
-
-        
-            
-        
-
         <TabSectionList
           showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior='automatic'
@@ -314,7 +307,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
           ItemSeparatorComponent={() => <View style={styles.divider} />}
           ListHeaderComponent={
             <>
-              
+              {/* Restaurant's image */}
               <Animated.View
                 style={[
                   styles.coverPhotoContainer,
@@ -331,18 +324,18 @@ const HomeRestaurant = ({route, navigation} : any) => {
                 <Animated.Image
                   source={{uri: restaurant.image}}
                   style={[styles.coverPhoto,]}
+
                 />
-
-                
-
               </Animated.View>
               
+              {/* Restaurant's title card */}
               <View style={styles.resturantRow}>
                 {restaurant.name && <Text style={styles.textArea}>{restaurant.name}</Text>}
-
                 <Text numberOfLines={1} style={styles.textAreaRating}><SvgXml xml={starXml} height={18} width={18}
                       fill={restaurant.rating >= '4.5'? colors.quaternary : colors.textBlack}/>{restaurant.rating}</Text>
               </View>
+
+              {/* Restaurant's discounts */}
               {
                 restaurant.menuDiscount !== '0' && 
                 <>
@@ -354,6 +347,15 @@ const HomeRestaurant = ({route, navigation} : any) => {
                   <View style={styles.divider}></View>
                 </>
               }
+              
+              {/* Restaurant cart order */}
+              {/* {restaurant.name == restaurantCart ?
+                <View style={{ bottom: 0, paddingHorizontal: 20, paddingVertical: 100, zIndex: 2000, backgroundColor: colors.primary}}>
+                  
+                </View>
+                :
+                <></>
+              } */}
             </>
           }
           renderTab={({title, isActive}) => {

@@ -21,12 +21,12 @@ const initialState = {
       longitude: 0.0,
       latitude: 0.0
     },
-    password: '' //Test purposes only
+    token: '' //Test purposes only
   } as UserModel,
 
   cart: {
     restaurantName: '',
-    restaurantId: 0,
+    restaurantId: -1,
     items: []
   } as CartModel,
 

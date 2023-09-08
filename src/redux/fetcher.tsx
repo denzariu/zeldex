@@ -11,7 +11,7 @@ import { foodItem } from "../database/models";
 
 export const cacheData = async (key: string, value: string) => {
   if (key === "" || value === "") {
-    Alert.alert("Either key or value field is empty. Please enter values for both.");
+    // Alert.alert("Either key or value field is empty. Please enter values for both.");
     return;
   }
   try {
@@ -46,11 +46,11 @@ export const fetchData = async (key: string) => {
   try {
     const value = await AsyncStorage.getItem(key);
     if (value !== null) {
-      Alert.alert("Data corresponding to the key " + key + " is: " + value);
+      // Alert.alert("Data corresponding to the key " + key + " is: " + value);
       return value;
     }
     else {
-      Alert.alert("Data corresponding to the key " + key + " does not exist in cache.");
+      // Alert.alert("Data corresponding to the key " + key + " does not exist in cache.");
       return undefined;
     }
   } catch (error) {
@@ -77,8 +77,8 @@ export const fetchDataArray = async (keyArray: Array<string>) => {
   
 };
 
-export const cacheUserDetails = (userData : UserModel, userIsLogged : boolean) => {
-  cacheDataArray(new Map<string, string>([
+export const cacheUserDetails = async (userData : UserModel, userIsLogged : boolean) => {
+  await cacheDataArray(new Map<string, string>([
   ['firstName', userData.firstName],
   ['lastName', userData.lastName],
   ['phone', userData.phone],
@@ -91,11 +91,13 @@ export const cacheUserDetails = (userData : UserModel, userIsLogged : boolean) =
 
 export const _retrieveDataOnStartup = async () => {
 
+
   const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated', 'countryCode', 'email', 'address', 'cartRestaurantId', 'cartNoItems']  
   
   try {
     for (const item in dataToRetrieveUser) {
       const value = await AsyncStorage.getItem(dataToRetrieveUser[item]);
+
       if (value !== null) {
         switch (dataToRetrieveUser[item]) {
           case 'firstName':
@@ -128,27 +130,25 @@ export const _retrieveDataOnStartup = async () => {
             }))
             break;
           case 'cartNoItems':
-            let noItemsCart: number | null = await AsyncStorage.getItem('cartNoItems').then((value) => {return Number(value)});
             // console.log('CACHED noItemsCart: ', noItemsCart);
             const restaurantId: number | null = store.getState().userReducer.cart.restaurantId;
             const db = await getDBConnection();
-            
+            let noItemsCart = Number(value);
             while (noItemsCart) {
               try {
               const itemId: string | null = await AsyncStorage.getItem('cartItem' + noItemsCart);
               const itemCart: foodItem = await getFoodItemById(db, restaurantId, Number(itemId))
               store.dispatch(userSlice.actions.appendCart(itemCart))
               } catch {
-                console.log("Coudn't fetch foodItem from cache.")
+                console.log("Coudn't fetch foodItem from cache or database.")
               }
               noItemsCart = noItemsCart - 1;
             }
-            store.dispatch(userSlice.actions.cachingComplete());
             break;
           default:
             console.log("None of the provided options has been found in data retrieval." + dataToRetrieveUser[item])
         }
-      }
+      } 
     }
   } catch (error) {
     console.log("Error retrieving data to state.");
