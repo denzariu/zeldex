@@ -57,8 +57,6 @@ const Cart = () => {
         return accumulator + currentValue.price;
       }, 0) ?? 0
 
-      console.log("CACHING: ", cachingComplete);
-      console.log("ITEM LNG: ", items.length);
       setSum(newSum);
     }
     // console.log("Cart sum: ", sum);

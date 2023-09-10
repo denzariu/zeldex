@@ -45,6 +45,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { _retrieveDataOnStartup } from './src/redux/fetcher';
 import { store } from './src/redux/store';
 import { userSlice } from './src/redux/reducers';
+import Checkout from './components/screens/Checkout';
 
 //TODO: styles revamp
 
@@ -327,7 +328,7 @@ function App(): JSX.Element {
     });
 
     //TEST PURPOSES: DELETING ALL CACHE
-    AsyncStorage.clear();  
+    // AsyncStorage.clear();  
   }, []) 
 
   useEffect(() => {
@@ -448,6 +449,29 @@ function App(): JSX.Element {
                   headerShadowVisible: false,
                   headerTitleAlign: 'center',
                   headerTintColor: colors.quaternary,
+                  headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: fontSizes.xl,
+                  },
+                })}
+              />
+
+<Stack.Screen
+                name="Checkout"
+                component={Checkout}
+                options={ (navigation)=> ({
+                  title: 'My order',
+                  statusBarColor: colors.white,
+                  statusBarStyle: 'dark',
+                  headerShown: true,
+                  headerTransparent: false,
+                  headerBackVisible: false,
+                  headerShadowVisible: false,
+                  headerTitleAlign: 'center',
+                  headerTintColor: colors.quaternary,
+                  headerStyle: {
+                    backgroundColor: colors.white
+                  },
                   headerTitleStyle: {
                     fontWeight: 'bold',
                     fontSize: fontSizes.xl,

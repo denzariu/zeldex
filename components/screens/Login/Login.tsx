@@ -59,8 +59,10 @@ const Login = () => {
   })
 
   // Second screen
-  const [textName, onChangeTextName] = React.useState('');
-  const [textGivenName, onChangeTextGivenName] = React.useState('');
+  const [textFirstName, onChangeTextFirstName] = React.useState('');
+  const [lastNameErr, setLastNameErr] = React.useState('');
+  const [textLastName, onChangeTextLastName] = React.useState('');
+  const [firstNameErr, setFirstNameErr] = React.useState('');
 
   const loginSecondViewAnimation = useAnimatedStyle(() => {
     const interpolation = interpolate(viewPosition.value, [0, 1], [width, 0])
@@ -72,6 +74,7 @@ const Login = () => {
   const [loading, onLoading] = React.useState(true);
   const [fetchLoaded, onFetchLoad] = React.useState(false);
   const [textPhone, onChangePhone] = React.useState(phone);
+  const [phoneErr, setPhoneErr] = React.useState('');
 
   const [countryCode, setCountryCode] = useState<CountryCode>('RO')
   const [country, setCountry] = useState<Country>()
@@ -85,26 +88,34 @@ const Login = () => {
   }
 
   function onUserLogIn(): void {
-
+    let err: boolean = false;
+    if (textFirstName === '') {
+      setFirstNameErr('Empty field');
+      err = true;
+    }
+    else setFirstNameErr('');
     
+    if (textLastName === '') {
+      setLastNameErr('Empty field');
+      err = true
+    }
+    else setLastNameErr('');
+     
+    if (err)
+      return;
+
     const userLoginData = {
       ...user,
-      firstName: textGivenName,
-      lastName: textName,
+      firstName: textFirstName,
+      lastName: textLastName,
     } as UserModel;
 
     store.dispatch(userSlice.actions.login(userLoginData))
     // cacheUserDetails(userLoginData, true)
     cacheUserDetails(userLoginData, true).then(() => {
-      console.log('letsgooo?');
-      // console.log(isAuthenticated)
+      //TODO: store user in DB
     });
 
-    try {
-
-    } catch (e){ 
-      throw new Error('Function not implemented.')
-    }
   }
   
   const onContinue = () => {
@@ -112,9 +123,11 @@ const Login = () => {
     //TODO: check data
     console.log('e'+ callingCode + textPhone)
     if (!checkPhone('+' + callingCode + textPhone)) {
-      Alert.alert("Phone number has an invalid format.");
+      setPhoneErr('Invalid phone number');
+      // Alert.alert("Phone number has an invalid format.");
       return;
     }
+    setPhoneErr('');
     
     const userLoginData = {
       ...user,
@@ -133,16 +146,6 @@ const Login = () => {
   }
   
   useEffect(() => {
-    // MOVED TO 'App.tsx' (protected routing change) 
-
-    // onLoading(true)
-    // _retrieveDataOnStartup().then(res => {
-    //   onFetchLoad(true);
-    //   if (loggedin)
-    //     onLoading(false)
-    // });
-
-
     // Back action overwrite
     function handleBackButtonClick() {
       if (viewPosition.value == 1)
@@ -195,14 +198,20 @@ const Login = () => {
             }}
             visible={false}
           />
-          <TextInput
-            style={[input, {flex: 1, margin: 0}]}
-            onChangeText={onChangePhone}
-            value={textPhone}
-            placeholder=""
-            autoComplete={"tel"}
-            keyboardType='phone-pad'>
-          </TextInput>
+          <View style={{flex: 1}}>
+            {/* TODO: rework reused styles into 'ui' component */}
+            {phoneErr != '' &&
+              <Text style={{position: 'absolute', top: -20, bottom: 0, right: 4, color: colors.quaternary, zIndex: 10}}>{phoneErr}</Text>
+            }
+            <TextInput
+              style={[input, {flex: 1, margin: 0}]}
+              onChangeText={onChangePhone}
+              value={textPhone}
+              placeholder=""
+              autoComplete={"tel"}
+              keyboardType='phone-pad'>
+            </TextInput>
+          </View>
         </View>    
         <Pressable
           onPress={onContinue}
@@ -216,22 +225,32 @@ const Login = () => {
 
       {/* Second login screen */}
       <Animated.View style={[styles.container, loginSecondViewAnimation]}>
-        <Text style={styles.textArea}>First Name</Text>
-        <TextInput
-          style={input}
-          onChangeText={onChangeTextGivenName}
-          value={textGivenName}
-          placeholder=""
-          autoComplete={"given-name"}>
-        </TextInput>  
-        <Text style={styles.textArea}>Last Name</Text>
-        <TextInput
-          style={input}
-          onChangeText={onChangeTextName}
-          value={textName}
-          placeholder=""
-          autoComplete={"name"}>
-        </TextInput>   
+      <View style={{flex: 1}}>
+          <Text style={styles.textArea}>First Name</Text>
+          {firstNameErr != '' &&
+            <Text style={{position: 'absolute', top: 8, right: 12, color: colors.quaternary, zIndex: 10}}>{firstNameErr}</Text>
+          }
+          <TextInput
+            style={input}
+            onChangeText={onChangeTextFirstName}
+            value={textFirstName}
+            placeholder=""
+            autoComplete={"given-name"}>
+          </TextInput>  
+        </View>
+        <View style={{flex: 1}}>
+          <Text style={styles.textArea}>Last Name</Text>
+          {lastNameErr != '' &&
+            <Text style={{position: 'absolute', top: 8, right: 12, color: colors.quaternary, zIndex: 10}}>{lastNameErr}</Text>
+          }
+          <TextInput
+            style={input}
+            onChangeText={onChangeTextLastName}
+            value={textLastName}
+            placeholder=""
+            autoComplete={"name"}>
+          </TextInput>
+        </View>
         
         <Pressable
           onPress={onUserLogIn}
@@ -272,13 +291,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-
     alignContent: 'center',
     justifyContent: 'center',
-
     borderRadius: 20,
     margin: 10,
     padding: 10,
+    paddingVertical: 16,
     backgroundColor: colors.primary
   },
 

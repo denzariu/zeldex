@@ -17,6 +17,7 @@ export const colors = {
   gray: '#87817A',
   grayDisabled: '#bbb',
   grayLight: '#E5E5EA',
+  grayMedium: '#b6b6b6'
 }
 
 export const fontSizes = {

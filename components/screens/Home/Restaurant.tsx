@@ -4,14 +4,9 @@ import {
   StyleSheet,
   View,
   Text,
-  StatusBar,
   Animated,
-  NativeSyntheticEvent,
   Image,
   TouchableOpacity,
-  Dimensions,
-  Modal,
-  ScrollView
 } from 'react-native';
 
 // import GestureRecognizer from 'react-native-swipe-gestures' 
@@ -30,17 +25,60 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 import { userSlice } from '../../../src/redux/reducers';
 import { CartModel } from '../../../src/redux/actions';
 import { store } from '../../../src/redux/store';
-import { foodItem } from '../../../src/database/models';
+import { foodItem, restaurantItem } from '../../../src/database/models';
 import { cacheData } from '../../../src/redux/fetcher';
 import { getDBConnection, getFoodItemsByRestaurantId } from '../../../src/database/db-service';
 
 declare const global: {HermesInternal: null | {}};
 
+type CartButtonProps = {
+  restaurant: restaurantItem,
+  restaurantCart: string,
+} 
+
+const CartButton = ({restaurant, restaurantCart}: CartButtonProps) => {
+  if (restaurant.name != restaurantCart)
+    return;
+
+  const navigation = useNavigation();
+
+  const items: Array<foodItem> = useSelector((state:any) => (state.userReducer.cart.items));
+  const [sum, setSum] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(true);
+  
+  useEffect (() => {
+    if (items.length) {
+      const newSum = items.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue.price;
+      }, 0) ?? 0
+
+      setSum(newSum);
+      setLoading(false);
+    }
+    // console.log("Cart sum: ", sum);
+  }, [[], items.length])
+  
+  function handleRedirectToCart(): void {
+    navigation.navigate('Checkout');
+
+  }
+
+  if (!loading)
+  return (
+    <View style={{position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 20, paddingVertical: 8, zIndex: 2000, backgroundColor: colors.primary}}>
+      <TouchableOpacity activeOpacity={0.75} style={styles.textContainerCart} onPress={handleRedirectToCart}>
+        <Text style={styles.textCart} numberOfLines={1}>Checkout</Text>
+        <Text style={styles.subtextCart}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(sum / 100).toLowerCase()}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 const HomeRestaurant = ({route, navigation} : any) => {
 
   const dispatch = useDispatch();
 
-  const { restaurant } = route.params;
+  const {restaurant} = route.params;
 
   const restaurantCart = useSelector((state:any) => (state.userReducer.cart.restaurantName));
   const [SECTIONS, setSECTIONS] = useState([
@@ -206,6 +244,8 @@ const HomeRestaurant = ({route, navigation} : any) => {
     setNoItems(0);
   }
 
+  
+
   const renderFooter = () => (
     <View style={styles.modalFooter}>
       
@@ -254,13 +294,13 @@ const HomeRestaurant = ({route, navigation} : any) => {
       </View>
     </View>,
   
-    <View key="6">
+    <View key="1">
       <View style={styles.modalInfo}>
         <View style={[styles.modalSection, {marginBottom: '15%'}]}>
           <Text style={styles.modalNote}>Leave a note for the kitchen</Text>
         </View>
       </View>
-    </View>
+    </View>,
   ]
 
   if (!loading)
@@ -268,7 +308,10 @@ const HomeRestaurant = ({route, navigation} : any) => {
     <>
       <SafeAreaView style={styles.safeArea}>
         
-        
+          <CartButton
+            restaurant={restaurant}
+            restaurantCart={restaurantCart}
+          />
           <Modalize
               ref={modalizeRef}
               scrollViewProps={{
@@ -298,7 +341,7 @@ const HomeRestaurant = ({route, navigation} : any) => {
         <TabSectionList
           showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior='automatic'
-          style={styles.sectionList}
+          style={[styles.sectionList, restaurantCart == restaurant.id ? {marginBottom: 75} : {marginBottom: 0}]}
           sections={SECTIONS || []}
           keyExtractor={(item) => item.id}
           stickySectionHeadersEnabled={false}
@@ -347,15 +390,6 @@ const HomeRestaurant = ({route, navigation} : any) => {
                   <View style={styles.divider}></View>
                 </>
               }
-              
-              {/* Restaurant cart order */}
-              {/* {restaurant.name == restaurantCart ?
-                <View style={{ bottom: 0, paddingHorizontal: 20, paddingVertical: 100, zIndex: 2000, backgroundColor: colors.primary}}>
-                  
-                </View>
-                :
-                <></>
-              } */}
             </>
           }
           renderTab={({title, isActive}) => {
@@ -653,7 +687,7 @@ const styles = StyleSheet.create({
 
   itemDescription: {
     marginVertical: 8,
-    color: '#b6b6b6',
+    color: colors.grayMedium,
     fontSize: fontSizes.s,
   },
   
@@ -748,6 +782,33 @@ const styles = StyleSheet.create({
     backgroundColor: colors.quaternary,
   },
 
+  containerCart: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    backgroundColor: colors.primary,
+    
+  },
+
+  textContainerCart: {
+    paddingVertical: 8,
+    backgroundColor: colors.quaternary,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 48,
+    alignItems: 'center'
+  },
+
+  textCart: {
+    fontSize: fontSizes.xl,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+
+  subtextCart: {
+    fontSize: fontSizes.ml,
+    fontWeight: '300',
+    color: colors.primary,
+  }
 });
 
 export default HomeRestaurant;

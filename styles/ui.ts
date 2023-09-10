@@ -14,6 +14,8 @@ export const input = {
   backgroundColor: colors.primary
 }
 
+// export const inputErr = {position: 'absolute', top: -18, bottom: 0, right: 4, color: colors.quaternary, zIndex: 10}
+
 export const inputTextAbove = StyleSheet.create({
   container: {
     height: 64,

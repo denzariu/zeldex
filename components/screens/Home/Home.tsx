@@ -408,21 +408,10 @@ const Home = () => {
   )
 }
 
-// To rework into actual database information
-export type Restaurant = {
-  name: string;
-  rating: string;
-  priceDelivery: string;
-  priceDeliveryUsual: string;
-  menuDiscount: string;
-  image: ImageSourcePropType;
-}
-
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
     backgroundColor: colors.primary,
-    //paddingVertical: 32,
   },
 
   container: {
@@ -450,7 +439,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 16,
     marginBottom: 12,
-    //paddingHorizontal: 16,
     borderRadius: 8,
   },
 

@@ -91,6 +91,18 @@ export const userSlice = createSlice({
       // console.log('ITEMS: ', state.cart.items);
       state.cart.items.push(action.payload);
       // console.log('--------------------------------->')
+    },
+    popCart(state, action: PayloadAction<number>) {
+
+      const itemId = action.payload;
+
+      const indexOf = state.cart.items.findIndex(item => 
+        itemId == item.id
+      )
+      console.log('Index of: ', indexOf);
+
+      if (indexOf !== -1)
+        state.cart.items.splice(indexOf, 1)
     }
   }
 })
