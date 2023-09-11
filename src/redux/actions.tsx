@@ -15,8 +15,8 @@ export interface UserModel {
   countryCode: string;
   address: string;
   coordinates: {
-    longitude: number | undefined,
-    latitude: number | undefined
+    longitude: number,
+    latitude: number
   },
   token: string;  
   type: string;

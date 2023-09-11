@@ -77,7 +77,7 @@ export const userSlice = createSlice({
     setUserLocation(state, action: PayloadAction<string>) {
       state.user.address = action.payload;
     },
-    setUserCoordinates(state, action: PayloadAction<{longitude: number | undefined, latitude: number | undefined}>) {
+    setUserCoordinates(state, action: PayloadAction<{longitude: number, latitude: number}>) {
       state.user.coordinates = action.payload;
     },
 
@@ -103,6 +103,12 @@ export const userSlice = createSlice({
 
       if (indexOf !== -1)
         state.cart.items.splice(indexOf, 1)
+    },
+    popStackCart(state, action: PayloadAction<number>) {
+      const refItemId = action.payload;
+      state.cart.items = state.cart.items.filter((item) => {
+        if (item.id != refItemId) return item;
+      })
     }
   }
 })

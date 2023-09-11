@@ -308,35 +308,35 @@ const HomeRestaurant = ({route, navigation} : any) => {
     <>
       <SafeAreaView style={styles.safeArea}>
         
-          <CartButton
-            restaurant={restaurant}
-            restaurantCart={restaurantCart}
-          />
-          <Modalize
-              ref={modalizeRef}
-              scrollViewProps={{
-                showsVerticalScrollIndicator: false,
-                // stickyHeaderIndices: [0]
-              }}
-              //rootStyle={{backgroundColor: colors.quaternary + '10'}}
-              //snapPoint={350}
-              adjustToContentHeight={true}
-              handleStyle={{
-                backgroundColor: colors.primary + '00',
-                height: 170, 
-                width: '100%',
-                zIndex: 100,
-              }}
-              HeaderComponent={renderFooter()}
-              // modalStyle={{
-              //   zIndex: 10,
-              //   marginBottom: 80,
-              //   marginTop: 80
-              // }}
-              handlePosition='inside'
-            >              
-              {renderContent()}
-            </Modalize>  
+        <CartButton
+          restaurant={restaurant}
+          restaurantCart={restaurantCart}
+        />
+        <Modalize
+            ref={modalizeRef}
+            scrollViewProps={{
+              showsVerticalScrollIndicator: false,
+              // stickyHeaderIndices: [0]
+            }}
+            //rootStyle={{backgroundColor: colors.quaternary + '10'}}
+            //snapPoint={350}
+            adjustToContentHeight={true}
+            handleStyle={{
+              backgroundColor: colors.primary + '00',
+              height: 170, 
+              width: '100%',
+              zIndex: 100,
+            }}
+            HeaderComponent={renderFooter()}
+            // modalStyle={{
+            //   zIndex: 10,
+            //   marginBottom: 80,
+            //   marginTop: 80
+            // }}
+            handlePosition='inside'
+          >              
+            {renderContent()}
+        </Modalize>  
             
         <TabSectionList
           showsVerticalScrollIndicator={false}

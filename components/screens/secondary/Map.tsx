@@ -69,12 +69,22 @@ const Map = ({ route, navigation } : MapProps) => {
   })  
   
   const onSelectLocation = () => {
-    dispatch(userSlice.actions.setUserCoordinates({longitude:LONGITUDE, latitude:LATITUDE}));
-    dispatch(userSlice.actions.setUserLocation(fullAddress));
+    try {
+      dispatch(userSlice.actions.setUserCoordinates({longitude:LONGITUDE, latitude:LATITUDE}));
+    } catch (e) {
+      console.log('Could not set user coordinates', LONGITUDE, LATITUDE)
+    }
+    try {
+      dispatch(userSlice.actions.setUserLocation(fullAddress));
+    } catch (e) {
+      console.log('Could not set user address', fullAddress)
+    }
     try {
       cacheData('address', fullAddress);
+      cacheData('userLatitude', LATITUDE.toString());
+      cacheData('userLongitude', LONGITUDE.toString());
     } catch (e) {
-      console.log('Could not cache address: ', fullAddress);
+      console.log('Could not cache address/coordinates: ', fullAddress, LATITUDE, LONGITUDE);
     }
     navigation.goBack();
   }
@@ -84,6 +94,8 @@ const Map = ({ route, navigation } : MapProps) => {
       .then(json => {
         const addressComponent = json.results[0].formatted_address;
         setAddress(addressComponent)
+        setLATITUDE(coords.latitude);
+        setLONGITUDE(coords.longitude);
       })
       .catch(error => console.warn(error));
   }
@@ -130,6 +142,7 @@ const Map = ({ route, navigation } : MapProps) => {
         scrollEnabled={true}
         tintColor={colors.quaternary}
         showsCompass={false}
+        showsUserLocation={true}
         
       >
         <MarkerAnimated 

@@ -228,7 +228,7 @@ const Home = () => {
             console.log(error.code, error.message);
             setLocation(undefined);
           },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+          { enableHighAccuracy: true, timeout: 3000, maximumAge: 10000 },
         );
       }
     });

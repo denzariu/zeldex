@@ -92,7 +92,7 @@ export const cacheUserDetails = async (userData : UserModel, userIsLogged : bool
 export const _retrieveDataOnStartup = async () => {
 
 
-  const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated', 'countryCode', 'email', 'address', 'cartRestaurantId', 'cartNoItems']  
+  const dataToRetrieveUser = ['firstName', 'lastName', 'phone', 'isAuthenticated', 'countryCode', 'email', 'address', 'userLatitude', 'userLongitude', 'cartRestaurantId', 'cartNoItems']  
   
   try {
     for (const item in dataToRetrieveUser) {
@@ -120,6 +120,16 @@ export const _retrieveDataOnStartup = async () => {
             break;
           case 'address':
             store.dispatch(userSlice.actions.setUserLocation(value));
+            break;
+          case 'userLatitude':
+            const currentLong: number = store.getState().userReducer.user.coordinates.longitude;
+            const currentLat: number = Number(value);
+            store.dispatch( userSlice.actions.setUserCoordinates( { longitude: currentLong, latitude: currentLat } ) );
+            break;
+          case 'userLongitude':
+            const setLat: number = store.getState().userReducer.user.coordinates.latitude;
+            const setLong: number = Number(value);
+            store.dispatch( userSlice.actions.setUserCoordinates( { longitude: setLong, latitude: setLat } ) );
             break;
           case 'cartRestaurantId':
             const restaurantName: string | null = await AsyncStorage.getItem('cartRestaurantName');

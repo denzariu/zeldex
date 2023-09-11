@@ -7,9 +7,13 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { colors, fontSizes } from '../../../styles/defaults';
 import { store } from '../../../src/redux/store';
 import { userSlice } from '../../../src/redux/reducers';
+import { SvgXml } from 'react-native-svg';
+import { svgThrash } from '../images/svgs';
+import { foodItem } from '../../../src/database/models';
 
 type itemProps = {
-  itemId: number;
+  item: foodItem;
+  quantity: number;
 }
 export default class AppleStyleSwipeableRow extends Component<
   PropsWithChildren<itemProps>
@@ -41,11 +45,32 @@ export default class AppleStyleSwipeableRow extends Component<
   private deleteItem = (() => {
     
     try {
-      const itemId = this.props.itemId;
-      store.dispatch(userSlice.actions.popCart(itemId))
-      console.log('Deleting item ID: ', itemId, ' (AppleStyleSwipeable)');
+      store.dispatch(userSlice.actions.popCart(this.props.item.id))
+      console.log('Deleting item ID: ', this.props.item.id, ' (AppleStyleSwipeable)');
     } catch {
       console.log("Error on deleting from state.");
+    }
+    // this.close();
+  })
+
+  private addItem = (() => {
+    
+    try {
+      console.log('Adding item ID: ', this.props.item.id, ' (AppleStyleSwipeable)');
+      if (this.props.item)
+        store.dispatch(userSlice.actions.appendCart(this.props.item))
+    } catch {
+      console.log("Error on adding from state.");
+    }
+    // this.close();
+  })
+
+  private deleteAllItem = (() => {
+    try {
+      store.dispatch(userSlice.actions.popStackCart(this.props.item.id))
+      console.log('Deleting item entirely ID: ', this.props.item.id, ' (AppleStyleSwipeable)');
+    } catch {
+      console.log("Error on deleting all from state.");
     }
     this.close();
   })
@@ -54,14 +79,33 @@ export default class AppleStyleSwipeableRow extends Component<
     text: string,
     color: string,
     x: number,
-    progress: Animated.AnimatedInterpolation<number>
+    progress: Animated.AnimatedInterpolation<number>,
+    icon?: string | undefined,
+    textColor?: string | undefined
   ) => {
     const trans = progress.interpolate({
       inputRange: [0, 1],
       outputRange: [x, 0],
     });
+
     const pressHandler = () => {
-      this.close();
+
+      switch (text) {
+        case '–':
+          this.deleteItem();
+          break;
+        case '+':
+          this.addItem();
+          break;
+        case 'X':
+          this.deleteAllItem();
+          break;
+      }
+
+      //TODO: add timer reset after each action
+      // timeout.refresh();
+
+      // this.close();
       // eslint-disable-next-line no-alert
       // window.alert(text);
     };
@@ -71,7 +115,12 @@ export default class AppleStyleSwipeableRow extends Component<
         <RectButton
           style={[styles.rightAction, { backgroundColor: color }]}
           onPress={pressHandler}>
-          <Text style={styles.actionText}>{text}</Text>
+          {
+            icon ? 
+            <SvgXml xml={icon} width={24} height={24} fill={colors.white}/>
+            :
+            <Text style={[styles.actionText, textColor ? {flex: 1, textAlign: 'center', textAlignVertical: 'center', fontSize: fontSizes.m, backgroundColor: colors.quaternary, borderTopLeftRadius: 12, borderBottomLeftRadius: 12, width: 35, paddingVertical: 18, fontWeight: '700'} : {}]}>{text}</Text>
+          }
         </RectButton>
       </Animated.View>
     );
@@ -83,12 +132,14 @@ export default class AppleStyleSwipeableRow extends Component<
   ) => (
     <View
       style={{
-        width: 192,
+        // width: 192,
+        width: 140,
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
       }}>
-      {this.renderRightAction('–', '#C8C7CD', 192, progress)}
-      {this.renderRightAction('+', '#ffab00', 128, progress)}
-      {this.renderRightAction('X', '#dd2c00', 64, progress)}
+      {this.renderRightAction('x' + this.props.quantity.toString(), colors.white, 140, progress, ``, colors.quaternary)}
+      {this.renderRightAction('–', '#c8c7cd', 105, progress)}
+      {this.renderRightAction('+', '#ffab00', 70, progress)}
+      {this.renderRightAction('X', '#dd2c00', 35, progress, svgThrash)}
     </View>
   );
 
@@ -109,7 +160,7 @@ export default class AppleStyleSwipeableRow extends Component<
         enableTrackpadTwoFingerGesture
         leftThreshold={20}
         rightThreshold={20}
-        renderLeftActions={this.renderLeftActions}
+        // renderLeftActions={this.renderLeftActions}
         renderRightActions={this.renderRightActions}
         onSwipeableOpen={(direction) => {
           console.log(`Opening swipeable from the ${direction}`);
@@ -130,10 +181,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionText: {
-    color: 'white',
-    fontSize: fontSizes.l,
+    color: colors.white,
+    fontSize: fontSizes.xxxl,
     backgroundColor: 'transparent',
-    padding: 22,
+    padding: 8,
   },
   rightAction: {
     alignItems: 'center',
