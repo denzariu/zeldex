@@ -22,21 +22,24 @@ export const inputTextAbove = StyleSheet.create({
     margin: 6,
     borderWidth: 1.5,
     borderRadius: 10,
-    borderColor: colors.quaternary,
     paddingVertical: 8,
     paddingHorizontal: 12,
     fontSize: fontSizes.m,
     color: colors.textBlack,
-    backgroundColor: colors.primary
+    backgroundColor: colors.primary,
+    
+    borderColor: colors.gray,
+    // color: colors.gray
   },
 
   focused: {
-
+    borderColor: colors.quaternary,
+    color: colors.quaternary
   }, 
 
   notFocused: {
-    borderColor: colors.gray,
-    color: colors.gray
+    // borderColor: colors.gray,
+    // color: colors.gray
   },
 
   disabled: {
@@ -50,7 +53,7 @@ export const inputTextAbove = StyleSheet.create({
   inputUpperText: {
     padding: 0,
     margin: 0,
-    color: colors.quaternary,
+    color: colors.gray,
     fontSize: fontSizes.s,
     fontWeight: '500'
   },

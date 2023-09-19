@@ -1,6 +1,5 @@
 import { FlatList, ScrollView, StyleSheet, Text } from "react-native";
 import Card from "../../ui/components/Card";
-import { Restaurant } from "./Home";
 import { colors, fontSizes } from "../../../styles/defaults";
 
 // Switch to FlatList

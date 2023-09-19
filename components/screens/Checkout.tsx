@@ -1,15 +1,18 @@
-import { Animated, Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native'
+import { Animated, Dimensions, FlatList, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { colors, fontSizes } from '../../styles/defaults'
 import { useSelector } from 'react-redux';
-import { foodItem } from '../../src/database/models';
+import { foodItem, restaurantItem } from '../../src/database/models';
 import AppleStyleSwipeableRow from '../ui/components/AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from '../ui/components/GmailStyleSwipeableRow';
-import { svgThreeDotsVertical } from '../ui/images/svgs';
+import { svgLocation, svgThreeDotsVertical } from '../ui/images/svgs';
 import { SvgXml } from 'react-native-svg';
 import { Modalize } from 'react-native-modalize';
 import { useNavigation } from '@react-navigation/native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import Input from '../ui/components/Input';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Row = ({ item, quantity }: { item: foodItem, quantity: number }) => {
 
@@ -51,20 +54,26 @@ const SwipeableRow = ({ item, quantity }: { item: foodItem, quantity: number }) 
 
 const modalInitSize = 88;
 
-const Checkout = () => {
+type CheckoutProps = {
+  route: any,
+  navigation: any,
+}
 
-  const navigation = useNavigation();
+const Checkout = ({ route, navigation } : CheckoutProps) => {
+
+  const { restaurant } = route.params;
   const modalizeRef = useRef<Modalize>(null);
 
   const [sum, setSum] = useState<number>(0)
-  const [loading, setLoading] = useState<boolean>(true);
   const items: foodItem[] = useSelector((state:any) => (state.userReducer.cart.items));
   const [itemsStacked, setItemsStacked] = useState<{ item: foodItem, quantity: number }[]>();
   
-  const restaurantCart: string = useSelector((state:any) => (state.userReducer.cart.restaurantName));
   const address: string = useSelector((state:any) => (state.userReducer.user.address));
   const coordinates: {latitude: number, longitude: number} = useSelector((state:any) => (state.userReducer.user.coordinates));
 
+  const [tipOption, setTip] = useState<number>(0);
+
+  const [userAddressOne, setUserAddressOne] = useState<string>('')
   const screen = Dimensions.get('window');
   const ASPECT_RATIO = screen.width / 160;
   const LATITUDE_DELTA = 0.002;
@@ -72,7 +81,7 @@ const Checkout = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: restaurantCart,
+      title: restaurant.name,
     });
   }, [navigation]);
 
@@ -97,40 +106,31 @@ const Checkout = () => {
 
       setItemsStacked(itemsStack);
       setSum(newSum);
-      setLoading(false);
     }
     // console.log("Cart sum: ", sum);
   }, [items.length])
   
 
   const renderHeader = () => (
-    <View style={styles.contentTitle}>
+    <>
+    <KeyboardAvoidingView style={[styles.contentTitle]}>
       <Text style={styles.contentSubheading}>{'Total'.toUpperCase()}</Text>
       <Text style={styles.contentHeading}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(sum / 100).toLowerCase()}</Text>
-    </View>
-  )
-
-  const renderContent = () => [
-    
-    <View style={styles.content} key="1">
-      <Text style={styles.contentDescription}>Restaurant {restaurantCart}</Text>
-    </View>,
-    <View style={styles.content} key="2">
-      <Text style={styles.contentDescription}>'Section 2'</Text>
-    </View>,
-    <View style={styles.content} key="3">
-      <Text style={styles.contentDescription}>'Section 3'</Text>
-    </View>,
-    <View style={styles.content} key="4">
-      <Text style={styles.contentDescription}>{address}</Text>
-    </View>,
-    <View style={styles.contentMap} key="5">
+    </KeyboardAvoidingView>
+    <KeyboardAvoidingView style={[styles.content, {paddingVertical: 8}]} key="4">
+      <Text style={[styles.contentHeading, {paddingTop: 8}]}>Delivery Address</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <SvgXml xml={svgLocation} height={18} width={18}></SvgXml>
+        <Text numberOfLines={1} style={styles.contentDelivery}>{address}</Text>
+      </View>
+    </KeyboardAvoidingView>
+    <KeyboardAvoidingView style={styles.contentMap} key="5">
       <View style={{alignSelf: 'center', alignItems: 'center', flex: 1, justifyContent: 'center', zIndex: 10, transform: [{translateY: -16}]}}>
         <Image source={require('../ui/images/marker.png')} style={{ height: 32, width: 32}}/>
       </View>
 
       <MapView key="5"
-        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+        provider={PROVIDER_GOOGLE}
         style={styles.map}  
         liteMode={true}
         region={{
@@ -141,39 +141,117 @@ const Checkout = () => {
         }}
       >
       </MapView>
-    </View>,
-    <View style={styles.content} key="6">
-      <Text style={styles.contentDescription}>'Section 6'</Text>
-    </View>,
+    </KeyboardAvoidingView>
+    <KeyboardAvoidingView style={styles.content} key="6">
+      <Input 
+        autoComplete='address-line1'
+        // defaultValue='' //TODO: replace with user's address
+        maxLength={80}
+        upperText='Address'
+        onTextChange={setUserAddressOne}
+        styleContainer={{backgroundColor: colors.white, borderColor: colors.grayLight}}
+        styleText={{color: colors.quaternary}}
+        blurOnSubmit={false}
+        placeholder='Floor, apartment number, etc.'
+      />
+    </KeyboardAvoidingView>
+    <KeyboardAvoidingView style={[styles.content, {paddingVertical: 8}]} key="7">
+      <Text style={[styles.contentHeading, {paddingTop: 8}]}>Tip the Courier</Text>
+      <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap', paddingVertical: 12}}>
+        <TouchableOpacity 
+          onPress={() => setTip(0)}
+          style={[{alignItems: 'center', width: 64, borderRadius: 6}, tipOption == 0 ? {borderColor: colors.quaternary, borderWidth: 1.5} : {borderColor: colors.grayLight, borderWidth: 1}]}>
+          <Text style={[styles.contentDescription, tipOption == 0 ? {color: colors.quaternary, fontWeight: '500'} : {}]}>None</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={() => setTip(1)}
+          style={[{alignItems: 'center', width: 64, borderRadius: 6}, tipOption == 1 ? {borderColor: colors.quaternary, borderWidth: 1.5} : {borderColor: colors.grayLight, borderWidth: 1}]}>
+          <Text style={[styles.contentDescription, tipOption == 1 ? {color: colors.quaternary, fontWeight: '500'} : {}]}>3 lei</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={() => setTip(2)}
+          style={[{alignItems: 'center', width: 64, borderWidth: 1, borderRadius: 6}, tipOption == 2 ? {borderColor: colors.quaternary, borderWidth: 1.5} : {borderColor: colors.grayLight, borderWidth: 1}]}>
+          <Text style={[styles.contentDescription, tipOption == 2 ? {color: colors.quaternary, fontWeight: '500'} : {}]}>10 lei</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={() => setTip(3)}
+          style={[{alignItems: 'center', width: 64, borderWidth: 1, borderRadius: 6}, tipOption == 3 ? {borderColor: colors.quaternary, borderWidth: 1.5} : {borderColor: colors.grayLight, borderWidth: 1}]}>
+          <Text style={[styles.contentDescription, tipOption == 3 ? {color: colors.quaternary, fontWeight: '500'} : {}]}>20 lei</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
+    
+    {/* <KeyboardAvoidingView style={styles.content} key="7">
+        <Input 
+        autoComplete='address-line1'
+        defaultValue='Second Line.' //TODO: replace with user's address
+        maxLength={80}
+        upperText='Address'
+        onTextChange={setUserAddressOne}
+        styleContainer={{backgroundColor: colors.white}}
+        blurOnSubmit={false}
+      />
+    </KeyboardAvoidingView>
+    <KeyboardAvoidingView style={styles.content} key="8">
+        <Input 
+        autoComplete='address-line1'
+        defaultValue='Second Line.' //TODO: replace with user's address
+        maxLength={80}
+        upperText='Address'
+        onTextChange={setUserAddressOne}
+        styleContainer={{backgroundColor: colors.white}}
+        blurOnSubmit={false}
+      />
+    </KeyboardAvoidingView> */}
+    
+    </>
+  )
+
+  const renderContent = () => [
+    
+    
+    // <View style={[styles.content, {paddingVertical: 8}]} key="4">
+    //   <Text style={[styles.contentHeading, {paddingTop: 8}]}>Delivery Address</Text>
+    //   <View style={{flexDirection: 'row', alignItems: 'center'}}>
+    //     <SvgXml xml={svgLocation} height={18} width={18}></SvgXml>
+    //     <Text numberOfLines={1} style={styles.contentDelivery}>{address}</Text>
+    //   </View>
+    // </View>,
+    // <View style={styles.contentMap} key="5">
+    //   <View style={{alignSelf: 'center', alignItems: 'center', flex: 1, justifyContent: 'center', zIndex: 10, transform: [{translateY: -16}]}}>
+    //     <Image source={require('../ui/images/marker.png')} style={{ height: 32, width: 32}}/>
+    //   </View>
+
+    //   <MapView key="5"
+    //     provider={PROVIDER_GOOGLE}
+    //     style={styles.map}  
+    //     liteMode={true}
+    //     region={{
+    //       latitude: coordinates? coordinates.latitude : 0,
+    //       longitude: coordinates? coordinates.longitude : 0, 
+    //       latitudeDelta: LATITUDE_DELTA,
+    //       longitudeDelta: LONGITUDE_DELTA
+    //     }}
+    //   >
+    //   </MapView>
+    // </View>,
+    // <View style={styles.content} key="6">
+    //   <Input 
+    //     autoComplete='address-line1'
+    //     defaultValue='Floor, apartment number, etc.' //TODO: replace with user's address
+    //     maxLength={80}
+    //     upperText='Address'
+    //     onTextChange={userAddressOne}
+    //     styleContainer={{backgroundColor: colors.white}}
+    //   />
+    // </View>,
     <View style={styles.content} key="7">
-      <Text style={styles.contentDescription}>'Section 7'</Text>
+      <Text style={[styles.contentHeading, {paddingTop: 8}]}>Payment Method</Text>
     </View>,
-    <View style={styles.content} key="8">
-      <Text style={styles.contentDescription}>'Section 8'</Text>
-    </View>,
-    <View style={styles.content} key="9">
-      <Text style={styles.contentDescription}>'Section 9'</Text>
-    </View>,
-    <View style={styles.content} key="10">
-      <Text style={styles.contentDescription}>'Section 10'</Text>
-    </View>,
-    <View style={styles.content} key="11">
-      <Text style={styles.contentDescription}>'Section 11'</Text>
-    </View>,
-    <View style={styles.content} key="12">
-      <Text style={styles.contentDescription}>'Section 12'</Text>
-    </View>,
-    <View style={styles.content} key="13">
-      <Text style={styles.contentDescription}>'Section 13'</Text>
-    </View>,
-    <View style={styles.content} key="14">
-      <Text style={styles.contentDescription}>'Section 14'</Text>
-    </View>,
-    <View style={styles.content} key="15">
-      <Text style={styles.contentDescription}>'Section 15'</Text>
-    </View>
+
   ]
 
+  const top = useSafeAreaInsets().top;
   return (
     <View style={styles.pageContainer}>
       <FlatList
@@ -188,39 +266,40 @@ const Checkout = () => {
       >
       </FlatList>
       
+          
       <Modalize
         ref={modalizeRef}
-        scrollViewProps={{
-          showsVerticalScrollIndicator: false,
-          // stickyHeaderIndices: [2]
-        }}
         panGestureComponentEnabled={true}
-        //rootStyle={{backgroundColor: colors.quaternary + '10'}}
-        // snapPoint={350}
-        // adjustToContentHeight={true}
-        // modalHeight={modalInitSize}
-        handleStyle={{
-          // backgroundColor: colors.grayLight
-        }}
-        modalStyle={styles.contentModal}
+        // overlayStyle={{backgroundColor: colors.white}}
+        
+        FloatingComponent={(
+          <KeyboardAvoidingView style={[styles.content, {marginVertical: 0, paddingVertical: 8, paddingHorizontal: 10, flex: 1, position: 'absolute', bottom: 0, right: 0, width: '50%' }]} key="8">
+            <TouchableOpacity
+              onPress={() => {console.log('Hi, please add validation to fields such as address. Thank you, developer.s')}}
+              containerStyle={{backgroundColor: colors.white}}
+              style={{alignItems: 'center', paddingVertical: 16, backgroundColor: colors.quaternary, borderRadius: 6}}
+            >
+              <Text style={{color: colors.primary, fontWeight: "800"}}>Place order</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        )}
+        modalStyle={[
+          styles.contentModal, 
+          { 
+            flex: 1,
+            // marginTop: top - 90
+          }
+        ]}
+        // avoidKeyboardLikeIOS={Platform.select({ios: true, android: true})}
+        keyboardAvoidingBehavior={Platform.OS == 'android' ? 'height' : 'padding'}
+        // avoidKeyboardLikeIOS={true}
+
         alwaysOpen={modalInitSize}
         handlePosition="inside"
-
         HeaderComponent={renderHeader()}
-        // modalStyle={{
-        //   zIndex: 10,
-        //   marginBottom: 80,
-        //   marginTop: 80
-        // }}
       >              
-        {renderContent()}
-      </Modalize>  
-      
-      {/* <View style={[styles.itemContainer, {borderRadius: 0, borderTopColor: colors.quaternary, borderTopWidth: 2}]}>
-        <Text style={styles.sumTotal}>Total</Text>
-        <Text style={styles.sumText}>{Intl.NumberFormat('ro-RO', {minimumFractionDigits: 2, style: 'currency', currency: 'lei', currencyDisplay: 'name'}).format(sum / 100).toLowerCase()}</Text>  
-      </View> */}
-    
+        {/* {renderContent()} */}
+      </Modalize>    
     </View>
   )
 }
@@ -325,8 +404,6 @@ const styles = StyleSheet.create({
   contentTitle: {
     padding: 20,
     backgroundColor: colors.white,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
     marginBottom: 2,
   },
 
@@ -334,16 +411,16 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 20,
     backgroundColor: colors.white,
-    marginVertical: 2,
+    marginVertical: 4,
     borderRadius: 8
   },
 
   contentModal: {
     backgroundColor: colors.primary,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
-    shadowRadius: 16,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 1,
+    // shadowRadius: 12,
   },
 
   contentSubheading: {
@@ -355,7 +432,7 @@ const styles = StyleSheet.create({
   },
 
   contentHeading: {
-    fontSize: 24,
+    fontSize: fontSizes.xxl,
     fontWeight: '600',
     color: colors.quaternary,
   },
@@ -363,6 +440,16 @@ const styles = StyleSheet.create({
   contentDescription: {
     paddingTop: 10,
     paddingBottom: 10,
+
+    fontSize: fontSizes.sm,
+    fontWeight: '200',
+    lineHeight: 22,
+    color: colors.textBlack,
+  },
+
+  contentDelivery: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
 
     fontSize: fontSizes.sm,
     fontWeight: '200',

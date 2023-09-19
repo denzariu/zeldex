@@ -9,12 +9,8 @@ const Stack = createNativeStackNavigator();
 
 import {
   ActivityIndicator,
-  Alert,
-  Button,
   Share,
   StatusBar,
-  StyleSheet,
-  View,
 } from 'react-native';
 
 
@@ -41,11 +37,18 @@ import HomeRestaurant from './components/screens/Home/Restaurant';
 import Map from './components/screens/secondary/Map'
 
 import { HeaderBackButton, HeaderTitle, PlatformPressable } from '@react-navigation/elements'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { _retrieveDataOnStartup } from './src/redux/fetcher';
 import { store } from './src/redux/store';
 import { userSlice } from './src/redux/reducers';
 import Checkout from './components/screens/Checkout';
+import { restaurantItem } from './src/database/models';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+export type AppStackParamList = {
+  Checkout: { restaurant: restaurantItem } | undefined;
+  HomeRestaurant: { restaurant: restaurantItem | undefined } | undefined;
+};
 
 //TODO: styles revamp
 
@@ -328,7 +331,7 @@ function App(): JSX.Element {
     });
 
     //TEST PURPOSES: DELETING ALL CACHE
-    // AsyncStorage.clear();  
+    AsyncStorage.clear();  
   }, []) 
 
   useEffect(() => {
@@ -456,7 +459,7 @@ function App(): JSX.Element {
                 })}
               />
 
-<Stack.Screen
+              <Stack.Screen
                 name="Checkout"
                 component={Checkout}
                 options={ (navigation)=> ({

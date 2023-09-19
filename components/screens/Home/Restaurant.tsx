@@ -13,21 +13,19 @@ import {
 import TabSectionList from './../../ui/components/TabSectionList';
 import { faker } from '@faker-js/faker';
 import { colors, fontSizes } from '../../../styles/defaults';
-import { useNavigation } from '@react-navigation/native';
-import { addListener } from '@reduxjs/toolkit';
-import { getDefaultHeaderHeight, useHeaderHeight } from '@react-navigation/elements'
+import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { SvgXml } from 'react-native-svg';
-import { HeaderTitle } from '@react-navigation/elements'
 import { starXml, svgClose, svgDiscount } from '../../ui/images/svgs';
 import { Modalize } from 'react-native-modalize';
-import { Button } from '@material-ui/core';
-import { useDispatch, useSelector, useStore } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { userSlice } from '../../../src/redux/reducers';
 import { CartModel } from '../../../src/redux/actions';
 import { store } from '../../../src/redux/store';
 import { foodItem, restaurantItem } from '../../../src/database/models';
 import { cacheData } from '../../../src/redux/fetcher';
 import { getDBConnection, getFoodItemsByRestaurantId } from '../../../src/database/db-service';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList } from '../../../App';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -40,7 +38,7 @@ const CartButton = ({restaurant, restaurantCart}: CartButtonProps) => {
   if (restaurant.name != restaurantCart)
     return;
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
 
   const items: Array<foodItem> = useSelector((state:any) => (state.userReducer.cart.items));
   const [sum, setSum] = useState<number>(0)
@@ -59,7 +57,7 @@ const CartButton = ({restaurant, restaurantCart}: CartButtonProps) => {
   }, [[], items.length])
   
   function handleRedirectToCart(): void {
-    navigation.navigate('Checkout');
+    navigation.navigate('Checkout', {restaurant: restaurant});
 
   }
 
@@ -74,13 +72,13 @@ const CartButton = ({restaurant, restaurantCart}: CartButtonProps) => {
   );
 }
 
-const HomeRestaurant = ({route, navigation} : any) => {
+const HomeRestaurant = ({ route, navigation }: any) => {
 
   const dispatch = useDispatch();
 
   const {restaurant} = route.params;
 
-  const restaurantCart = useSelector((state:any) => (state.userReducer.cart.restaurantName));
+  const restaurantCart = useSelector((state: any) => (state.userReducer.cart.restaurantName));
   const [SECTIONS, setSECTIONS] = useState([
     {
       title: 'Burgers',
@@ -341,9 +339,10 @@ const HomeRestaurant = ({route, navigation} : any) => {
         <TabSectionList
           showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior='automatic'
-          style={[styles.sectionList, restaurantCart == restaurant.id ? {marginBottom: 75} : {marginBottom: 0}]}
+          style={styles.sectionList}
+          contentContainerStyle={restaurantCart == restaurant.name ? {paddingBottom: 72} : {paddingBottom: 0}}
           sections={SECTIONS || []}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: any) => item.id}
           stickySectionHeadersEnabled={false}
           scrollToLocationOffset={5}
           tabBarStyle={[styles.tabBar, {opacity: tabBarOpacity}]}

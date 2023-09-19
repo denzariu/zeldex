@@ -7,9 +7,12 @@ import { useSelector, useStore } from 'react-redux'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { store } from '../src/redux/store'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList } from '../App'
+
 
 const Cart = () => {
-  const navigator = useNavigation();
+  const navigator = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
   const restaurantName: string = useSelector((state:any) => (state.userReducer.cart.restaurantName));
   const items: Array<foodItem> = useSelector((state:any) => (state.userReducer.cart.items));
   const cachingComplete: number = useSelector((state:any) => (state.userReducer.cachingComplete));

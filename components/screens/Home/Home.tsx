@@ -62,11 +62,9 @@ const requestLocationPermission = async () => {
 
 const Home = () => {
 
-  const dispatch = useDispatch();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();  
 
   const [restaurants, setRestaurantItems] = useState<restaurantItem[]>([]);
-  const [newRestaurant, setNewsetRestaurantItem] = useState('');
   const [location, setLocation] = useState<GeoCoordinates>();
   const address: string = useSelector((state:any) => (state.userReducer.user.address));
   const [refreshing, setRefreshing] = React.useState(false);
@@ -228,7 +226,7 @@ const Home = () => {
             console.log(error.code, error.message);
             setLocation(undefined);
           },
-          { enableHighAccuracy: true, timeout: 3000, maximumAge: 10000 },
+          { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000 },
         );
       }
     });
