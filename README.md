@@ -4,7 +4,7 @@
 ### Typescript | Redux | Native Stack/Tab Navigation
 
 A few screens:
-![Screens](https://github.com/denzariu/zeldex/assets/40743579/67f6cd82-173b-49cc-8b74-381707ba92b6)
+![Frame 1](https://github.com/denzariu/zeldex/assets/40743579/9975870c-cd9a-400b-9a79-cbda9dace6a6)
 
 ## Some other shots:
 ![image](https://github.com/denzariu/zeldex/assets/40743579/62fbe7b5-5afd-401d-ad43-99df63b1bc83)
