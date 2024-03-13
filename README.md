@@ -1,7 +1,7 @@
 # zeldex
 ### WIP: React Native App
 
-### Typescript | Redux | Native Stack/Tab Navigation
+### Typescript | Redux 
 
 A few screens:
 ![Frame 1](https://github.com/denzariu/zeldex/assets/40743579/9975870c-cd9a-400b-9a79-cbda9dace6a6)
